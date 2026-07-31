@@ -1,21 +1,19 @@
 import { z } from 'zod'
 
 export const GARMENT_TYPES = [
-  'camisa', 'pantalon', 'pollera', 'buzo', 'zapatos',
-  'medias', 'guardapolvo', 'corbata', 'bermuda', 'campera',
+  'remera', 'camisa', 'swetear', 'buzo', 'campera',
+  'pantalon', 'pollera', 'zapatos',
 ] as const
 
 export const GARMENT_LABELS: Record<string, string> = {
+  remera: 'Remera',
   camisa: 'Camisa',
+  swetear: 'Swetear',
+  buzo: 'Buzo',
+  campera: 'Campera',
   pantalon: 'Pantalón',
   pollera: 'Pollera',
-  buzo: 'Buzo',
   zapatos: 'Zapatos',
-  medias: 'Medias',
-  guardapolvo: 'Guardapolvo',
-  corbata: 'Corbata',
-  bermuda: 'Bermuda',
-  campera: 'Campera',
 }
 
 export const SIZES = ['2', '4', '6', '8', '10', '12', '14', '16', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '36', '37', '38', '39', '40', '41', '42', '43', '44'] as const
@@ -52,7 +50,7 @@ export const bookListingSchema = z.object({
   title: z.string().min(1, 'El título es requerido'),
   author: z.string().min(1, 'El autor es requerido'),
   subject: z.string().min(1, 'La materia es requerida'),
-  grade: z.coerce.number().int().min(1).max(12),
+  grade: z.string().min(1, 'El grado es requerido'),
   condition: z.enum(['como_nuevo', 'buen_estado', 'regular']),
   price: z.coerce.number().min(0).max(999999).optional().nullable(),
   notes: z.string().max(280).optional().nullable(),

@@ -7,8 +7,8 @@ CREATE TYPE listing_type AS ENUM ('book', 'uniform');
 CREATE TYPE listing_status AS ENUM ('active', 'sold', 'removed');
 CREATE TYPE condition_type AS ENUM ('como_nuevo', 'buen_estado', 'regular');
 CREATE TYPE garment_type AS ENUM (
-  'camisa', 'pantalon', 'pollera', 'buzo', 'zapatos',
-  'medias', 'guardapolvo', 'corbata', 'bermuda', 'campera'
+  'remera', 'camisa', 'swetear', 'buzo', 'campera',
+  'pantalon', 'pollera', 'zapatos'
 );
 CREATE TYPE gender_type AS ENUM ('masculino', 'femenino', 'unisex');
 CREATE TYPE rating_role AS ENUM ('buyer', 'seller');
