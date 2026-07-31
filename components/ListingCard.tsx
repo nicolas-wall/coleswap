@@ -20,7 +20,7 @@ export function ListingCard({ listing }: Props) {
     : `Talle ${listing.uniform_details?.size} · ${listing.uniform_details?.gender}`
 
   const meta = isBook
-    ? `${listing.book_details?.subject} · ${listing.book_details?.grade}° año`
+    ? `${listing.book_details?.subject} · ${listing.book_details?.grade}`
     : listing.uniform_details?.color ? `Color: ${listing.uniform_details.color}` : undefined
 
   return (

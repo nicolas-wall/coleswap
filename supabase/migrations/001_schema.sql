@@ -70,7 +70,7 @@ CREATE TABLE book_details (
   title      text NOT NULL,
   author     text NOT NULL,
   subject    text NOT NULL,
-  grade      int  NOT NULL
+  grade      text NOT NULL
 );
 
 -- Detalle de uniformes

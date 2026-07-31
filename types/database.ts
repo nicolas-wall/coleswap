@@ -138,7 +138,7 @@ export interface Database {
           title: string
           author: string
           subject: string
-          grade: number
+          grade: string
         }
         Insert: {
           listing_id: string
@@ -146,7 +146,7 @@ export interface Database {
           title: string
           author: string
           subject: string
-          grade: number
+          grade: string
         }
         Update: {
           isbn?: string

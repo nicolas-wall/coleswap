@@ -80,13 +80,23 @@ export default function SellBookPage() {
                 <select id="grade" name="grade" required
                   className="w-full border rounded-md px-3 py-2 text-sm bg-background">
                   <option value="">Seleccioná</option>
-                  <option value="1">1°</option>
-                  <option value="2">2°</option>
-                  <option value="3">3°</option>
-                  <option value="4">4°</option>
-                  <option value="5">5°</option>
-                  <option value="6">6°</option>
-                  <option value="7">7°</option>
+                  <optgroup label="Primaria">
+                    <option>Primaria 1°</option>
+                    <option>Primaria 2°</option>
+                    <option>Primaria 3°</option>
+                    <option>Primaria 4°</option>
+                    <option>Primaria 5°</option>
+                    <option>Primaria 6°</option>
+                    <option>Primaria 7°</option>
+                  </optgroup>
+                  <optgroup label="Secundaria">
+                    <option>Secundaria 1°</option>
+                    <option>Secundaria 2°</option>
+                    <option>Secundaria 3°</option>
+                    <option>Secundaria 4°</option>
+                    <option>Secundaria 5°</option>
+                    <option>Secundaria 6°</option>
+                  </optgroup>
                 </select>
               </div>
             </div>
