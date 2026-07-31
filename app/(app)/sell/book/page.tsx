@@ -47,17 +47,47 @@ export default function SellBookPage() {
 
             <div className="space-y-1.5">
               <Label htmlFor="author">Autor *</Label>
-              <Input id="author" name="author" required defaultValue={meta?.author ?? ''} key={meta?.isbn + '-author'} />
+              <Input id="author" name="author" required defaultValue={meta ? (meta.author || 'No disponible') : ''} key={meta?.isbn + '-author'} />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="subject">Materia *</Label>
-                <Input id="subject" name="subject" placeholder="Matemática" required />
+                <select id="subject" name="subject" required
+                  className="w-full border rounded-md px-3 py-2 text-sm bg-background">
+                  <option value="">Seleccioná la materia</option>
+                  <option>Matemática</option>
+                  <option>Lengua y Literatura</option>
+                  <option>Ciencias Naturales</option>
+                  <option>Ciencias Sociales</option>
+                  <option>Historia</option>
+                  <option>Geografía</option>
+                  <option>Inglés</option>
+                  <option>Educación Física</option>
+                  <option>Música</option>
+                  <option>Plástica</option>
+                  <option>Tecnología</option>
+                  <option>Física</option>
+                  <option>Química</option>
+                  <option>Biología</option>
+                  <option>Filosofía</option>
+                  <option>Formación Ética</option>
+                  <option>Otra</option>
+                </select>
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="grade">Año/Grado *</Label>
-                <Input id="grade" name="grade" type="number" min={1} max={12} required placeholder="3" />
+                <select id="grade" name="grade" required
+                  className="w-full border rounded-md px-3 py-2 text-sm bg-background">
+                  <option value="">Seleccioná</option>
+                  <option value="1">1°</option>
+                  <option value="2">2°</option>
+                  <option value="3">3°</option>
+                  <option value="4">4°</option>
+                  <option value="5">5°</option>
+                  <option value="6">6°</option>
+                  <option value="7">7°</option>
+                </select>
               </div>
             </div>
 
