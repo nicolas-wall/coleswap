@@ -38,12 +38,7 @@ export default function SellBookPage() {
           <CardContent className="space-y-5">
             <ISBNLookup onFound={(m) => setMeta(m)} />
 
-            {/* Hidden / prefilled fields */}
-            {meta && (
-              <>
-                <input type="hidden" name="isbn" value={meta.isbn} />
-              </>
-            )}
+            {meta && <input type="hidden" name="isbn" value={meta.isbn} />}
 
             <div className="space-y-1.5">
               <Label htmlFor="title">Título *</Label>
@@ -93,10 +88,9 @@ export default function SellBookPage() {
               </Alert>
             )}
 
-            <Button type="submit" className="w-full" disabled={loading || !meta}>
+            <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Publicando…' : 'Publicar libro'}
             </Button>
-            {!meta && <p className="text-xs text-muted-foreground text-center">Buscá el ISBN primero para habilitar la publicación.</p>}
           </CardContent>
         </Card>
       </form>

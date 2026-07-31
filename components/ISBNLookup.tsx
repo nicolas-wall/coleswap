@@ -32,7 +32,7 @@ export function ISBNLookup({ onFound }: Props) {
       const data = await res.json()
 
       if (!data.book) {
-        setError('No se encontró el libro con ese ISBN. Completá los datos manualmente.')
+        setError('No se encontró en la base de datos. Completá el título y autor manualmente.')
         return
       }
 
