@@ -16,6 +16,7 @@ export async function createBookListing(formData: FormData) {
     price: formData.get('price') || null,
     notes: formData.get('notes') || null,
   }
+  const images = formData.getAll('images').map(String).slice(0, 4)
 
   const parsed = bookListingSchema.safeParse(raw)
   if (!parsed.success) {
@@ -43,6 +44,7 @@ export async function createBookListing(formData: FormData) {
       condition: parsed.data.condition,
       price: parsed.data.price ?? null,
       notes: parsed.data.notes ?? null,
+      images,
     })
     .select('id')
     .single() as { data: Pick<Listing, 'id'> | null; error: unknown }
@@ -78,6 +80,7 @@ export async function createUniformListing(formData: FormData) {
     price: formData.get('price') || null,
     notes: formData.get('notes') || null,
   }
+  const images = formData.getAll('images').map(String).slice(0, 4)
 
   const parsed = uniformListingSchema.safeParse(raw)
   if (!parsed.success) {
@@ -105,6 +108,7 @@ export async function createUniformListing(formData: FormData) {
       condition: parsed.data.condition,
       price: parsed.data.price ?? null,
       notes: parsed.data.notes ?? null,
+      images,
     })
     .select('id')
     .single() as { data: Pick<Listing, 'id'> | null; error: unknown }

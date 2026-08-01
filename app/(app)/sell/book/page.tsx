@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ISBNLookup } from '@/components/ISBNLookup'
+import { ImageUploader } from '@/components/ImageUploader'
 import { createBookListing } from '@/lib/actions/listings'
 import type { BookMetadata } from '@/lib/open-library'
 
@@ -120,6 +121,11 @@ export default function SellBookPage() {
             <div className="space-y-1.5">
               <Label htmlFor="notes">Notas (máx. 280 caracteres) — opcional</Label>
               <Textarea id="notes" name="notes" maxLength={280} rows={2} placeholder="Ej: Tiene subrayados en los primeros capítulos" />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>Fotos</Label>
+              <ImageUploader />
             </div>
 
             {error && (

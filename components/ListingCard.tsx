@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { CONDITION_LABELS, GARMENT_LABELS } from '@/lib/schemas'
@@ -26,6 +27,15 @@ export function ListingCard({ listing }: Props) {
   return (
     <Link href={`/listings/${listing.id}`} className="block group">
       <Card className="h-full transition-shadow group-hover:shadow-md">
+        {listing.images?.[0] && (
+          <Image
+            src={listing.images[0]}
+            alt=""
+            width={400}
+            height={400}
+            className="w-full aspect-square object-cover bg-muted"
+          />
+        )}
         <CardContent className="pt-4 pb-2">
           <div className="flex items-start justify-between gap-2 mb-2">
             <Badge variant={isBook ? 'default' : 'secondary'} className="text-xs shrink-0">

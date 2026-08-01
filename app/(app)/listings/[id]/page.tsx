@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -48,6 +49,16 @@ export default function ListingDetailPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <Link href="/catalog" className="text-sm text-muted-foreground hover:text-foreground">← Volver al catálogo</Link>
+
+      {listing.images && listing.images.length > 0 && (
+        <div className="grid grid-cols-4 gap-2">
+          {listing.images.map((url) => (
+            <div key={url} className="relative aspect-square rounded-lg overflow-hidden border">
+              <Image src={url} alt="" fill className="object-cover" sizes="150px" />
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="space-y-2">
         <div className="flex gap-2 flex-wrap">

@@ -3,7 +3,7 @@ export type Json = string | number | boolean | null | { [key: string]: Json } | 
 export type ListingType = 'book' | 'uniform'
 export type ListingStatus = 'active' | 'sold' | 'removed'
 export type ConditionType = 'como_nuevo' | 'buen_estado' | 'regular'
-export type GarmentType = 'camisa' | 'pantalon' | 'pollera' | 'buzo' | 'zapatos' | 'medias' | 'guardapolvo' | 'corbata' | 'bermuda' | 'campera'
+export type GarmentType = 'remera' | 'camisa' | 'swetear' | 'buzo' | 'campera' | 'pantalon' | 'pollera' | 'zapatos'
 export type GenderType = 'masculino' | 'femenino' | 'unisex'
 export type RatingRole = 'buyer' | 'seller'
 
@@ -103,6 +103,7 @@ export interface Database {
           price: number | null
           condition: ConditionType
           notes: string | null
+          images: string[]
           created_at: string
           sold_at: string | null
         }
@@ -115,6 +116,7 @@ export interface Database {
           price?: number | null
           condition: ConditionType
           notes?: string | null
+          images?: string[]
           created_at?: string
           sold_at?: string | null
         }
@@ -126,6 +128,7 @@ export interface Database {
           price?: number | null
           condition?: ConditionType
           notes?: string | null
+          images?: string[]
           created_at?: string
           sold_at?: string | null
         }

@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { createUniformListing } from '@/lib/actions/listings'
 import { GARMENT_LABELS, GARMENT_TYPES, SIZES } from '@/lib/schemas'
+import { ImageUploader } from '@/components/ImageUploader'
 
 export default function SellUniformPage() {
   const [error, setError] = useState('')
@@ -90,6 +91,11 @@ export default function SellUniformPage() {
             <div className="space-y-1.5">
               <Label htmlFor="notes">Notas — opcional (máx. 280 caracteres)</Label>
               <Textarea id="notes" name="notes" maxLength={280} rows={2} placeholder="Ej: Poco uso, lavado en frío" />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>Fotos</Label>
+              <ImageUploader />
             </div>
 
             {error && (
