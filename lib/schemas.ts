@@ -87,6 +87,14 @@ export const childSchema = z.object({
   grade: z.string().min(1, 'El grado es requerido'),
 })
 
+// ── School schema ────────────────────────────────────────────
+export const schoolSchema = z.object({
+  name: z.string().min(1, 'El nombre es requerido').max(120),
+  city: z.string().min(1, 'La ciudad es requerida').max(80),
+  slug: z.string().min(1, 'El slug es requerido').max(80).regex(/^[a-z0-9-]+$/, 'Solo minúsculas, números y guiones'),
+  crestUrl: z.string().url().optional().nullable(),
+})
+
 export type SignupInput = z.infer<typeof signupSchema>
 export type LoginInput = z.infer<typeof loginSchema>
 export type BookListingInput = z.infer<typeof bookListingSchema>
@@ -94,3 +102,4 @@ export type UniformListingInput = z.infer<typeof uniformListingSchema>
 export type RatingInput = z.infer<typeof ratingSchema>
 export type ProfileInput = z.infer<typeof profileSchema>
 export type ChildInput = z.infer<typeof childSchema>
+export type SchoolInput = z.infer<typeof schoolSchema>

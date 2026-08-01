@@ -17,6 +17,7 @@ export interface Database {
           name: string
           slug: string
           city: string
+          crest_url: string | null
           created_at: string
         }
         Insert: {
@@ -24,6 +25,7 @@ export interface Database {
           name: string
           slug: string
           city: string
+          crest_url?: string | null
           created_at?: string
         }
         Update: {
@@ -31,8 +33,21 @@ export interface Database {
           name?: string
           slug?: string
           city?: string
+          crest_url?: string | null
           created_at?: string
         }
+        Relationships: []
+      }
+      platform_admins: {
+        Row: {
+          user_id: string
+          created_at: string
+        }
+        Insert: {
+          user_id: string
+          created_at?: string
+        }
+        Update: Record<string, never>
         Relationships: []
       }
       invitations: {
@@ -269,6 +284,10 @@ export interface Database {
         Returns: string
       }
       is_school_admin: {
+        Args: Record<string, never>
+        Returns: boolean
+      }
+      is_platform_admin: {
         Args: Record<string, never>
         Returns: boolean
       }

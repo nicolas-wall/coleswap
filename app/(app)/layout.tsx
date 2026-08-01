@@ -9,9 +9,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   let isSchoolAdmin = false
+  let isPlatformAdmin = false
   if (user) {
-    const { data: family } = await supabase.from('families').select('role').eq('id', user.id).single()
+    const { data: family } = await supabase.from('families').select('role').eq('id', user.id).maybeSingle()
     isSchoolAdmin = family?.role === 'school_admin'
+
+    const { data: platformAdmin } = await supabase
+      .from('platform_admins')
+      .select('user_id')
+      .eq('user_id', user.id)
+      .maybeSingle()
+    isPlatformAdmin = Boolean(platformAdmin)
   }
 
   return (
@@ -38,6 +46,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             {isSchoolAdmin && (
               <Link href="/admin">
                 <Button variant="ghost" size="sm">Admin</Button>
+              </Link>
+            )}
+            {isPlatformAdmin && (
+              <Link href="/admin/platform">
+                <Button variant="ghost" size="sm">Plataforma</Button>
               </Link>
             )}
             <form action={signOut}>

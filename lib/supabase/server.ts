@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,9 +30,11 @@ export async function createClient() {
   )
 }
 
-// Cliente con service role: bypasea RLS. Solo para Server Actions de signup.
-export async function createServiceClient() {
-  return buildClient(
+// Cliente con service role: bypasea RLS. No debe leer cookies de sesión —
+// si lo hace, @supabase/ssr restaura la sesión del usuario logueado y usa
+// su token en vez de la service role key, anulando el bypass de RLS.
+export function createServiceClient() {
+  return createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { autoRefreshToken: false, persistSession: false } }
