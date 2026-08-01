@@ -38,6 +38,29 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
 
   const { data: listings } = await query
 
+  const { data: children } = await supabase
+    .from('children')
+    .select('grade')
+    .eq('family_id', user.id)
+
+  const childGrades = [...new Set((children ?? []).map((c) => c.grade))]
+
+  const { data: recommended } = childGrades.length
+    ? await supabase
+        .from('listings')
+        .select(`
+          *,
+          book_details!inner(*),
+          uniform_details(*),
+          family:families!listings_family_id_fkey(id, display_name, rating_avg, rating_count)
+        `)
+        .eq('status', 'active')
+        .neq('family_id', user.id)
+        .in('book_details.grade', childGrades)
+        .order('created_at', { ascending: false })
+        .limit(8)
+    : { data: null }
+
   // Filtro de búsqueda textual en memoria (para MVP — en producción usar FTS de Postgres)
   const filtered = params.q
     ? (listings ?? []).filter((l: ListingWithDetails) => {
@@ -53,8 +76,23 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
       })
     : (listings ?? [])
 
+  const hasActiveFilters = Boolean(params.q || params.type || params.condition)
+  const recommendedIds = new Set((recommended ?? []).map((l) => l.id))
+  const rest = hasActiveFilters ? filtered : filtered.filter((l) => !recommendedIds.has(l.id))
+
   return (
     <div className="space-y-6">
+      {!hasActiveFilters && recommended && recommended.length > 0 && (
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold text-muted-foreground">Recomendado para tu familia</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {recommended.map((listing: ListingWithDetails) => (
+              <ListingCard key={listing.id} listing={listing} />
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex flex-wrap gap-2 items-center">
         <form method="get" className="flex flex-wrap gap-2 items-center flex-1">
@@ -91,7 +129,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
       </div>
 
       {/* Grid */}
-      {filtered.length === 0 ? (
+      {rest.length === 0 && !(!hasActiveFilters && recommended && recommended.length > 0) ? (
         <div className="text-center py-16 text-muted-foreground">
           <p className="text-lg mb-2">No hay publicaciones</p>
           <p className="text-sm mb-6">Sé el primero en publicar un artículo para tu colegio.</p>
@@ -102,9 +140,9 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
         </div>
       ) : (
         <>
-          <p className="text-sm text-muted-foreground">{filtered.length} publicación{filtered.length !== 1 ? 'es' : ''}</p>
+          <p className="text-sm text-muted-foreground">{rest.length} publicación{rest.length !== 1 ? 'es' : ''}</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {filtered.map((listing: ListingWithDetails) => (
+            {rest.map((listing: ListingWithDetails) => (
               <ListingCard key={listing.id} listing={listing} />
             ))}
           </div>

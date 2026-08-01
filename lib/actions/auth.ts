@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
-import { signupSchema, loginSchema } from '@/lib/schemas'
+import { signupSchema, loginSchema, profileSchema } from '@/lib/schemas'
 import type { Invitation, Family } from '@/types/database'
 
 export async function signUp(formData: FormData) {
@@ -55,6 +55,8 @@ export async function signUp(formData: FormData) {
     display_name: displayName,
     phone,
     email,
+    social_handle: null,
+    contact_note: null,
   } satisfies Omit<Family, 'rating_avg' | 'rating_count' | 'created_at'>)
 
   if (familyErr) {
@@ -95,4 +97,36 @@ export async function signOut() {
   const supabase = await createClient()
   await supabase.auth.signOut()
   redirect('/login')
+}
+
+export async function updateProfile(formData: FormData) {
+  const raw = {
+    phone: formData.get('phone'),
+    email: formData.get('email'),
+    socialHandle: formData.get('socialHandle') || null,
+    contactNote: formData.get('contactNote') || null,
+  }
+
+  const parsed = profileSchema.safeParse(raw)
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message }
+  }
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'No autenticado' }
+
+  const { error } = await supabase
+    .from('families')
+    .update({
+      phone: parsed.data.phone,
+      email: parsed.data.email,
+      social_handle: parsed.data.socialHandle,
+      contact_note: parsed.data.contactNote,
+    })
+    .eq('id', user.id)
+
+  if (error) return { error: 'No se pudo actualizar el perfil' }
+
+  return { success: true }
 }

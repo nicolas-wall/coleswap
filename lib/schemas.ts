@@ -73,8 +73,24 @@ export const ratingSchema = z.object({
   comment: z.string().max(280).optional().nullable(),
 })
 
+// ── Profile schema ────────────────────────────────────────────
+export const profileSchema = z.object({
+  phone: z.string().min(8, 'Teléfono inválido').max(20).regex(/^[\d\s\+\-\(\)]+$/, 'Solo números y símbolos de teléfono'),
+  email: z.string().email('Email inválido'),
+  socialHandle: z.string().max(50).optional().nullable(),
+  contactNote: z.string().max(280).optional().nullable(),
+})
+
+// ── Child schema ─────────────────────────────────────────────
+export const childSchema = z.object({
+  name: z.string().max(60).optional().nullable(),
+  grade: z.string().min(1, 'El grado es requerido'),
+})
+
 export type SignupInput = z.infer<typeof signupSchema>
 export type LoginInput = z.infer<typeof loginSchema>
 export type BookListingInput = z.infer<typeof bookListingSchema>
 export type UniformListingInput = z.infer<typeof uniformListingSchema>
 export type RatingInput = z.infer<typeof ratingSchema>
+export type ProfileInput = z.infer<typeof profileSchema>
+export type ChildInput = z.infer<typeof childSchema>

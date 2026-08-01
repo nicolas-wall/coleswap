@@ -20,6 +20,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <Link href="/sell/uniform">
               <Button variant="outline" size="sm">+ Uniforme</Button>
             </Link>
+            <Link href="/profile">
+              <Button variant="ghost" size="sm">Mi perfil</Button>
+            </Link>
             <Link href="/my-listings">
               <Button variant="ghost" size="sm">Mis publicaciones</Button>
             </Link>

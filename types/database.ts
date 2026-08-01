@@ -68,6 +68,8 @@ export interface Database {
           display_name: string
           phone: string
           email: string
+          social_handle: string | null
+          contact_note: string | null
           rating_avg: number | null
           rating_count: number
           created_at: string
@@ -78,6 +80,8 @@ export interface Database {
           display_name: string
           phone: string
           email: string
+          social_handle?: string | null
+          contact_note?: string | null
           rating_avg?: number | null
           rating_count?: number
           created_at?: string
@@ -87,6 +91,8 @@ export interface Database {
           display_name?: string
           phone?: string
           email?: string
+          social_handle?: string | null
+          contact_note?: string | null
           rating_avg?: number | null
           rating_count?: number
           created_at?: string
@@ -227,6 +233,27 @@ export interface Database {
         }
         Relationships: []
       }
+      children: {
+        Row: {
+          id: string
+          family_id: string
+          name: string | null
+          grade: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          family_id: string
+          name?: string | null
+          grade: string
+          created_at?: string
+        }
+        Update: {
+          name?: string | null
+          grade?: string
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, unknown>
     Functions: {
@@ -256,6 +283,7 @@ export type BookDetails = Database['public']['Tables']['book_details']['Row']
 export type UniformDetails = Database['public']['Tables']['uniform_details']['Row']
 export type Contact = Database['public']['Tables']['contacts']['Row']
 export type Rating = Database['public']['Tables']['ratings']['Row']
+export type Child = Database['public']['Tables']['children']['Row']
 
 // Tipos compuestos para queries con join
 export type ListingWithDetails = Listing & {
