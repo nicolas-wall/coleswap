@@ -3,8 +3,17 @@ import { Suspense } from 'react'
 import { Button } from '@/components/ui/button'
 import { SchoolBadge } from '@/components/SchoolBadge'
 import { signOut } from '@/lib/actions/auth'
+import { createClient } from '@/lib/supabase/server'
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  let isSchoolAdmin = false
+  if (user) {
+    const { data: family } = await supabase.from('families').select('role').eq('id', user.id).single()
+    isSchoolAdmin = family?.role === 'school_admin'
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b bg-background sticky top-0 z-10">
@@ -26,6 +35,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <Link href="/my-listings">
               <Button variant="ghost" size="sm">Mis publicaciones</Button>
             </Link>
+            {isSchoolAdmin && (
+              <Link href="/admin">
+                <Button variant="ghost" size="sm">Admin</Button>
+              </Link>
+            )}
             <form action={signOut}>
               <Button variant="ghost" size="sm" type="submit">Salir</Button>
             </form>

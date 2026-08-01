@@ -6,6 +6,7 @@ export type ConditionType = 'como_nuevo' | 'buen_estado' | 'regular'
 export type GarmentType = 'remera' | 'camisa' | 'swetear' | 'buzo' | 'campera' | 'pantalon' | 'pollera' | 'zapatos'
 export type GenderType = 'masculino' | 'femenino' | 'unisex'
 export type RatingRole = 'buyer' | 'seller'
+export type FamilyRole = 'user' | 'school_admin'
 
 export interface Database {
   public: {
@@ -70,6 +71,8 @@ export interface Database {
           email: string
           social_handle: string | null
           contact_note: string | null
+          role: FamilyRole
+          suspended: boolean
           rating_avg: number | null
           rating_count: number
           created_at: string
@@ -82,6 +85,8 @@ export interface Database {
           email: string
           social_handle?: string | null
           contact_note?: string | null
+          role?: FamilyRole
+          suspended?: boolean
           rating_avg?: number | null
           rating_count?: number
           created_at?: string
@@ -93,6 +98,8 @@ export interface Database {
           email?: string
           social_handle?: string | null
           contact_note?: string | null
+          role?: FamilyRole
+          suspended?: boolean
           rating_avg?: number | null
           rating_count?: number
           created_at?: string
@@ -261,6 +268,10 @@ export interface Database {
         Args: Record<string, never>
         Returns: string
       }
+      is_school_admin: {
+        Args: Record<string, never>
+        Returns: boolean
+      }
     }
     Enums: {
       listing_type: ListingType
@@ -269,6 +280,7 @@ export interface Database {
       garment_type: GarmentType
       gender_type: GenderType
       rating_role: RatingRole
+      family_role: FamilyRole
     }
     CompositeTypes: Record<string, unknown>
   }

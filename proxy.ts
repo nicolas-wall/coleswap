@@ -40,6 +40,20 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  if (user && request.method === 'GET' && pathname !== '/suspended' && !isAuthRoute) {
+    const { data: family } = await supabase
+      .from('families')
+      .select('suspended')
+      .eq('id', user.id)
+      .single()
+
+    if (family?.suspended) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/suspended'
+      return NextResponse.redirect(url)
+    }
+  }
+
   return supabaseResponse
 }
 

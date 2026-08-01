@@ -57,6 +57,8 @@ export async function signUp(formData: FormData) {
     email,
     social_handle: null,
     contact_note: null,
+    role: 'user',
+    suspended: false,
   } satisfies Omit<Family, 'rating_avg' | 'rating_count' | 'created_at'>)
 
   if (familyErr) {
