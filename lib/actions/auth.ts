@@ -85,7 +85,6 @@ export async function signIn(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(parsed.data)
 
   if (error) {
-    console.error('[signIn]', error.status, error.code, error.message)
     return { error: 'Email o contraseña incorrectos' }
   }
 
