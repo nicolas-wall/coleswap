@@ -1,8 +1,9 @@
+import Link from 'next/link'
 import Image from 'next/image'
+import { GraduationCap } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 
 interface FamilyWithSchool {
-  display_name: string
   schools: { name: string; short_name: string | null; crest_url: string | null } | null
 }
 
@@ -13,23 +14,33 @@ export async function SchoolBadge() {
 
   const { data: family } = await supabase
     .from('families')
-    .select('display_name, schools(name, short_name, crest_url)')
+    .select('schools(name, short_name, crest_url)')
     .eq('id', user.id)
-    .single() as { data: FamilyWithSchool | null; error: unknown }
+    .maybeSingle() as { data: FamilyWithSchool | null; error: unknown }
 
   const school = family?.schools
 
   return (
-    <div className="flex items-center gap-2 text-sm">
-      <span className="text-muted-foreground hidden sm:inline">{family?.display_name}</span>
-      {school && (
-        <span className="flex items-center gap-1.5 bg-primary/10 text-primary pl-1 pr-2 py-0.5 rounded-full text-xs font-medium">
-          {school.crest_url && (
-            <Image src={school.crest_url} alt="" width={18} height={18} className="rounded-full object-cover" />
-          )}
-          <span className="truncate max-w-[120px]">{school.short_name || school.name}</span>
+    <Link href="/catalog" className="flex items-center gap-2.5 min-w-0 shrink-0">
+      {school?.crest_url ? (
+        <Image
+          src={school.crest_url}
+          alt=""
+          width={40}
+          height={40}
+          className="rounded-xl object-cover size-9 sm:size-10 shrink-0 ring-1 ring-border"
+        />
+      ) : (
+        <span className="inline-flex items-center justify-center size-9 sm:size-10 rounded-xl bg-primary text-primary-foreground shrink-0">
+          <GraduationCap className="size-5" />
         </span>
       )}
-    </div>
+      <div className="min-w-0">
+        <p className="font-bold text-sm sm:text-base leading-tight truncate max-w-[130px] sm:max-w-[220px]">
+          {school ? (school.short_name || school.name) : 'SchoolShop'}
+        </p>
+        {!school && <p className="text-[0.65rem] text-muted-foreground leading-tight hidden sm:block">Insumos escolares</p>}
+      </div>
+    </Link>
   )
 }
