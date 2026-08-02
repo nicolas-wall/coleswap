@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import type { Family } from '@/types/database'
 
 async function requireSchoolAdmin() {
@@ -31,6 +31,40 @@ export async function setFamilySuspended(familyId: string, suspended: boolean) {
     .eq('id', familyId)
 
   if (error) return { error: 'No se pudo actualizar la familia' }
+
+  return { success: true }
+}
+
+export async function deleteFamily(familyId: string) {
+  const { supabase, error: authErr } = await requireSchoolAdmin()
+  if (authErr) return { error: authErr }
+
+  const { data: target } = await supabase
+    .from('families')
+    .select('suspended')
+    .eq('id', familyId)
+    .single() as { data: Pick<Family, 'suspended'> | null }
+
+  if (!target?.suspended) {
+    return { error: 'Solo se pueden eliminar familias suspendidas' }
+  }
+
+  const service = createServiceClient()
+
+  await service.from('ratings').delete().or(`rater_family_id.eq.${familyId},rated_family_id.eq.${familyId}`)
+
+  const { data: familyListings } = await service.from('listings').select('id').eq('family_id', familyId)
+  const listingIds = (familyListings ?? []).map((l) => l.id)
+  if (listingIds.length > 0) {
+    await service.from('contacts').delete().in('listing_id', listingIds)
+  }
+  await service.from('contacts').delete().eq('buyer_family_id', familyId)
+
+  await service.from('listings').delete().eq('family_id', familyId)
+  await service.from('invitations').update({ used_by: null, used_at: null }).eq('used_by', familyId)
+
+  const { error } = await service.auth.admin.deleteUser(familyId)
+  if (error) return { error: 'No se pudo eliminar la familia' }
 
   return { success: true }
 }

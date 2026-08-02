@@ -7,10 +7,11 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { CONDITION_LABELS, GARMENT_LABELS } from '@/lib/schemas'
-import { setFamilySuspended, adminRemoveListing } from '@/lib/actions/admin'
+import { setFamilySuspended, adminRemoveListing, deleteFamily } from '@/lib/actions/admin'
 import type { Family, ListingWithDetails } from '@/types/database'
 
 type AdminFamily = Pick<Family, 'id' | 'display_name' | 'phone' | 'email' | 'role' | 'suspended' | 'rating_avg' | 'rating_count' | 'created_at'>
+type Confirming = { id: string; type: 'suspend' | 'delete' } | null
 
 export default function AdminPage() {
   const [families, setFamilies] = useState<AdminFamily[]>([])
@@ -18,6 +19,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [isPending, startTransition] = useTransition()
+  const [confirming, setConfirming] = useState<Confirming>(null)
 
   async function load() {
     const res = await fetch('/api/admin')
@@ -35,8 +37,17 @@ export default function AdminPage() {
   useEffect(() => { load() }, [])
 
   function handleToggleSuspend(familyId: string, suspended: boolean) {
+    setConfirming(null)
     startTransition(async () => {
       await setFamilySuspended(familyId, suspended)
+      load()
+    })
+  }
+
+  function handleDeleteFamily(familyId: string) {
+    setConfirming(null)
+    startTransition(async () => {
+      await deleteFamily(familyId)
       load()
     })
   }
@@ -83,15 +94,67 @@ export default function AdminPage() {
                   <p className="text-xs text-muted-foreground">{f.email} · {f.phone}</p>
                 </div>
                 {f.role !== 'school_admin' && (
-                  <Button
-                    size="sm"
-                    variant={f.suspended ? 'outline' : 'ghost'}
-                    disabled={isPending}
-                    className="text-xs shrink-0"
-                    onClick={() => handleToggleSuspend(f.id, !f.suspended)}
-                  >
-                    {f.suspended ? 'Reactivar' : 'Suspender'}
-                  </Button>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {confirming?.id === f.id && confirming.type === 'suspend' ? (
+                      <>
+                        <span className="text-xs text-muted-foreground">
+                          {f.suspended ? '¿Reactivar?' : '¿Suspender?'}
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          disabled={isPending}
+                          className="text-xs"
+                          onClick={() => handleToggleSuspend(f.id, !f.suspended)}
+                        >
+                          Sí, confirmar
+                        </Button>
+                        <Button size="sm" variant="ghost" className="text-xs" onClick={() => setConfirming(null)}>
+                          Cancelar
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant={f.suspended ? 'outline' : 'ghost'}
+                        disabled={isPending}
+                        className="text-xs"
+                        onClick={() => setConfirming({ id: f.id, type: 'suspend' })}
+                      >
+                        {f.suspended ? 'Reactivar' : 'Suspender'}
+                      </Button>
+                    )}
+
+                    {f.suspended && (
+                      confirming?.id === f.id && confirming.type === 'delete' ? (
+                        <>
+                          <span className="text-xs text-muted-foreground">¿Eliminar?</span>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            disabled={isPending}
+                            className="text-xs"
+                            onClick={() => handleDeleteFamily(f.id)}
+                          >
+                            Sí, eliminar
+                          </Button>
+                          <Button size="sm" variant="ghost" className="text-xs" onClick={() => setConfirming(null)}>
+                            Cancelar
+                          </Button>
+                        </>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          disabled={isPending}
+                          className="text-xs text-destructive"
+                          onClick={() => setConfirming({ id: f.id, type: 'delete' })}
+                        >
+                          Eliminar
+                        </Button>
+                      )
+                    )}
+                  </div>
                 )}
               </CardContent>
             </Card>
