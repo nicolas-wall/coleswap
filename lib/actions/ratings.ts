@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { ratingSchema } from '@/lib/schemas'
 import type { Listing } from '@/types/database'
 
-interface ContactRow { buyer_family_id: string }
+interface ConversationRow { buyer_id: string }
 interface RatingRow { score: number }
 
 export async function submitRating(listingId: string, formData: FormData) {
@@ -37,28 +37,28 @@ export async function submitRating(listingId: string, formData: FormData) {
 
   if (listing.family_id === user.id) {
     role = 'seller'
-    const { data: contact } = await supabase
-      .from('contacts')
-      .select('buyer_family_id')
+    const { data: conversation } = await supabase
+      .from('conversations')
+      .select('buyer_id')
       .eq('listing_id', listingId)
       .order('created_at', { ascending: true })
       .limit(1)
-      .single() as { data: ContactRow | null; error: unknown }
+      .single() as { data: ConversationRow | null; error: unknown }
 
-    if (!contact) return { error: 'No se encontró al comprador para calificar' }
-    ratedFamilyId = contact.buyer_family_id
+    if (!conversation) return { error: 'No se encontró al comprador para calificar' }
+    ratedFamilyId = conversation.buyer_id
   } else {
     role = 'buyer'
     ratedFamilyId = listing.family_id
 
-    const { data: contact } = await supabase
-      .from('contacts')
+    const { data: conversation } = await supabase
+      .from('conversations')
       .select('id')
       .eq('listing_id', listingId)
-      .eq('buyer_family_id', user.id)
+      .eq('buyer_id', user.id)
       .single() as { data: { id: string } | null; error: unknown }
 
-    if (!contact) return { error: 'No sos el comprador de esta publicación' }
+    if (!conversation) return { error: 'No sos el comprador de esta publicación' }
   }
 
   const { error: ratingErr } = await supabase.from('ratings').insert({

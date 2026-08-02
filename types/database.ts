@@ -217,24 +217,6 @@ export interface Database {
         }
         Relationships: []
       }
-      contacts: {
-        Row: {
-          id: string
-          listing_id: string
-          buyer_family_id: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          listing_id: string
-          buyer_family_id: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-        }
-        Relationships: []
-      }
       ratings: {
         Row: {
           id: string
@@ -372,7 +354,6 @@ export type Family = Database['public']['Tables']['families']['Row']
 export type Listing = Database['public']['Tables']['listings']['Row']
 export type BookDetails = Database['public']['Tables']['book_details']['Row']
 export type UniformDetails = Database['public']['Tables']['uniform_details']['Row']
-export type Contact = Database['public']['Tables']['contacts']['Row']
 export type Rating = Database['public']['Tables']['ratings']['Row']
 export type Child = Database['public']['Tables']['children']['Row']
 export type Conversation = Database['public']['Tables']['conversations']['Row']

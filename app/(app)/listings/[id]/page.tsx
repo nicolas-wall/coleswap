@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter, notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, BookOpen, Shirt, Phone, Mail, CheckCircle2, MessageCircle } from 'lucide-react'
+import { ArrowLeft, BookOpen, Shirt, MessageCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -13,7 +13,6 @@ import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { RatingStars } from '@/components/RatingStars'
 import { CONDITION_LABELS, GARMENT_LABELS } from '@/lib/schemas'
-import { contactSeller } from '@/lib/actions/contacts'
 import { startConversation } from '@/lib/actions/messages'
 import type { ListingWithDetails } from '@/types/database'
 
@@ -22,8 +21,6 @@ export default function ListingDetailPage() {
   const router = useRouter()
   const [listing, setListing] = useState<ListingWithDetails | null>(null)
   const [loading, setLoading] = useState(true)
-  const [contactInfo, setContactInfo] = useState<{ display_name: string; phone: string; email: string } | null>(null)
-  const [contacting, setContacting] = useState(false)
   const [messaging, setMessaging] = useState(false)
   const [error, setError] = useState('')
 
@@ -34,22 +31,10 @@ export default function ListingDetailPage() {
       .catch(() => setLoading(false))
   }, [id])
 
-  async function handleContact() {
-    setContacting(true)
-    setError('')
-    const result = await contactSeller(id as string)
-    if ('error' in result && result.error) {
-      setError(result.error)
-    } else if ('contact' in result && result.contact) {
-      setContactInfo(result.contact as { display_name: string; phone: string; email: string })
-    }
-    setContacting(false)
-  }
-
   async function handleMessage() {
     setMessaging(true)
     setError('')
-    const result = await startConversation(id as string, '¡Hola! Me interesa esta publicación.')
+    const result = await startConversation(id as string)
     if ('error' in result && result.error) {
       setError(result.error)
       setMessaging(false)
@@ -162,33 +147,10 @@ export default function ListingDetailPage() {
             </Alert>
           )}
 
-          {contactInfo ? (
-            <div className="bg-accent/40 border border-accent rounded-lg p-3 space-y-1.5 text-sm">
-              <p className="font-medium text-primary flex items-center gap-1.5">
-                <CheckCircle2 className="size-4" />
-                ¡Datos de contacto revelados!
-              </p>
-              <p className="flex items-center gap-1.5">
-                <Phone className="size-3.5 text-muted-foreground" />
-                <a href={`tel:${contactInfo.phone}`} className="underline">{contactInfo.phone}</a>
-              </p>
-              <p className="flex items-center gap-1.5">
-                <Mail className="size-3.5 text-muted-foreground" />
-                <a href={`mailto:${contactInfo.email}`} className="underline">{contactInfo.email}</a>
-              </p>
-              <p className="text-xs text-muted-foreground mt-2">Coordiná la entrega en la puerta del colegio.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <Button onClick={handleMessage} disabled={messaging} variant="default" className="gap-1.5">
-                <MessageCircle className="size-4" />
-                {messaging ? 'Abriendo chat…' : 'Enviar mensaje'}
-              </Button>
-              <Button onClick={handleContact} disabled={contacting} variant="outline">
-                {contacting ? 'Obteniendo datos…' : 'Ver datos de contacto'}
-              </Button>
-            </div>
-          )}
+          <Button onClick={handleMessage} disabled={messaging} variant="default" className="w-full gap-1.5">
+            <MessageCircle className="size-4" />
+            {messaging ? 'Abriendo chat…' : 'Enviar mensaje'}
+          </Button>
         </CardContent>
       </Card>
     </div>

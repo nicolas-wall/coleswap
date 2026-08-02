@@ -5,10 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { messageSchema } from '@/lib/schemas'
 import type { Listing } from '@/types/database'
 
-export async function startConversation(listingId: string, body: string) {
-  const parsed = messageSchema.safeParse({ body })
-  if (!parsed.success) return { error: parsed.error.issues[0].message }
-
+export async function startConversation(listingId: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'No autenticado' }
@@ -34,14 +31,6 @@ export async function startConversation(listingId: string, body: string) {
     .single()
 
   if (convErr || !conversation) return { error: 'No se pudo iniciar la conversación' }
-
-  const { error: msgErr } = await supabase.from('messages').insert({
-    conversation_id: conversation.id,
-    sender_id: user.id,
-    body: parsed.data.body,
-  })
-
-  if (msgErr) return { error: 'No se pudo enviar el mensaje' }
 
   revalidatePath('/messages')
   return { success: true, conversationId: conversation.id as string }

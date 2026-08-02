@@ -19,7 +19,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
   if (!listing) return NextResponse.json({ listing: null }, { status: 404 })
 
-  // No exponer phone/email hasta que se solicite contacto explícitamente
+  // phone/email no se exponen acá — la coordinación se hace por mensajería
   const { family, ...rest } = listing
   const safeListing = {
     ...rest,

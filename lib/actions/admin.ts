@@ -52,13 +52,7 @@ export async function deleteFamily(familyId: string) {
   const service = createServiceClient()
 
   await service.from('ratings').delete().or(`rater_family_id.eq.${familyId},rated_family_id.eq.${familyId}`)
-
-  const { data: familyListings } = await service.from('listings').select('id').eq('family_id', familyId)
-  const listingIds = (familyListings ?? []).map((l) => l.id)
-  if (listingIds.length > 0) {
-    await service.from('contacts').delete().in('listing_id', listingIds)
-  }
-  await service.from('contacts').delete().eq('buyer_family_id', familyId)
+  await service.from('conversations').delete().or(`buyer_id.eq.${familyId},seller_id.eq.${familyId}`)
 
   await service.from('listings').delete().eq('family_id', familyId)
   await service.from('invitations').update({ used_by: null, used_at: null }).eq('used_by', familyId)
