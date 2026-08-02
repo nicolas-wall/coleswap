@@ -74,6 +74,7 @@ export function ISBNLookup({ onFound, onISBNChange }: Props) {
         <div className="bg-muted/50 rounded-lg p-3 text-sm space-y-1">
           <p className="font-medium">{found.title}</p>
           {found.author && <p className="text-muted-foreground">{found.author}</p>}
+          {found.publisher && <p className="text-muted-foreground text-xs">{found.publisher}</p>}
           {found.publishYear && <p className="text-muted-foreground text-xs">Publicado: {found.publishYear}</p>}
         </div>
       )}

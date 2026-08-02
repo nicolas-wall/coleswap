@@ -10,6 +10,7 @@ export async function createBookListing(formData: FormData) {
     isbn: formData.get('isbn'),
     title: formData.get('title'),
     author: formData.get('author'),
+    publisher: formData.get('publisher') || null,
     subject: formData.get('subject'),
     grade: formData.get('grade'),
     condition: formData.get('condition'),
@@ -58,6 +59,7 @@ export async function createBookListing(formData: FormData) {
     isbn: parsed.data.isbn,
     title: parsed.data.title,
     author: parsed.data.author,
+    publisher: parsed.data.publisher,
     subject: parsed.data.subject,
     grade: parsed.data.grade,
   })

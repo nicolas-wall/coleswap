@@ -49,6 +49,7 @@ export const bookListingSchema = z.object({
   isbn: z.string().min(10, 'ISBN inválido').max(13, 'ISBN inválido').regex(/^\d+$/, 'El ISBN solo contiene números'),
   title: z.string().min(1, 'El título es requerido'),
   author: z.string().min(1, 'El autor es requerido'),
+  publisher: z.string().max(100).optional().nullable(),
   subject: z.string().min(1, 'La materia es requerida'),
   grade: z.string().min(1, 'El grado es requerido'),
   condition: z.enum(['como_nuevo', 'buen_estado', 'regular']),

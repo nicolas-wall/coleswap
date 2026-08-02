@@ -52,6 +52,11 @@ export default function SellBookPage() {
               <Input id="author" name="author" required defaultValue={meta ? (meta.author || 'No disponible') : ''} key={isbn + '-author'} />
             </div>
 
+            <div className="space-y-1.5">
+              <Label htmlFor="publisher">Editorial — opcional</Label>
+              <Input id="publisher" name="publisher" defaultValue={meta?.publisher ?? ''} key={isbn + '-publisher'} placeholder="Ej: Santillana" />
+            </div>
+
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="subject">Materia *</Label>

@@ -73,6 +73,7 @@ export default function ListingDetailPage() {
         {isBook && listing.book_details && (
           <div className="text-muted-foreground space-y-0.5">
             <p>{listing.book_details.author}</p>
+            {listing.book_details.publisher && <p className="text-sm">{listing.book_details.publisher}</p>}
             <p className="text-sm">{listing.book_details.subject} · {listing.book_details.grade}</p>
             <p className="text-xs font-mono text-muted-foreground/60">ISBN: {listing.book_details.isbn}</p>
           </div>

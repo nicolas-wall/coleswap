@@ -171,6 +171,7 @@ export interface Database {
           isbn: string
           title: string
           author: string
+          publisher: string | null
           subject: string
           grade: string
         }
@@ -179,6 +180,7 @@ export interface Database {
           isbn: string
           title: string
           author: string
+          publisher?: string | null
           subject: string
           grade: string
         }
@@ -186,8 +188,9 @@ export interface Database {
           isbn?: string
           title?: string
           author?: string
+          publisher?: string | null
           subject?: string
-          grade?: number
+          grade?: string
         }
         Relationships: []
       }

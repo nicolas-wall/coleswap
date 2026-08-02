@@ -1,6 +1,7 @@
 export interface BookMetadata {
   title: string
   author: string
+  publisher: string | null
   publishYear: number | null
   coverUrl: string | null
 }
@@ -32,9 +33,14 @@ async function lookupOpenLibrary(isbn: string): Promise<BookMetadata | null> {
       ? parseInt(book.publish_date.slice(-4), 10) || null
       : null
 
+    const publisher = Array.isArray(book.publishers)
+      ? book.publishers.map((p: { name: string }) => p.name).join(', ')
+      : null
+
     return {
       title: book.title ?? '',
       author,
+      publisher: publisher || null,
       publishYear,
       coverUrl: book.cover?.medium ?? book.cover?.small ?? null,
     }
@@ -65,7 +71,7 @@ async function lookupGoogleBooks(isbn: string): Promise<BookMetadata | null> {
       : null
     const coverUrl = volume.imageLinks?.thumbnail?.replace('http:', 'https:') ?? null
 
-    return { title: volume.title ?? '', author, publishYear, coverUrl }
+    return { title: volume.title ?? '', author, publisher: volume.publisher ?? null, publishYear, coverUrl }
   } catch {
     return null
   }
