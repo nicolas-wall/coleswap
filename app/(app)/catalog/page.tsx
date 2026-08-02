@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Search, Sparkles, PackageSearch } from 'lucide-react'
+import { Sparkles, PackageSearch, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { ListingCard } from '@/components/ListingCard'
 import { Button } from '@/components/ui/button'
@@ -98,16 +98,23 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
       )}
 
       {/* Filters */}
-      <form method="get" className="flex flex-wrap gap-2 items-center">
-        <div className="relative flex-1 min-w-[180px]">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
-          <input
-            name="q"
-            defaultValue={params.q}
-            placeholder="Buscar título, autor…"
-            className="w-full border border-input rounded-lg pl-8 pr-3 py-1.5 text-sm bg-background outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 transition-colors"
-          />
+      {params.q && (
+        <div className="flex items-center gap-1.5 text-sm">
+          <span className="text-muted-foreground">Buscando:</span>
+          <span className="inline-flex items-center gap-1 bg-secondary text-secondary-foreground rounded-full pl-2.5 pr-1.5 py-0.5">
+            {params.q}
+            <Link
+              href={{ pathname: '/catalog', query: { type: params.type, condition: params.condition } }}
+              className="hover:text-destructive transition-colors"
+              aria-label="Quitar búsqueda"
+            >
+              <X className="size-3.5" />
+            </Link>
+          </span>
         </div>
+      )}
+      <form method="get" className="flex flex-wrap gap-2 items-center">
+        {params.q && <input type="hidden" name="q" value={params.q} />}
         <select
           name="type"
           defaultValue={params.type ?? ''}
