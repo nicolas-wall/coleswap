@@ -8,9 +8,10 @@ import type { BookMetadata } from '@/lib/open-library'
 
 interface Props {
   onFound: (meta: BookMetadata & { isbn: string }) => void
+  onISBNChange: (isbn: string) => void
 }
 
-export function ISBNLookup({ onFound }: Props) {
+export function ISBNLookup({ onFound, onISBNChange }: Props) {
   const [isbn, setIsbn] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -26,6 +27,7 @@ export function ISBNLookup({ onFound }: Props) {
     setLoading(true)
     setError('')
     setFound(null)
+    onISBNChange(clean)
 
     try {
       const res = await fetch(`/api/isbn?isbn=${clean}`)

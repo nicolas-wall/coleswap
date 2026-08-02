@@ -14,6 +14,7 @@ import type { BookMetadata } from '@/lib/open-library'
 
 export default function SellBookPage() {
   const [meta, setMeta] = useState<(BookMetadata & { isbn: string }) | null>(null)
+  const [isbn, setIsbn] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -37,18 +38,18 @@ export default function SellBookPage() {
             <CardTitle className="text-base">Buscar por ISBN</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
-            <ISBNLookup onFound={(m) => setMeta(m)} />
+            <ISBNLookup onFound={(m) => setMeta(m)} onISBNChange={setIsbn} />
 
-            {meta && <input type="hidden" name="isbn" value={meta.isbn} />}
+            {isbn && <input type="hidden" name="isbn" value={isbn} />}
 
             <div className="space-y-1.5">
               <Label htmlFor="title">Título *</Label>
-              <Input id="title" name="title" required defaultValue={meta?.title ?? ''} key={meta?.isbn + '-title'} />
+              <Input id="title" name="title" required defaultValue={meta?.title ?? ''} key={isbn + '-title'} />
             </div>
 
             <div className="space-y-1.5">
               <Label htmlFor="author">Autor *</Label>
-              <Input id="author" name="author" required defaultValue={meta ? (meta.author || 'No disponible') : ''} key={meta?.isbn + '-author'} />
+              <Input id="author" name="author" required defaultValue={meta ? (meta.author || 'No disponible') : ''} key={isbn + '-author'} />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
