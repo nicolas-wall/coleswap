@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { ScanBarcode } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -14,11 +15,12 @@ interface Props {
 export function ISBNLookup({ onFound, onISBNChange }: Props) {
   const [isbn, setIsbn] = useState('')
   const [loading, setLoading] = useState(false)
+  const [scanning, setScanning] = useState(false)
   const [error, setError] = useState('')
   const [found, setFound] = useState<(BookMetadata & { isbn: string }) | null>(null)
 
-  async function lookup() {
-    const clean = isbn.replace(/[-\s]/g, '')
+  async function lookup(overrideIsbn?: string) {
+    const clean = (overrideIsbn ?? isbn).replace(/[-\s]/g, '')
     if (!/^\d{10}(\d{3})?$/.test(clean)) {
       setError('Ingresá un ISBN de 10 o 13 dígitos')
       return
@@ -48,6 +50,34 @@ export function ISBNLookup({ onFound, onISBNChange }: Props) {
     }
   }
 
+  async function handleScan(file: File | undefined) {
+    if (!file) return
+    setError('')
+    setFound(null)
+    setScanning(true)
+
+    const url = URL.createObjectURL(file)
+    try {
+      const { BrowserMultiFormatReader } = await import('@zxing/browser')
+      const reader = new BrowserMultiFormatReader()
+      const result = await reader.decodeFromImageUrl(url)
+      const text = result.getText().replace(/\D/g, '')
+
+      if (!/^\d{10}(\d{3})?$/.test(text)) {
+        setError('El código escaneado no parece un ISBN. Probá de nuevo o escribilo a mano.')
+        return
+      }
+
+      setIsbn(text)
+      await lookup(text)
+    } catch {
+      setError('No pudimos leer el código de barras. Probá con mejor luz, más cerca, o escribilo a mano.')
+    } finally {
+      URL.revokeObjectURL(url)
+      setScanning(false)
+    }
+  }
+
   return (
     <div className="space-y-3">
       <div className="flex gap-2">
@@ -59,10 +89,23 @@ export function ISBNLookup({ onFound, onISBNChange }: Props) {
           className="font-mono"
           onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), lookup())}
         />
-        <Button type="button" onClick={lookup} disabled={loading || isbn.length < 10} variant="outline">
+        <Button type="button" onClick={() => lookup()} disabled={loading || isbn.length < 10} variant="outline">
           {loading ? 'Buscando…' : 'Buscar'}
         </Button>
       </div>
+
+      <label className="inline-flex items-center gap-1.5 text-sm border rounded-md px-3 py-1.5 cursor-pointer hover:bg-muted/50 w-fit transition-colors has-[:disabled]:pointer-events-none has-[:disabled]:opacity-50">
+        <ScanBarcode className="size-4" />
+        {scanning ? 'Leyendo código…' : 'Escanear código de barras'}
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="hidden"
+          disabled={scanning}
+          onChange={(e) => handleScan(e.target.files?.[0])}
+        />
+      </label>
 
       {error && (
         <Alert variant="destructive">
