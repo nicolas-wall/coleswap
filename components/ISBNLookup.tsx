@@ -62,9 +62,10 @@ export function ISBNLookup({ onFound, onISBNChange }: Props) {
       const reader = new BrowserMultiFormatReader()
       const result = await reader.decodeFromImageUrl(url)
       const text = result.getText().replace(/\D/g, '')
+      const isValidIsbn = /^\d{10}$/.test(text) || /^97[89]\d{10}$/.test(text)
 
-      if (!/^\d{10}(\d{3})?$/.test(text)) {
-        setError('El código escaneado no parece un ISBN. Probá de nuevo o escribilo a mano.')
+      if (!isValidIsbn) {
+        setError('Ese código de barras es un EAN genérico, no el ISBN del libro. Buscá el código que empieza con 978 o 979, o escribilo a mano.')
         return
       }
 
