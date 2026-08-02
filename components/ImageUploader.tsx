@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Camera, ImagePlus } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { compressImage } from '@/lib/compress-image'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -76,17 +77,38 @@ export function ImageUploader() {
           </div>
         ))}
         {urls.length < MAX_IMAGES && (
-          <label className="aspect-square rounded-md border border-dashed flex items-center justify-center text-xs text-muted-foreground cursor-pointer hover:bg-muted/50">
-            {uploading ? 'Subiendo…' : '+ Foto'}
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              disabled={uploading}
-              onChange={(e) => handleFiles(e.target.files)}
-            />
-          </label>
+          <div className="aspect-square rounded-md border border-dashed flex flex-col items-center justify-center gap-1.5 text-xs text-muted-foreground">
+            {uploading ? (
+              <span>Subiendo…</span>
+            ) : (
+              <>
+                <label className="flex flex-col items-center gap-0.5 cursor-pointer hover:text-foreground">
+                  <Camera className="size-4" />
+                  <span>Cámara</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    className="hidden"
+                    disabled={uploading}
+                    onChange={(e) => handleFiles(e.target.files)}
+                  />
+                </label>
+                <label className="flex flex-col items-center gap-0.5 cursor-pointer hover:text-foreground">
+                  <ImagePlus className="size-4" />
+                  <span>Galería</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    disabled={uploading}
+                    onChange={(e) => handleFiles(e.target.files)}
+                  />
+                </label>
+              </>
+            )}
+          </div>
         )}
       </div>
 

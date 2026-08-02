@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 
 interface FamilyWithSchool {
   display_name: string
-  schools: { name: string; crest_url: string | null } | null
+  schools: { name: string; short_name: string | null; crest_url: string | null } | null
 }
 
 export async function SchoolBadge() {
@@ -13,7 +13,7 @@ export async function SchoolBadge() {
 
   const { data: family } = await supabase
     .from('families')
-    .select('display_name, schools(name, crest_url)')
+    .select('display_name, schools(name, short_name, crest_url)')
     .eq('id', user.id)
     .single() as { data: FamilyWithSchool | null; error: unknown }
 
@@ -27,7 +27,7 @@ export async function SchoolBadge() {
           {school.crest_url && (
             <Image src={school.crest_url} alt="" width={18} height={18} className="rounded-full object-cover" />
           )}
-          {school.name}
+          <span className="truncate max-w-[120px]">{school.short_name || school.name}</span>
         </span>
       )}
     </div>

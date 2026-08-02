@@ -18,6 +18,7 @@ export interface Database {
           slug: string
           city: string
           crest_url: string | null
+          short_name: string | null
           created_at: string
         }
         Insert: {
@@ -26,6 +27,7 @@ export interface Database {
           slug: string
           city: string
           crest_url?: string | null
+          short_name?: string | null
           created_at?: string
         }
         Update: {
@@ -34,6 +36,7 @@ export interface Database {
           slug?: string
           city?: string
           crest_url?: string | null
+          short_name?: string | null
           created_at?: string
         }
         Relationships: []

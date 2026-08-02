@@ -22,6 +22,7 @@ async function requirePlatformAdmin() {
 export async function createSchool(formData: FormData) {
   const raw = {
     name: formData.get('name'),
+    shortName: formData.get('shortName') || null,
     city: formData.get('city'),
     slug: formData.get('slug'),
     crestUrl: formData.get('crestUrl') || null,
@@ -37,12 +38,46 @@ export async function createSchool(formData: FormData) {
 
   const { error } = await supabase.from('schools').insert({
     name: parsed.data.name,
+    short_name: parsed.data.shortName,
     city: parsed.data.city,
     slug: parsed.data.slug,
     crest_url: parsed.data.crestUrl,
   })
 
   if (error) return { error: error.message.includes('duplicate') ? 'Ese slug ya existe' : 'No se pudo crear el colegio' }
+
+  return { success: true }
+}
+
+export async function updateSchool(schoolId: string, formData: FormData) {
+  const raw = {
+    name: formData.get('name'),
+    shortName: formData.get('shortName') || null,
+    city: formData.get('city'),
+    slug: formData.get('slug'),
+    crestUrl: formData.get('crestUrl') || null,
+  }
+
+  const parsed = schoolSchema.safeParse(raw)
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message }
+  }
+
+  const { supabase, error: authErr } = await requirePlatformAdmin()
+  if (authErr) return { error: authErr }
+
+  const { error } = await supabase
+    .from('schools')
+    .update({
+      name: parsed.data.name,
+      short_name: parsed.data.shortName,
+      city: parsed.data.city,
+      slug: parsed.data.slug,
+      crest_url: parsed.data.crestUrl,
+    })
+    .eq('id', schoolId)
+
+  if (error) return { error: error.message.includes('duplicate') ? 'Ese slug ya existe' : 'No se pudo actualizar el colegio' }
 
   return { success: true }
 }

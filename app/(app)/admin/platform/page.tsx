@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { CrestUploader } from '@/components/CrestUploader'
-import { createSchool, generateInvitation, setSchoolAdminRole } from '@/lib/actions/platform'
+import { createSchool, updateSchool, generateInvitation, setSchoolAdminRole } from '@/lib/actions/platform'
 import type { School, Family } from '@/types/database'
 
 type AdminFamily = Pick<Family, 'id' | 'school_id' | 'display_name' | 'email' | 'role'>
@@ -21,6 +21,7 @@ export default function PlatformAdminPage() {
   const [isPending, startTransition] = useTransition()
 
   const [name, setName] = useState('')
+  const [shortName, setShortName] = useState('')
   const [city, setCity] = useState('')
   const [slug, setSlug] = useState('')
   const [crestUrl, setCrestUrl] = useState<string | null>(null)
@@ -50,6 +51,7 @@ export default function PlatformAdminPage() {
     setCreating(true)
     const formData = new FormData()
     formData.set('name', name)
+    if (shortName) formData.set('shortName', shortName)
     formData.set('city', city)
     formData.set('slug', slug)
     if (crestUrl) formData.set('crestUrl', crestUrl)
@@ -58,6 +60,7 @@ export default function PlatformAdminPage() {
       setFormError(result.error)
     } else {
       setName('')
+      setShortName('')
       setCity('')
       setSlug('')
       setCrestUrl(null)
@@ -113,6 +116,10 @@ export default function PlatformAdminPage() {
               </div>
             </div>
             <div className="space-y-1.5">
+              <Label htmlFor="shortName">Nombre corto — opcional (para el encabezado)</Label>
+              <Input id="shortName" value={shortName} onChange={(e) => setShortName(e.target.value)} placeholder="Ej: San Martín" maxLength={30} />
+            </div>
+            <div className="space-y-1.5">
               <Label htmlFor="slug">Slug</Label>
               <Input id="slug" value={slug} onChange={(e) => setSlug(e.target.value.toLowerCase())} placeholder="Ej: san-martin" required />
             </div>
@@ -134,57 +141,164 @@ export default function PlatformAdminPage() {
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
           Colegios ({schools.length})
         </h2>
-        {schools.map((school) => {
-          const schoolFamilies = families.filter((f) => f.school_id === school.id)
-          return (
-            <Card key={school.id}>
-              <CardContent className="pt-4 space-y-3">
-                <div className="flex items-center gap-3">
-                  {school.crest_url && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={school.crest_url} alt="" className="w-10 h-10 rounded object-cover border" />
-                  )}
-                  <div>
-                    <p className="font-medium">{school.name}</p>
-                    <p className="text-xs text-muted-foreground">{school.city} · {school.slug}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Button size="sm" variant="outline" disabled={isPending} onClick={() => handleGenerateCode(school.id)}>
-                    Generar código de invitación
-                  </Button>
-                  {codesBySchool[school.id] && (
-                    <code className="text-xs bg-muted px-2 py-1 rounded">{codesBySchool[school.id]}</code>
-                  )}
-                </div>
-
-                {schoolFamilies.length > 0 && (
-                  <div className="space-y-1 pt-2 border-t">
-                    {schoolFamilies.map((f) => (
-                      <div key={f.id} className="flex items-center justify-between text-sm py-1">
-                        <span>
-                          {f.display_name} <span className="text-xs text-muted-foreground">{f.email}</span>
-                          {f.role === 'school_admin' && <Badge variant="secondary" className="text-xs ml-2">Admin</Badge>}
-                        </span>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          disabled={isPending}
-                          className="text-xs"
-                          onClick={() => handleToggleAdmin(f.id, f.role !== 'school_admin')}
-                        >
-                          {f.role === 'school_admin' ? 'Quitar admin' : 'Hacer admin'}
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )
-        })}
+        {schools.map((school) => (
+          <SchoolCard
+            key={school.id}
+            school={school}
+            families={families.filter((f) => f.school_id === school.id)}
+            isPending={isPending}
+            generatedCode={codesBySchool[school.id]}
+            onGenerateCode={() => handleGenerateCode(school.id)}
+            onToggleAdmin={handleToggleAdmin}
+            onSaved={load}
+          />
+        ))}
       </section>
     </div>
+  )
+}
+
+function SchoolCard({
+  school,
+  families,
+  isPending,
+  generatedCode,
+  onGenerateCode,
+  onToggleAdmin,
+  onSaved,
+}: {
+  school: School
+  families: AdminFamily[]
+  isPending: boolean
+  generatedCode?: string
+  onGenerateCode: () => void
+  onToggleAdmin: (familyId: string, isAdmin: boolean) => void
+  onSaved: () => void
+}) {
+  const [editing, setEditing] = useState(false)
+  const [name, setName] = useState(school.name)
+  const [shortName, setShortName] = useState(school.short_name ?? '')
+  const [city, setCity] = useState(school.city)
+  const [slug, setSlug] = useState(school.slug)
+  const [crestUrl, setCrestUrl] = useState<string | null>(school.crest_url)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault()
+    setError('')
+    setSaving(true)
+    const formData = new FormData()
+    formData.set('name', name)
+    if (shortName) formData.set('shortName', shortName)
+    formData.set('city', city)
+    formData.set('slug', slug)
+    if (crestUrl) formData.set('crestUrl', crestUrl)
+    const result = await updateSchool(school.id, formData)
+    if (result?.error) {
+      setError(result.error)
+    } else {
+      setEditing(false)
+      onSaved()
+    }
+    setSaving(false)
+  }
+
+  if (editing) {
+    return (
+      <Card>
+        <CardContent className="pt-4">
+          <form onSubmit={handleSave} className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>Nombre</Label>
+                <Input value={name} onChange={(e) => setName(e.target.value)} required />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Ciudad</Label>
+                <Input value={city} onChange={(e) => setCity(e.target.value)} required />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Nombre corto — para el encabezado</Label>
+              <Input value={shortName} onChange={(e) => setShortName(e.target.value)} maxLength={30} />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Slug</Label>
+              <Input value={slug} onChange={(e) => setSlug(e.target.value.toLowerCase())} required />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Escudo</Label>
+              <CrestUploader onUploaded={setCrestUrl} />
+            </div>
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            <div className="flex gap-2">
+              <Button type="submit" size="sm" disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</Button>
+              <Button type="button" size="sm" variant="ghost" onClick={() => setEditing(false)}>Cancelar</Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <Card>
+      <CardContent className="pt-4 space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            {school.crest_url && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={school.crest_url} alt="" className="w-10 h-10 rounded object-cover border" />
+            )}
+            <div>
+              <p className="font-medium">
+                {school.name}
+                {school.short_name && <span className="text-xs text-muted-foreground ml-2">({school.short_name})</span>}
+              </p>
+              <p className="text-xs text-muted-foreground">{school.city} · {school.slug}</p>
+            </div>
+          </div>
+          <Button size="sm" variant="ghost" className="text-xs shrink-0" onClick={() => setEditing(true)}>
+            Editar
+          </Button>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" disabled={isPending} onClick={onGenerateCode}>
+            Generar código de invitación
+          </Button>
+          {generatedCode && (
+            <code className="text-xs bg-muted px-2 py-1 rounded">{generatedCode}</code>
+          )}
+        </div>
+
+        {families.length > 0 && (
+          <div className="space-y-1 pt-2 border-t">
+            {families.map((f) => (
+              <div key={f.id} className="flex items-center justify-between text-sm py-1">
+                <span>
+                  {f.display_name} <span className="text-xs text-muted-foreground">{f.email}</span>
+                  {f.role === 'school_admin' && <Badge variant="secondary" className="text-xs ml-2">Admin</Badge>}
+                </span>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  disabled={isPending}
+                  className="text-xs"
+                  onClick={() => onToggleAdmin(f.id, f.role !== 'school_admin')}
+                >
+                  {f.role === 'school_admin' ? 'Quitar admin' : 'Hacer admin'}
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }

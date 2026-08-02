@@ -90,6 +90,7 @@ export const childSchema = z.object({
 // ── School schema ────────────────────────────────────────────
 export const schoolSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido').max(120),
+  shortName: z.string().max(30).optional().nullable(),
   city: z.string().min(1, 'La ciudad es requerida').max(80),
   slug: z.string().min(1, 'El slug es requerido').max(80).regex(/^[a-z0-9-]+$/, 'Solo minúsculas, números y guiones'),
   crestUrl: z.string().url().optional().nullable(),

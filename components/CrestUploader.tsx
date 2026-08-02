@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Camera, ImagePlus } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { compressImage } from '@/lib/compress-image'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -46,16 +47,35 @@ export function CrestUploader({ onUploaded }: Props) {
           // eslint-disable-next-line @next/next/no-img-element
           <img src={preview} alt="" className="w-12 h-12 rounded object-cover border" />
         )}
-        <label className="text-sm border rounded-md px-3 py-1.5 cursor-pointer hover:bg-muted/50">
-          {uploading ? 'Subiendo…' : preview ? 'Cambiar escudo' : '+ Escudo'}
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            disabled={uploading}
-            onChange={(e) => handleFile(e.target.files?.[0])}
-          />
-        </label>
+        {uploading ? (
+          <span className="text-sm text-muted-foreground">Subiendo…</span>
+        ) : (
+          <>
+            <label className="flex items-center gap-1.5 text-sm border rounded-md px-3 py-1.5 cursor-pointer hover:bg-muted/50">
+              <Camera className="size-4" />
+              Cámara
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                disabled={uploading}
+                onChange={(e) => handleFile(e.target.files?.[0])}
+              />
+            </label>
+            <label className="flex items-center gap-1.5 text-sm border rounded-md px-3 py-1.5 cursor-pointer hover:bg-muted/50">
+              <ImagePlus className="size-4" />
+              {preview ? 'Cambiar' : 'Galería'}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                disabled={uploading}
+                onChange={(e) => handleFile(e.target.files?.[0])}
+              />
+            </label>
+          </>
+        )}
       </div>
       {error && (
         <Alert variant="destructive">

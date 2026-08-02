@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import { Button } from '@/components/ui/button'
 import { SchoolBadge } from '@/components/SchoolBadge'
-import { signOut } from '@/lib/actions/auth'
+import { NavMenu } from '@/components/NavMenu'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -37,25 +37,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <Link href="/sell/uniform">
               <Button variant="outline" size="sm">+ Uniforme</Button>
             </Link>
-            <Link href="/profile">
-              <Button variant="ghost" size="sm">Mi perfil</Button>
-            </Link>
-            <Link href="/my-listings">
-              <Button variant="ghost" size="sm">Mis publicaciones</Button>
-            </Link>
-            {isSchoolAdmin && (
-              <Link href="/admin">
-                <Button variant="ghost" size="sm">Admin</Button>
-              </Link>
-            )}
-            {isPlatformAdmin && (
-              <Link href="/admin/platform">
-                <Button variant="ghost" size="sm">Plataforma</Button>
-              </Link>
-            )}
-            <form action={signOut}>
-              <Button variant="ghost" size="sm" type="submit">Salir</Button>
-            </form>
+            <NavMenu isSchoolAdmin={isSchoolAdmin} isPlatformAdmin={isPlatformAdmin} />
           </nav>
         </div>
       </header>
