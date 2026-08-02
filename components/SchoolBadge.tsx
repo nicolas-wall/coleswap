@@ -28,15 +28,15 @@ export async function SchoolBadge() {
           alt=""
           width={32}
           height={32}
-          className="rounded-lg object-cover size-7 shrink-0 ring-1 ring-border"
+          className="object-cover size-8 shrink-0 ring-1 ring-primary-foreground/30"
         />
       ) : (
-        <span className="inline-flex items-center justify-center size-7 rounded-lg bg-muted text-muted-foreground shrink-0">
+        <span className="inline-flex items-center justify-center size-8 bg-primary-foreground/15 text-primary-foreground shrink-0">
           <GraduationCap className="size-4" />
         </span>
       )}
       {school && (
-        <p className="font-semibold text-sm leading-tight truncate max-w-[130px] sm:max-w-[220px]">
+        <p className="hidden sm:block font-semibold text-sm text-primary-foreground leading-tight truncate max-w-[160px]">
           {school.short_name || school.name}
         </p>
       )}

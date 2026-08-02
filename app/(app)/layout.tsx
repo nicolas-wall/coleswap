@@ -29,7 +29,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen flex flex-col">
       <header className="sticky top-0 z-10">
-        {/* Main bar: brand + search */}
+        {/* Main bar: brand + search + school */}
         <div className="bg-primary text-primary-foreground">
           <div className="max-w-5xl mx-auto px-4 h-14 flex items-center gap-3">
             <Link href="/catalog" className="flex items-center gap-1.5 font-bold text-lg tracking-tight shrink-0">
@@ -41,15 +41,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <Suspense fallback={<div className="flex-1 max-w-xl h-10 rounded-full bg-primary-foreground/10" />}>
               <HeaderSearch />
             </Suspense>
+            <Suspense fallback={<div className="w-8 h-8 rounded-lg bg-primary-foreground/10" />}>
+              <SchoolBadge />
+            </Suspense>
           </div>
         </div>
 
-        {/* Secondary bar: school + user + actions */}
+        {/* Secondary bar: user + actions */}
         <div className="border-b bg-background/95 backdrop-blur-sm">
-          <div className="max-w-5xl mx-auto px-4 h-12 flex items-center justify-between gap-3">
-            <Suspense fallback={<div className="w-28 h-7 bg-muted animate-pulse rounded-lg" />}>
-              <SchoolBadge />
-            </Suspense>
+          <div className="max-w-5xl mx-auto px-4 h-12 flex items-center justify-end gap-3">
             <nav className="flex items-center gap-2 shrink-0">
               {displayName && (
                 <span className="text-sm text-muted-foreground hidden md:inline truncate max-w-[140px]">{displayName}</span>
