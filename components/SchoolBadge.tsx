@@ -28,10 +28,10 @@ export async function SchoolBadge() {
           alt=""
           width={32}
           height={32}
-          className="object-cover size-8 shrink-0 ring-1 ring-primary-foreground/30"
+          className="rounded-full object-cover size-8 shrink-0 ring-1 ring-primary-foreground/30"
         />
       ) : (
-        <span className="inline-flex items-center justify-center size-8 bg-primary-foreground/15 text-primary-foreground shrink-0">
+        <span className="inline-flex items-center justify-center size-8 rounded-full bg-primary-foreground/15 text-primary-foreground shrink-0">
           <GraduationCap className="size-4" />
         </span>
       )}
