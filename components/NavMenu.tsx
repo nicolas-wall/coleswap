@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Menu, User, Package, ShieldCheck, Building2, LogOut, BookOpen, Shirt } from 'lucide-react'
+import { Menu, User, Package, ShieldCheck, Building2, LogOut, BookOpen, Shirt, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -35,6 +35,10 @@ export function NavMenu({ isSchoolAdmin, isPlatformAdmin }: Props) {
           Publicar uniforme
         </DropdownMenuItem>
         <DropdownMenuSeparator />
+        <DropdownMenuItem render={<Link href="/messages" />}>
+          <MessageCircle className="size-4" />
+          Mensajes
+        </DropdownMenuItem>
         <DropdownMenuItem render={<Link href="/profile" />}>
           <User className="size-4" />
           Mi perfil

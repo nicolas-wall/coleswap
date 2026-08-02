@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, notFound } from 'next/navigation'
+import { useParams, useRouter, notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, BookOpen, Shirt, Phone, Mail, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, BookOpen, Shirt, Phone, Mail, CheckCircle2, MessageCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -14,14 +14,17 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { RatingStars } from '@/components/RatingStars'
 import { CONDITION_LABELS, GARMENT_LABELS } from '@/lib/schemas'
 import { contactSeller } from '@/lib/actions/contacts'
+import { startConversation } from '@/lib/actions/messages'
 import type { ListingWithDetails } from '@/types/database'
 
 export default function ListingDetailPage() {
   const { id } = useParams()
+  const router = useRouter()
   const [listing, setListing] = useState<ListingWithDetails | null>(null)
   const [loading, setLoading] = useState(true)
   const [contactInfo, setContactInfo] = useState<{ display_name: string; phone: string; email: string } | null>(null)
   const [contacting, setContacting] = useState(false)
+  const [messaging, setMessaging] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -41,6 +44,18 @@ export default function ListingDetailPage() {
       setContactInfo(result.contact as { display_name: string; phone: string; email: string })
     }
     setContacting(false)
+  }
+
+  async function handleMessage() {
+    setMessaging(true)
+    setError('')
+    const result = await startConversation(id as string, '¡Hola! Me interesa esta publicación.')
+    if ('error' in result && result.error) {
+      setError(result.error)
+      setMessaging(false)
+    } else if ('conversationId' in result && result.conversationId) {
+      router.push(`/messages/${result.conversationId}`)
+    }
   }
 
   if (loading) {
@@ -164,9 +179,15 @@ export default function ListingDetailPage() {
               <p className="text-xs text-muted-foreground mt-2">Coordiná la entrega en la puerta del colegio.</p>
             </div>
           ) : (
-            <Button onClick={handleContact} disabled={contacting} className="w-full">
-              {contacting ? 'Obteniendo datos…' : 'Ver datos de contacto del vendedor'}
-            </Button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <Button onClick={handleMessage} disabled={messaging} variant="default" className="gap-1.5">
+                <MessageCircle className="size-4" />
+                {messaging ? 'Abriendo chat…' : 'Enviar mensaje'}
+              </Button>
+              <Button onClick={handleContact} disabled={contacting} variant="outline">
+                {contacting ? 'Obteniendo datos…' : 'Ver datos de contacto'}
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>

@@ -282,6 +282,60 @@ export interface Database {
         }
         Relationships: []
       }
+      conversations: {
+        Row: {
+          id: string
+          listing_id: string
+          buyer_id: string
+          seller_id: string
+          created_at: string
+          last_message_at: string
+        }
+        Insert: {
+          id?: string
+          listing_id: string
+          buyer_id: string
+          seller_id: string
+          created_at?: string
+          last_message_at?: string
+        }
+        Update: Record<string, never>
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          id: string
+          conversation_id: string
+          sender_id: string
+          body: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          conversation_id: string
+          sender_id: string
+          body: string
+          created_at?: string
+        }
+        Update: Record<string, never>
+        Relationships: []
+      }
+      conversation_reads: {
+        Row: {
+          conversation_id: string
+          family_id: string
+          last_read_at: string
+        }
+        Insert: {
+          conversation_id: string
+          family_id: string
+          last_read_at?: string
+        }
+        Update: {
+          last_read_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, unknown>
     Functions: {
@@ -321,6 +375,9 @@ export type UniformDetails = Database['public']['Tables']['uniform_details']['Ro
 export type Contact = Database['public']['Tables']['contacts']['Row']
 export type Rating = Database['public']['Tables']['ratings']['Row']
 export type Child = Database['public']['Tables']['children']['Row']
+export type Conversation = Database['public']['Tables']['conversations']['Row']
+export type Message = Database['public']['Tables']['messages']['Row']
+export type ConversationRead = Database['public']['Tables']['conversation_reads']['Row']
 
 // Tipos compuestos para queries con join
 export type ListingWithDetails = Listing & {

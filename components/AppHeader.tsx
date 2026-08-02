@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { GraduationCap, Search, X } from 'lucide-react'
 import { NavMenu } from '@/components/NavMenu'
+import { MessagesBell } from '@/components/MessagesBell'
 
 interface Props {
   schoolName: string | null
@@ -93,6 +94,7 @@ export function AppHeader({ schoolName, crestUrl, displayName, isSchoolAdmin, is
           <span className="text-sm hidden md:inline truncate max-w-[140px] text-primary-foreground/90">{displayName}</span>
         )}
 
+        <MessagesBell />
         <NavMenu isSchoolAdmin={isSchoolAdmin} isPlatformAdmin={isPlatformAdmin} />
       </div>
 

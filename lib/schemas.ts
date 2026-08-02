@@ -97,6 +97,11 @@ export const schoolSchema = z.object({
   crestUrl: z.string().url().optional().nullable(),
 })
 
+// ── Message schema ───────────────────────────────────────────
+export const messageSchema = z.object({
+  body: z.string().trim().min(1, 'Escribí un mensaje').max(1000, 'Máximo 1000 caracteres'),
+})
+
 export type SignupInput = z.infer<typeof signupSchema>
 export type LoginInput = z.infer<typeof loginSchema>
 export type BookListingInput = z.infer<typeof bookListingSchema>
@@ -105,3 +110,4 @@ export type RatingInput = z.infer<typeof ratingSchema>
 export type ProfileInput = z.infer<typeof profileSchema>
 export type ChildInput = z.infer<typeof childSchema>
 export type SchoolInput = z.infer<typeof schoolSchema>
+export type MessageInput = z.infer<typeof messageSchema>
