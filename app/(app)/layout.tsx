@@ -1,11 +1,12 @@
-import Link from 'next/link'
 import { Suspense } from 'react'
-import { GraduationCap, Plus } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { SchoolBadge } from '@/components/SchoolBadge'
-import { HeaderSearch } from '@/components/HeaderSearch'
-import { NavMenu } from '@/components/NavMenu'
+import { AppHeader } from '@/components/AppHeader'
 import { createClient } from '@/lib/supabase/server'
+
+interface FamilyWithSchool {
+  role: string
+  display_name: string | null
+  schools: { name: string; short_name: string | null; crest_url: string | null } | null
+}
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -13,10 +14,20 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   let isSchoolAdmin = false
   let isPlatformAdmin = false
   let displayName = ''
+  let schoolName: string | null = null
+  let crestUrl: string | null = null
+
   if (user) {
-    const { data: family } = await supabase.from('families').select('role, display_name').eq('id', user.id).maybeSingle()
+    const { data: family } = await supabase
+      .from('families')
+      .select('role, display_name, schools(name, short_name, crest_url)')
+      .eq('id', user.id)
+      .maybeSingle() as { data: FamilyWithSchool | null; error: unknown }
+
     isSchoolAdmin = family?.role === 'school_admin'
     displayName = family?.display_name ?? ''
+    schoolName = family?.schools?.short_name || family?.schools?.name || null
+    crestUrl = family?.schools?.crest_url ?? null
 
     const { data: platformAdmin } = await supabase
       .from('platform_admins')
@@ -28,49 +39,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-10">
-        {/* Main bar: brand + search + school */}
-        <div className="bg-primary text-primary-foreground">
-          <div className="max-w-5xl mx-auto px-4 h-14 flex items-center gap-3">
-            <Link href="/catalog" className="flex items-center gap-1.5 font-bold text-lg tracking-tight shrink-0">
-              <span className="inline-flex items-center justify-center size-7 rounded-lg bg-primary-foreground/15">
-                <GraduationCap className="size-4" />
-              </span>
-              <span className="hidden sm:inline">SchoolShop</span>
-            </Link>
-            <Suspense fallback={<div className="flex-1 max-w-xl h-10 rounded-full bg-primary-foreground/10" />}>
-              <HeaderSearch />
-            </Suspense>
-            <Suspense fallback={<div className="w-8 h-8 rounded-lg bg-primary-foreground/10" />}>
-              <SchoolBadge />
-            </Suspense>
-          </div>
-        </div>
-
-        {/* Secondary bar: user + actions */}
-        <div className="border-b bg-background/95 backdrop-blur-sm">
-          <div className="max-w-5xl mx-auto px-4 h-12 flex items-center justify-end gap-3">
-            <nav className="flex items-center gap-2 shrink-0">
-              {displayName && (
-                <span className="text-sm text-muted-foreground hidden md:inline truncate max-w-[140px]">{displayName}</span>
-              )}
-              <Link href="/sell/book">
-                <Button variant="outline" size="sm" className="gap-1">
-                  <Plus className="size-3.5" />
-                  Libro
-                </Button>
-              </Link>
-              <Link href="/sell/uniform">
-                <Button variant="outline" size="sm" className="gap-1">
-                  <Plus className="size-3.5" />
-                  Uniforme
-                </Button>
-              </Link>
-              <NavMenu isSchoolAdmin={isSchoolAdmin} isPlatformAdmin={isPlatformAdmin} />
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Suspense fallback={<div className="h-14 bg-primary" />}>
+        <AppHeader
+          schoolName={schoolName}
+          crestUrl={crestUrl}
+          displayName={displayName}
+          isSchoolAdmin={isSchoolAdmin}
+          isPlatformAdmin={isPlatformAdmin}
+        />
+      </Suspense>
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-6">{children}</main>
     </div>
   )

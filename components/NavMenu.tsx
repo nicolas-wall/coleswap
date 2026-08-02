@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Menu, User, Package, ShieldCheck, Building2, LogOut } from 'lucide-react'
+import { Menu, User, Package, ShieldCheck, Building2, LogOut, BookOpen, Shirt } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -21,11 +21,20 @@ export function NavMenu({ isSchoolAdmin, isPlatformAdmin }: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        render={<Button variant="ghost" size="sm" aria-label="Menú" />}
+        render={<Button variant="ghost" size="sm" aria-label="Menú" className="text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shrink-0" />}
       >
         <Menu className="size-4" />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
+        <DropdownMenuItem render={<Link href="/sell/book" />}>
+          <BookOpen className="size-4" />
+          Publicar libro
+        </DropdownMenuItem>
+        <DropdownMenuItem render={<Link href="/sell/uniform" />}>
+          <Shirt className="size-4" />
+          Publicar uniforme
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem render={<Link href="/profile" />}>
           <User className="size-4" />
           Mi perfil
