@@ -1,12 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Skeleton } from '@/components/ui/skeleton'
 import { updateProfile } from '@/lib/actions/auth'
 import { ChildrenManager } from '@/components/ChildrenManager'
 
@@ -22,7 +24,6 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
-  const [saved, setSaved] = useState(false)
 
   useEffect(() => {
     fetch('/api/profile')
@@ -35,19 +36,24 @@ export default function ProfilePage() {
     e.preventDefault()
     setSubmitting(true)
     setError('')
-    setSaved(false)
     const result = await updateProfile(new FormData(e.currentTarget))
     if (result?.error) {
       setError(result.error)
-      setSubmitting(false)
     } else if (result?.success) {
-      setSaved(true)
-      setSubmitting(false)
-      setTimeout(() => setSaved(false), 3000)
+      toast.success('Perfil actualizado')
     }
+    setSubmitting(false)
   }
 
-  if (loading) return <div className="py-16 text-center text-muted-foreground">Cargando…</div>
+  if (loading) {
+    return (
+      <div className="max-w-lg mx-auto space-y-6">
+        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-80 w-full rounded-xl" />
+        <Skeleton className="h-40 w-full rounded-xl" />
+      </div>
+    )
+  }
 
   return (
     <div className="max-w-lg mx-auto">
@@ -107,12 +113,6 @@ export default function ProfilePage() {
             {error && (
               <Alert variant="destructive">
                 <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            {saved && (
-              <Alert className="border-green-200 bg-green-50">
-                <AlertDescription className="text-green-800">Perfil actualizado</AlertDescription>
               </Alert>
             )}
 

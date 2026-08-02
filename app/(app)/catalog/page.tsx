@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Search, Sparkles, PackageSearch } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { ListingCard } from '@/components/ListingCard'
 import { Button } from '@/components/ui/button'
@@ -83,8 +84,11 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
   return (
     <div className="space-y-6">
       {!hasActiveFilters && recommended && recommended.length > 0 && (
-        <div className="space-y-2">
-          <h2 className="text-sm font-semibold text-muted-foreground">Recomendado para tu familia</h2>
+        <div className="space-y-2 bg-accent/40 border border-accent rounded-xl p-4">
+          <h2 className="text-sm font-semibold text-accent-foreground flex items-center gap-1.5">
+            <Sparkles className="size-4" />
+            Recomendado para tu familia
+          </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {recommended.map((listing: ListingWithDetails) => (
               <ListingCard key={listing.id} listing={listing} />
@@ -94,44 +98,46 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
       )}
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-2 items-center">
-        <form method="get" className="flex flex-wrap gap-2 items-center flex-1">
+      <form method="get" className="flex flex-wrap gap-2 items-center">
+        <div className="relative flex-1 min-w-[180px]">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
           <input
             name="q"
             defaultValue={params.q}
             placeholder="Buscar título, autor…"
-            className="border rounded-md px-3 py-1.5 text-sm bg-background min-w-[180px]"
+            className="w-full border border-input rounded-lg pl-8 pr-3 py-1.5 text-sm bg-background outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 transition-colors"
           />
-          <select
-            name="type"
-            defaultValue={params.type ?? ''}
-            className="border rounded-md px-3 py-1.5 text-sm bg-background"
-          >
-            <option value="">Todo</option>
-            <option value="book">Libros</option>
-            <option value="uniform">Uniformes</option>
-          </select>
-          <select
-            name="condition"
-            defaultValue={params.condition ?? ''}
-            className="border rounded-md px-3 py-1.5 text-sm bg-background"
-          >
-            <option value="">Cualquier estado</option>
-            <option value="como_nuevo">Como nuevo</option>
-            <option value="buen_estado">Buen estado</option>
-            <option value="regular">Regular</option>
-          </select>
-          <Button type="submit" size="sm" variant="outline">Filtrar</Button>
-          {(params.q || params.type || params.condition) && (
-            <Link href="/catalog"><Button type="button" size="sm" variant="ghost">Limpiar</Button></Link>
-          )}
-        </form>
-      </div>
+        </div>
+        <select
+          name="type"
+          defaultValue={params.type ?? ''}
+          className="border border-input rounded-lg px-3 py-1.5 text-sm bg-background outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 transition-colors"
+        >
+          <option value="">Todo</option>
+          <option value="book">Libros</option>
+          <option value="uniform">Uniformes</option>
+        </select>
+        <select
+          name="condition"
+          defaultValue={params.condition ?? ''}
+          className="border border-input rounded-lg px-3 py-1.5 text-sm bg-background outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 transition-colors"
+        >
+          <option value="">Cualquier estado</option>
+          <option value="como_nuevo">Como nuevo</option>
+          <option value="buen_estado">Buen estado</option>
+          <option value="regular">Regular</option>
+        </select>
+        <Button type="submit" size="sm" variant="outline">Filtrar</Button>
+        {(params.q || params.type || params.condition) && (
+          <Link href="/catalog"><Button type="button" size="sm" variant="ghost">Limpiar</Button></Link>
+        )}
+      </form>
 
       {/* Grid */}
       {rest.length === 0 && !(!hasActiveFilters && recommended && recommended.length > 0) ? (
-        <div className="text-center py-16 text-muted-foreground">
-          <p className="text-lg mb-2">No hay publicaciones</p>
+        <div className="text-center py-20 text-muted-foreground">
+          <PackageSearch className="size-12 mx-auto mb-4 text-muted-foreground/40" strokeWidth={1.25} />
+          <p className="text-lg font-medium text-foreground mb-1">No hay publicaciones</p>
           <p className="text-sm mb-6">Sé el primero en publicar un artículo para tu colegio.</p>
           <div className="flex gap-3 justify-center">
             <Link href="/sell/book"><Button variant="outline">Publicar libro</Button></Link>
@@ -141,7 +147,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
       ) : (
         <>
           <p className="text-sm text-muted-foreground">{rest.length} publicación{rest.length !== 1 ? 'es' : ''}</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {rest.map((listing: ListingWithDetails) => (
               <ListingCard key={listing.id} listing={listing} />
             ))}

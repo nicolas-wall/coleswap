@@ -2,10 +2,13 @@
 
 import { useEffect, useState, useTransition } from 'react'
 import Link from 'next/link'
+import { toast } from 'sonner'
+import { PackagePlus, BookOpen, Shirt } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
 import { CONDITION_LABELS, GARMENT_LABELS } from '@/lib/schemas'
 import { markSold, removeListing } from '@/lib/actions/listings'
 import type { ListingWithDetails } from '@/types/database'
@@ -26,14 +29,18 @@ export default function MyListingsPage() {
 
   async function handleMarkSold(id: string) {
     startTransition(async () => {
-      await markSold(id)
+      const result = await markSold(id)
+      if (result?.error) toast.error(result.error)
+      else toast.success('Marcada como vendida')
       load()
     })
   }
 
   async function handleRemove(id: string) {
     startTransition(async () => {
-      await removeListing(id)
+      const result = await removeListing(id)
+      if (result?.error) toast.error(result.error)
+      else toast.success('Publicación eliminada')
       load()
     })
   }
@@ -42,7 +49,24 @@ export default function MyListingsPage() {
   const sold = listings.filter(l => l.status === 'sold')
   const removed = listings.filter(l => l.status === 'removed')
 
-  if (loading) return <div className="py-16 text-center text-muted-foreground">Cargando…</div>
+  if (loading) {
+    return (
+      <div className="space-y-8 max-w-2xl mx-auto">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-8 w-48" />
+          <div className="flex gap-2">
+            <Skeleton className="h-7 w-20" />
+            <Skeleton className="h-7 w-24" />
+          </div>
+        </div>
+        <div className="space-y-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-20 w-full rounded-xl" />
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8 max-w-2xl mx-auto">
@@ -56,6 +80,7 @@ export default function MyListingsPage() {
 
       {listings.length === 0 && (
         <div className="text-center py-16 text-muted-foreground">
+          <PackagePlus className="size-12 mx-auto mb-4 text-muted-foreground/40" strokeWidth={1.25} />
           <p className="mb-4">Todavía no publicaste nada.</p>
           <Link href="/sell/book"><Button variant="outline">Publicar primer artículo</Button></Link>
         </div>
@@ -105,13 +130,14 @@ function ListingRow({
   pending: boolean
 }) {
   const isBook = listing.type === 'book'
+  const TypeIcon = isBook ? BookOpen : Shirt
   const title = isBook
     ? listing.book_details?.title ?? 'Libro'
     : GARMENT_LABELS[listing.uniform_details?.garment_type ?? '']
 
   const statusColors: Record<string, string> = {
-    active: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-    sold: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+    active: 'bg-primary/10 text-primary',
+    sold: 'bg-accent text-accent-foreground',
     removed: 'bg-muted text-muted-foreground',
   }
   const statusLabels: Record<string, string> = { active: 'Activa', sold: 'Vendida', removed: 'Eliminada' }
@@ -122,7 +148,9 @@ function ListingRow({
         <div className="flex items-start justify-between gap-2">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <Badge variant={isBook ? 'default' : 'secondary'} className="text-xs">{isBook ? '📚' : '👕'}</Badge>
+              <Badge variant={isBook ? 'default' : 'secondary'} className="text-xs gap-1">
+                <TypeIcon className="size-3" />
+              </Badge>
               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[listing.status]}`}>
                 {statusLabels[listing.status]}
               </span>

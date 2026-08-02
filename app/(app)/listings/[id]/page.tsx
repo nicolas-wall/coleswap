@@ -4,11 +4,13 @@ import { useEffect, useState } from 'react'
 import { useParams, notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import { ArrowLeft, BookOpen, Shirt, Phone, Mail, CheckCircle2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
 import { RatingStars } from '@/components/RatingStars'
 import { CONDITION_LABELS, GARMENT_LABELS } from '@/lib/schemas'
 import { contactSeller } from '@/lib/actions/contacts'
@@ -41,19 +43,37 @@ export default function ListingDetailPage() {
     setContacting(false)
   }
 
-  if (loading) return <div className="py-16 text-center text-muted-foreground">Cargando…</div>
+  if (loading) {
+    return (
+      <div className="max-w-2xl mx-auto space-y-6">
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="aspect-square w-full rounded-xl max-w-xs" />
+        <div className="space-y-2">
+          <Skeleton className="h-5 w-40" />
+          <Skeleton className="h-7 w-2/3" />
+          <Skeleton className="h-4 w-1/2" />
+        </div>
+        <Skeleton className="h-9 w-32" />
+        <Skeleton className="h-24 w-full rounded-xl" />
+      </div>
+    )
+  }
   if (!listing) return notFound()
 
   const isBook = listing.type === 'book'
+  const TypeIcon = isBook ? BookOpen : Shirt
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <Link href="/catalog" className="text-sm text-muted-foreground hover:text-foreground">← Volver al catálogo</Link>
+      <Link href="/catalog" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <ArrowLeft className="size-3.5" />
+        Volver al catálogo
+      </Link>
 
       {listing.images && listing.images.length > 0 && (
         <div className="grid grid-cols-4 gap-2">
           {listing.images.map((url) => (
-            <div key={url} className="relative aspect-square rounded-lg overflow-hidden border">
+            <div key={url} className="relative aspect-square rounded-lg overflow-hidden border bg-muted">
               <Image src={url} alt="" fill className="object-cover" sizes="150px" />
             </div>
           ))}
@@ -62,7 +82,10 @@ export default function ListingDetailPage() {
 
       <div className="space-y-2">
         <div className="flex gap-2 flex-wrap">
-          <Badge variant={isBook ? 'default' : 'secondary'}>{isBook ? '📚 Libro' : '👕 Uniforme'}</Badge>
+          <Badge variant={isBook ? 'default' : 'secondary'} className="gap-1">
+            <TypeIcon className="size-3" />
+            {isBook ? 'Libro' : 'Uniforme'}
+          </Badge>
           <Badge variant="outline">{CONDITION_LABELS[listing.condition]}</Badge>
         </div>
 
@@ -87,14 +110,14 @@ export default function ListingDetailPage() {
         )}
       </div>
 
-      <div className="text-3xl font-bold">
+      <div className="text-3xl font-bold text-primary">
         {listing.price != null
           ? `$${listing.price.toLocaleString('es-AR')}`
-          : <span className="text-muted-foreground text-xl">Precio a consultar</span>}
+          : <span className="text-muted-foreground text-xl font-semibold">Precio a consultar</span>}
       </div>
 
       {listing.notes && (
-        <p className="text-sm text-muted-foreground border-l-2 pl-3 italic">{listing.notes}</p>
+        <p className="text-sm text-muted-foreground border-l-2 border-primary/30 pl-3 italic">{listing.notes}</p>
       )}
 
       <Separator />
@@ -125,10 +148,19 @@ export default function ListingDetailPage() {
           )}
 
           {contactInfo ? (
-            <div className="bg-muted/50 rounded-lg p-3 space-y-1 text-sm">
-              <p className="font-medium text-green-700 dark:text-green-400">¡Datos de contacto revelados!</p>
-              <p>📱 <a href={`tel:${contactInfo.phone}`} className="underline">{contactInfo.phone}</a></p>
-              <p>✉️ <a href={`mailto:${contactInfo.email}`} className="underline">{contactInfo.email}</a></p>
+            <div className="bg-accent/40 border border-accent rounded-lg p-3 space-y-1.5 text-sm">
+              <p className="font-medium text-primary flex items-center gap-1.5">
+                <CheckCircle2 className="size-4" />
+                ¡Datos de contacto revelados!
+              </p>
+              <p className="flex items-center gap-1.5">
+                <Phone className="size-3.5 text-muted-foreground" />
+                <a href={`tel:${contactInfo.phone}`} className="underline">{contactInfo.phone}</a>
+              </p>
+              <p className="flex items-center gap-1.5">
+                <Mail className="size-3.5 text-muted-foreground" />
+                <a href={`mailto:${contactInfo.email}`} className="underline">{contactInfo.email}</a>
+              </p>
               <p className="text-xs text-muted-foreground mt-2">Coordiná la entrega en la puerta del colegio.</p>
             </div>
           ) : (

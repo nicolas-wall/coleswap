@@ -1,12 +1,14 @@
 'use client'
 
 import { useEffect, useState, useTransition } from 'react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
 import { CrestUploader } from '@/components/CrestUploader'
 import { createSchool, updateSchool, generateInvitation, setSchoolAdminRole } from '@/lib/actions/platform'
 import type { School, Family } from '@/types/database'
@@ -59,6 +61,7 @@ export default function PlatformAdminPage() {
     if (result?.error) {
       setFormError(result.error)
     } else {
+      toast.success('Colegio creado')
       setName('')
       setShortName('')
       setCity('')
@@ -73,17 +76,32 @@ export default function PlatformAdminPage() {
     const result = await generateInvitation(schoolId)
     if (result?.success && result.code) {
       setCodesBySchool((prev) => ({ ...prev, [schoolId]: result.code }))
+      toast.success('Código generado')
+    } else if (result?.error) {
+      toast.error(result.error)
     }
   }
 
   function handleToggleAdmin(familyId: string, isAdmin: boolean) {
     startTransition(async () => {
-      await setSchoolAdminRole(familyId, isAdmin)
+      const result = await setSchoolAdminRole(familyId, isAdmin)
+      if (result?.error) toast.error(result.error)
+      else toast.success(isAdmin ? 'Ahora es admin del colegio' : 'Rol de admin removido')
       load()
     })
   }
 
-  if (loading) return <div className="py-16 text-center text-muted-foreground">Cargando…</div>
+  if (loading) {
+    return (
+      <div className="space-y-8 max-w-3xl mx-auto">
+        <Skeleton className="h-8 w-56" />
+        <Skeleton className="h-64 w-full rounded-xl" />
+        <div className="space-y-4">
+          {Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-xl" />)}
+        </div>
+      </div>
+    )
+  }
 
   if (accessError) {
     return (
@@ -198,6 +216,7 @@ function SchoolCard({
     if (result?.error) {
       setError(result.error)
     } else {
+      toast.success('Colegio actualizado')
       setEditing(false)
       onSaved()
     }

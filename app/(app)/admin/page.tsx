@@ -1,11 +1,14 @@
 'use client'
 
 import { useEffect, useState, useTransition } from 'react'
+import { toast } from 'sonner'
+import { BookOpen, Shirt } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Skeleton } from '@/components/ui/skeleton'
 import { CONDITION_LABELS, GARMENT_LABELS } from '@/lib/schemas'
 import { setFamilySuspended, adminRemoveListing, deleteFamily } from '@/lib/actions/admin'
 import type { Family, ListingWithDetails } from '@/types/database'
@@ -39,7 +42,9 @@ export default function AdminPage() {
   function handleToggleSuspend(familyId: string, suspended: boolean) {
     setConfirming(null)
     startTransition(async () => {
-      await setFamilySuspended(familyId, suspended)
+      const result = await setFamilySuspended(familyId, suspended)
+      if (result?.error) toast.error(result.error)
+      else toast.success(suspended ? 'Familia suspendida' : 'Familia reactivada')
       load()
     })
   }
@@ -47,19 +52,32 @@ export default function AdminPage() {
   function handleDeleteFamily(familyId: string) {
     setConfirming(null)
     startTransition(async () => {
-      await deleteFamily(familyId)
+      const result = await deleteFamily(familyId)
+      if (result?.error) toast.error(result.error)
+      else toast.success('Familia eliminada')
       load()
     })
   }
 
   function handleRemoveListing(listingId: string) {
     startTransition(async () => {
-      await adminRemoveListing(listingId)
+      const result = await adminRemoveListing(listingId)
+      if (result?.error) toast.error(result.error)
+      else toast.success('Publicación removida')
       load()
     })
   }
 
-  if (loading) return <div className="py-16 text-center text-muted-foreground">Cargando…</div>
+  if (loading) {
+    return (
+      <div className="space-y-8 max-w-3xl mx-auto">
+        <Skeleton className="h-8 w-56" />
+        <div className="space-y-2">
+          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}
+        </div>
+      </div>
+    )
+  }
 
   if (error) {
     return (
@@ -171,6 +189,7 @@ export default function AdminPage() {
         <div className="space-y-2">
           {activeListings.map((l) => {
             const isBook = l.type === 'book'
+            const TypeIcon = isBook ? BookOpen : Shirt
             const title = isBook
               ? l.book_details?.title ?? 'Libro'
               : GARMENT_LABELS[l.uniform_details?.garment_type ?? '']
@@ -179,7 +198,9 @@ export default function AdminPage() {
                 <CardContent className="pt-4 pb-3 flex items-center justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <Badge variant={isBook ? 'default' : 'secondary'} className="text-xs">{isBook ? '📚' : '👕'}</Badge>
+                      <Badge variant={isBook ? 'default' : 'secondary'} className="text-xs">
+                        <TypeIcon className="size-3" />
+                      </Badge>
                       <p className="font-medium text-sm">{title}</p>
                     </div>
                     <p className="text-xs text-muted-foreground">

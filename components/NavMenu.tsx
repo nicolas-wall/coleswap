@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Menu } from 'lucide-react'
+import { Menu, User, Package, ShieldCheck, Building2, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -26,16 +26,31 @@ export function NavMenu({ isSchoolAdmin, isPlatformAdmin }: Props) {
         <Menu className="size-4" />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem render={<Link href="/profile" />}>Mi perfil</DropdownMenuItem>
-        <DropdownMenuItem render={<Link href="/my-listings" />}>Mis publicaciones</DropdownMenuItem>
+        <DropdownMenuItem render={<Link href="/profile" />}>
+          <User className="size-4" />
+          Mi perfil
+        </DropdownMenuItem>
+        <DropdownMenuItem render={<Link href="/my-listings" />}>
+          <Package className="size-4" />
+          Mis publicaciones
+        </DropdownMenuItem>
         {isSchoolAdmin && (
-          <DropdownMenuItem render={<Link href="/admin" />}>Admin</DropdownMenuItem>
+          <DropdownMenuItem render={<Link href="/admin" />}>
+            <ShieldCheck className="size-4" />
+            Admin
+          </DropdownMenuItem>
         )}
         {isPlatformAdmin && (
-          <DropdownMenuItem render={<Link href="/admin/platform" />}>Plataforma</DropdownMenuItem>
+          <DropdownMenuItem render={<Link href="/admin/platform" />}>
+            <Building2 className="size-4" />
+            Plataforma
+          </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut()}>Salir</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => signOut()} className="text-destructive focus:text-destructive">
+          <LogOut className="size-4" />
+          Salir
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import { X, Plus } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -39,6 +41,7 @@ export function ChildrenManager() {
     if (result?.error) {
       setError(result.error)
     } else {
+      toast.success('Hijo agregado')
       setName('')
       setGrade('')
       load()
@@ -47,7 +50,8 @@ export function ChildrenManager() {
   }
 
   async function handleRemove(id: string) {
-    await removeChild(id)
+    const result = await removeChild(id)
+    if (result?.error) toast.error(result.error)
     load()
   }
 
@@ -56,14 +60,15 @@ export function ChildrenManager() {
       {!loading && children.length > 0 && (
         <ul className="space-y-1.5">
           {children.map((child) => (
-            <li key={child.id} className="flex items-center justify-between bg-muted/50 rounded-md px-3 py-2 text-sm">
+            <li key={child.id} className="flex items-center justify-between bg-secondary/60 rounded-lg px-3 py-2 text-sm">
               <span>{child.name ? `${child.name} — ${child.grade}` : child.grade}</span>
               <button
                 type="button"
                 onClick={() => handleRemove(child.id)}
-                className="text-xs text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-destructive transition-colors"
+                aria-label="Eliminar"
               >
-                Eliminar
+                <X className="size-3.5" />
               </button>
             </li>
           ))}
@@ -80,7 +85,7 @@ export function ChildrenManager() {
           <select
             value={grade}
             onChange={(e) => setGrade(e.target.value)}
-            className="border rounded-md px-3 py-2 text-sm bg-background h-9"
+            className="border border-input rounded-lg px-3 py-2 text-sm bg-background h-9 outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           >
             <option value="">Seleccioná</option>
             <optgroup label="Primaria">
@@ -102,8 +107,9 @@ export function ChildrenManager() {
             </optgroup>
           </select>
         </div>
-        <Button type="submit" size="sm" variant="outline" disabled={saving}>
-          {saving ? 'Agregando…' : '+ Agregar'}
+        <Button type="submit" size="sm" variant="outline" disabled={saving} className="gap-1">
+          <Plus className="size-3.5" />
+          {saving ? 'Agregando…' : 'Agregar'}
         </Button>
       </form>
 

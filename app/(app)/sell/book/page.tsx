@@ -1,16 +1,20 @@
 'use client'
 
 import { useState } from 'react'
+import { BookOpen, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Separator } from '@/components/ui/separator'
 import { ISBNLookup } from '@/components/ISBNLookup'
 import { ImageUploader } from '@/components/ImageUploader'
 import { createBookListing } from '@/lib/actions/listings'
 import type { BookMetadata } from '@/lib/open-library'
+
+const selectClass = 'w-full border border-input rounded-lg px-3 py-2 text-sm bg-background outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50'
 
 export default function SellBookPage() {
   const [meta, setMeta] = useState<(BookMetadata & { isbn: string }) | null>(null)
@@ -31,7 +35,10 @@ export default function SellBookPage() {
 
   return (
     <div className="max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Publicar libro</h1>
+      <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
+        <BookOpen className="size-6 text-primary" />
+        Publicar libro
+      </h1>
       <form onSubmit={handleSubmit}>
         <Card>
           <CardHeader>
@@ -41,6 +48,8 @@ export default function SellBookPage() {
             <ISBNLookup onFound={(m) => setMeta(m)} onISBNChange={setIsbn} />
 
             {isbn && <input type="hidden" name="isbn" value={isbn} />}
+
+            <Separator />
 
             <div className="space-y-1.5">
               <Label htmlFor="title">Título *</Label>
@@ -60,8 +69,7 @@ export default function SellBookPage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="subject">Materia *</Label>
-                <select id="subject" name="subject" required
-                  className="w-full border rounded-md px-3 py-2 text-sm bg-background">
+                <select id="subject" name="subject" required className={selectClass}>
                   <option value="">Seleccioná la materia</option>
                   <option>Matemática</option>
                   <option>Lengua y Literatura</option>
@@ -84,8 +92,7 @@ export default function SellBookPage() {
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="grade">Año/Grado *</Label>
-                <select id="grade" name="grade" required
-                  className="w-full border rounded-md px-3 py-2 text-sm bg-background">
+                <select id="grade" name="grade" required className={selectClass}>
                   <option value="">Seleccioná</option>
                   <optgroup label="Primaria">
                     <option>Primaria 1°</option>
@@ -110,8 +117,7 @@ export default function SellBookPage() {
 
             <div className="space-y-1.5">
               <Label htmlFor="condition">Estado *</Label>
-              <select id="condition" name="condition" required
-                className="w-full border rounded-md px-3 py-2 text-sm bg-background">
+              <select id="condition" name="condition" required className={selectClass}>
                 <option value="">Seleccioná el estado</option>
                 <option value="como_nuevo">Como nuevo</option>
                 <option value="buen_estado">Buen estado</option>
@@ -140,7 +146,8 @@ export default function SellBookPage() {
               </Alert>
             )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full gap-1.5" disabled={loading}>
+              <Upload className="size-4" />
               {loading ? 'Publicando…' : 'Publicar libro'}
             </Button>
           </CardContent>
