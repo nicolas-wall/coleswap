@@ -55,7 +55,7 @@ export function ListingCard({ listing }: Props) {
             {CONDITION_LABELS[listing.condition]}
           </Badge>
         </div>
-        <CardContent className="pt-3 pb-2">
+        <CardContent className="pt-3 pb-2 flex-1">
           <div className="flex items-center gap-1 text-[0.7rem] text-muted-foreground mb-1">
             <TypeIcon className="size-3" strokeWidth={2} />
             <span>{isBook ? 'Libro' : 'Uniforme'}</span>
