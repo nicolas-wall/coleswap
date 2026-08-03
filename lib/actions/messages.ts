@@ -20,13 +20,22 @@ export async function startConversation(listingId: string) {
   if (listing.status !== 'active') return { error: 'Esta publicación ya no está disponible' }
   if (listing.family_id === user.id) return { error: 'No podés enviarte un mensaje a vos mismo' }
 
+  const { data: existing } = await supabase
+    .from('conversations')
+    .select('id')
+    .eq('listing_id', listingId)
+    .eq('buyer_id', user.id)
+    .maybeSingle()
+
+  if (existing) return { success: true, conversationId: existing.id as string }
+
   const { data: conversation, error: convErr } = await supabase
     .from('conversations')
-    .upsert({
+    .insert({
       listing_id: listingId,
       buyer_id: user.id,
       seller_id: listing.family_id,
-    }, { onConflict: 'listing_id,buyer_id', ignoreDuplicates: false })
+    })
     .select('id')
     .single()
 
