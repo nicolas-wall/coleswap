@@ -10,7 +10,7 @@ export async function GET() {
   const { data: conversations } = await supabase
     .from('conversations')
     .select('id')
-    .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`) as { data: { id: string }[] | null; error: unknown }
+    .or(`family_a_id.eq.${user.id},family_b_id.eq.${user.id}`) as { data: { id: string }[] | null; error: unknown }
 
   const ids = (conversations ?? []).map((c) => c.id)
   if (ids.length === 0) return NextResponse.json({ count: 0 })

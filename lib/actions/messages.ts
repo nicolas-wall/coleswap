@@ -20,11 +20,18 @@ export async function startConversation(listingId: string) {
   if (listing.status !== 'active') return { error: 'Esta publicación ya no está disponible' }
   if (listing.family_id === user.id) return { error: 'No podés enviarte un mensaje a vos mismo' }
 
+  // Registro liviano de "esta familia se interesó en esta publicación", usado
+  // solo para saber a quién calificar cuando se marca como vendida — el hilo
+  // de mensajes en sí es por par de familias, no por publicación.
+  await supabase.from('contacts').insert({ listing_id: listingId, buyer_family_id: user.id })
+
+  const [familyA, familyB] = [user.id, listing.family_id].sort()
+
   const { data: existing } = await supabase
     .from('conversations')
     .select('id')
-    .eq('listing_id', listingId)
-    .eq('buyer_id', user.id)
+    .eq('family_a_id', familyA)
+    .eq('family_b_id', familyB)
     .maybeSingle()
 
   if (existing) return { success: true, conversationId: existing.id as string }
@@ -33,8 +40,8 @@ export async function startConversation(listingId: string) {
     .from('conversations')
     .insert({
       listing_id: listingId,
-      buyer_id: user.id,
-      seller_id: listing.family_id,
+      family_a_id: familyA,
+      family_b_id: familyB,
     })
     .select('id')
     .single()

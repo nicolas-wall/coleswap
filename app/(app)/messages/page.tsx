@@ -2,18 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { BookOpen, Shirt, MessageCircle } from 'lucide-react'
+import { MessageCircle } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
-import { GARMENT_LABELS } from '@/lib/schemas'
 import { formatRelativeTime, cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 
 interface ConversationSummary {
   id: string
-  listingId: string
-  listingTitle: string
-  listingType: 'book' | 'uniform'
-  listingStatus: string
   otherParticipant: { id: string; displayName: string }
   lastMessage: { body: string; createdAt: string; isMine: boolean } | null
   lastMessageAt: string
@@ -60,46 +55,41 @@ export default function MessagesPage() {
         <div className="text-center py-16 text-muted-foreground">
           <MessageCircle className="size-10 mx-auto mb-3 opacity-40" />
           <p>Todavía no tenés conversaciones.</p>
-          <p className="text-sm mt-1">Escribile al vendedor desde cualquier publicación.</p>
+          <p className="text-sm mt-1">Escribile a alguien desde cualquier publicación.</p>
         </div>
       ) : (
         <ul className="space-y-2">
-          {conversations.map((c) => {
-            const TypeIcon = c.listingType === 'book' ? BookOpen : Shirt
-            const title = c.listingType === 'uniform' ? (GARMENT_LABELS[c.listingTitle] ?? c.listingTitle) : c.listingTitle
-            return (
-              <li key={c.id}>
-                <Link
-                  href={`/messages/${c.id}`}
-                  className={cn(
-                    'flex items-center gap-3 rounded-xl border p-3 transition-colors hover:bg-muted/50',
-                    c.unreadCount > 0 && 'bg-accent/30 border-accent'
-                  )}
-                >
-                  <span className="inline-flex items-center justify-center size-10 rounded-full bg-muted text-muted-foreground shrink-0">
-                    <TypeIcon className="size-4" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="font-medium text-sm truncate">{c.otherParticipant.displayName}</p>
-                      <span className="text-[0.7rem] text-muted-foreground shrink-0">{formatRelativeTime(c.lastMessageAt)}</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground truncate">{title}</p>
-                    {c.lastMessage && (
-                      <p className={cn('text-sm truncate mt-0.5', c.unreadCount > 0 ? 'font-medium' : 'text-muted-foreground')}>
-                        {c.lastMessage.isMine && 'Vos: '}{c.lastMessage.body}
-                      </p>
-                    )}
+          {conversations.map((c) => (
+            <li key={c.id}>
+              <Link
+                href={`/messages/${c.id}`}
+                className={cn(
+                  'flex items-center gap-3 rounded-xl border p-3 transition-colors hover:bg-muted/50',
+                  c.unreadCount > 0 && 'bg-accent/30 border-accent'
+                )}
+              >
+                <span className="inline-flex items-center justify-center size-10 rounded-full bg-muted text-muted-foreground shrink-0">
+                  <MessageCircle className="size-4" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-medium text-sm truncate">{c.otherParticipant.displayName}</p>
+                    <span className="text-[0.7rem] text-muted-foreground shrink-0">{formatRelativeTime(c.lastMessageAt)}</span>
                   </div>
-                  {c.unreadCount > 0 && (
-                    <span className="shrink-0 inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
-                      {c.unreadCount}
-                    </span>
+                  {c.lastMessage && (
+                    <p className={cn('text-sm truncate mt-0.5', c.unreadCount > 0 ? 'font-medium' : 'text-muted-foreground')}>
+                      {c.lastMessage.isMine && 'Vos: '}{c.lastMessage.body}
+                    </p>
                   )}
-                </Link>
-              </li>
-            )
-          })}
+                </div>
+                {c.unreadCount > 0 && (
+                  <span className="shrink-0 inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
+                    {c.unreadCount}
+                  </span>
+                )}
+              </Link>
+            </li>
+          ))}
         </ul>
       )}
     </div>

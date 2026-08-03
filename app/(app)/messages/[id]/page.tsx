@@ -3,10 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, BookOpen, Shirt, Send } from 'lucide-react'
+import { ArrowLeft, MessageCircle, Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { GARMENT_LABELS } from '@/lib/schemas'
 import { formatRelativeTime, cn } from '@/lib/utils'
 import { sendMessage, markConversationRead } from '@/lib/actions/messages'
 import { createClient } from '@/lib/supabase/client'
@@ -20,9 +19,6 @@ interface ThreadMessage {
 
 interface ConversationDetail {
   id: string
-  listingId: string
-  listingTitle: string
-  listingType: 'book' | 'uniform'
   otherParticipant: { id: string; displayName: string }
   messages: ThreadMessage[]
 }
@@ -92,11 +88,6 @@ export default function ConversationPage() {
   }
   if (!conversation) return notFound()
 
-  const TypeIcon = conversation.listingType === 'book' ? BookOpen : Shirt
-  const title = conversation.listingType === 'uniform'
-    ? (GARMENT_LABELS[conversation.listingTitle] ?? conversation.listingTitle)
-    : conversation.listingTitle
-
   return (
     <div className="max-w-2xl mx-auto flex flex-col h-[calc(100vh-8rem)]">
       <div className="shrink-0 space-y-2 pb-3 border-b">
@@ -104,15 +95,12 @@ export default function ConversationPage() {
           <ArrowLeft className="size-3.5" />
           Mensajes
         </Link>
-        <Link href={`/listings/${conversation.listingId}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <div className="flex items-center gap-2">
           <span className="inline-flex items-center justify-center size-9 rounded-full bg-muted text-muted-foreground shrink-0">
-            <TypeIcon className="size-4" />
+            <MessageCircle className="size-4" />
           </span>
-          <div className="min-w-0">
-            <p className="font-medium text-sm truncate">{conversation.otherParticipant.displayName}</p>
-            <p className="text-xs text-muted-foreground truncate">{title}</p>
-          </div>
-        </Link>
+          <p className="font-medium text-sm truncate">{conversation.otherParticipant.displayName}</p>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto py-4 space-y-2">
