@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import type { Family } from '@/types/database'
 
 export async function GET() {
@@ -17,9 +17,14 @@ export async function GET() {
     return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
   }
 
-  const { data: families } = await supabase
+  // El moderador ve teléfono/email de su colegio: esas columnas ya no salen por
+  // el cliente del usuario (migración 021), así que van por service role,
+  // scopeado explícitamente al colegio del moderador
+  const service = createServiceClient()
+  const { data: families } = await service
     .from('families')
     .select('id, display_name, phone, email, role, suspended, approved, joined_via_code, rating_avg, rating_count, created_at')
+    .eq('school_id', me.school_id)
     .order('created_at', { ascending: false })
 
   const { data: listings } = await supabase

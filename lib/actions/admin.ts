@@ -28,11 +28,38 @@ async function requireSchoolAdmin() {
   return { supabase, error: null }
 }
 
+// suspended/approved/role ya no son actualizables por los clientes (grants por
+// columna, migración 021), así que estas acciones escriben con el service role
+// después de verificar que quien llama es moderador del mismo colegio.
+async function requireSameSchoolAdmin(familyId: string) {
+  const { supabase, error } = await requireSchoolAdmin()
+  if (error) return { error }
+
+  const { data: me } = await supabase
+    .from('families')
+    .select('school_id')
+    .eq('id', (await supabase.auth.getUser()).data.user!.id)
+    .single() as { data: Pick<Family, 'school_id'> | null }
+
+  const { data: target } = await supabase
+    .from('families')
+    .select('school_id')
+    .eq('id', familyId)
+    .single() as { data: Pick<Family, 'school_id'> | null }
+
+  if (!me || !target || me.school_id !== target.school_id) {
+    return { error: 'No autorizado' as const }
+  }
+
+  return { error: null }
+}
+
 export async function setFamilySuspended(familyId: string, suspended: boolean) {
-  const { supabase, error: authErr } = await requireSchoolAdmin()
+  const { error: authErr } = await requireSameSchoolAdmin(familyId)
   if (authErr) return { error: authErr }
 
-  const { error } = await supabase
+  const service = createServiceClient()
+  const { error } = await service
     .from('families')
     .update({ suspended })
     .eq('id', familyId)
@@ -43,10 +70,11 @@ export async function setFamilySuspended(familyId: string, suspended: boolean) {
 }
 
 export async function approveFamily(familyId: string) {
-  const { supabase, error: authErr } = await requireSchoolAdmin()
+  const { error: authErr } = await requireSameSchoolAdmin(familyId)
   if (authErr) return { error: authErr }
 
-  const { error } = await supabase
+  const service = createServiceClient()
+  const { error } = await service
     .from('families')
     .update({ approved: true })
     .eq('id', familyId)
@@ -57,6 +85,9 @@ export async function approveFamily(familyId: string) {
 }
 
 export async function rejectFamily(familyId: string) {
+  const { error: schoolErr } = await requireSameSchoolAdmin(familyId)
+  if (schoolErr) return { error: schoolErr }
+
   const { supabase, error: authErr } = await requireSchoolAdmin()
   if (authErr) return { error: authErr }
 
@@ -78,6 +109,9 @@ export async function rejectFamily(familyId: string) {
 }
 
 export async function deleteFamily(familyId: string) {
+  const { error: schoolErr } = await requireSameSchoolAdmin(familyId)
+  if (schoolErr) return { error: schoolErr }
+
   const { supabase, error: authErr } = await requireSchoolAdmin()
   if (authErr) return { error: authErr }
 

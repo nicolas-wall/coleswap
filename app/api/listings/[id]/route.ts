@@ -12,7 +12,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       *,
       book_details(*),
       uniform_details(*),
-      family:families!listings_family_id_fkey(id, display_name, phone, email, rating_avg, rating_count)
+      family:families!listings_family_id_fkey(id, display_name, rating_avg, rating_count)
     `)
     .eq('id', id)
     .single() as { data: ListingWithDetails | null; error: unknown }

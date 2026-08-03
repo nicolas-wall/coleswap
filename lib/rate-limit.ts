@@ -1,11 +1,12 @@
 import { headers } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 
-// Cuenta hits en la tabla rate_limit_hits (ver migración 016) vía una función
-// SECURITY DEFINER, así que funciona igual para clientes autenticados y anónimos.
+// Cuenta hits en la tabla rate_limit_hits (ver migración 016). El RPC solo es
+// ejecutable por el service role (migración 021): si fuera invocable por los
+// clientes, cualquiera podría llenar el balde de otra familia y bloquearla.
 // Falla "abierto": si el RPC en sí falla, no bloqueamos al usuario real por eso.
 export async function checkRateLimit(key: string, maxCount: number, windowSeconds: number): Promise<boolean> {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
   const { data, error } = await supabase.rpc('check_rate_limit', {
     p_key: key,
     p_max_count: maxCount,

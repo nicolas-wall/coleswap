@@ -6,7 +6,6 @@ import { ratingSchema } from '@/lib/schemas'
 import type { Listing } from '@/types/database'
 
 interface ContactRow { buyer_family_id: string }
-interface RatingRow { score: number }
 
 export async function submitRating(listingId: string, formData: FormData) {
   const raw = {
@@ -72,21 +71,12 @@ export async function submitRating(listingId: string, formData: FormData) {
 
   if (ratingErr) {
     if ((ratingErr as { code?: string }).code === '23505') return { error: 'Ya calificaste esta transacción' }
-    return { error: 'Error al guardar la calificación' }
+    return { error: 'No se pudo guardar la calificación' }
   }
 
-  const { data: avgData } = await supabase
-    .from('ratings')
-    .select('score')
-    .eq('rated_family_id', ratedFamilyId) as { data: RatingRow[] | null; error: unknown }
-
-  if (avgData && avgData.length > 0) {
-    const avg = avgData.reduce((s, r) => s + r.score, 0) / avgData.length
-    await supabase
-      .from('families')
-      .update({ rating_avg: Math.round(avg * 100) / 100, rating_count: avgData.length })
-      .eq('id', ratedFamilyId)
-  }
+  // rating_avg / rating_count los recalcula el trigger ratings_refresh_family
+  // (migración 021): hacerlo acá fallaba en silencio, porque el RLS no deja
+  // que una familia actualice la fila de otra.
 
   redirect('/my-listings')
 }

@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { schoolSchema } from '@/lib/schemas'
 
 async function requirePlatformAdmin() {
@@ -83,10 +83,12 @@ export async function updateSchool(schoolId: string, formData: FormData) {
 }
 
 export async function setSchoolAdminRole(familyId: string, isAdmin: boolean) {
-  const { supabase, error: authErr } = await requirePlatformAdmin()
+  const { error: authErr } = await requirePlatformAdmin()
   if (authErr) return { error: authErr }
 
-  const { error } = await supabase
+  // role ya no es actualizable por los clientes (grants por columna, migración 021)
+  const service = createServiceClient()
+  const { error } = await service
     .from('families')
     .update({ role: isAdmin ? 'school_admin' : 'user' })
     .eq('id', familyId)
