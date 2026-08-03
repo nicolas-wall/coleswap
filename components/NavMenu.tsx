@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Menu, User, Package, ShieldCheck, Building2, LogOut, BookOpen, Shirt, MessageCircle } from 'lucide-react'
+import { Menu, User, Package, ShieldCheck, Building2, LogOut, BookOpen, Shirt, MessageCircle, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import { signOut } from '@/lib/actions/auth'
+import { useInstallPrompt } from '@/hooks/useInstallPrompt'
 
 interface Props {
   isSchoolAdmin: boolean
@@ -18,6 +19,8 @@ interface Props {
 }
 
 export function NavMenu({ isSchoolAdmin, isPlatformAdmin }: Props) {
+  const { status, promptInstall } = useInstallPrompt()
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -58,6 +61,15 @@ export function NavMenu({ isSchoolAdmin, isPlatformAdmin }: Props) {
             <Building2 className="size-4" />
             Plataforma
           </DropdownMenuItem>
+        )}
+        {status === 'installable' && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => promptInstall()}>
+              <Download className="size-4" />
+              Instalar app
+            </DropdownMenuItem>
+          </>
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut()} className="text-destructive focus:text-destructive">
