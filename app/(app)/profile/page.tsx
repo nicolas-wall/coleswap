@@ -103,13 +103,13 @@ export default function ProfilePage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="contactEmail">Otro email de contacto — opcional</Label>
+              <Label htmlFor="contactEmail">Email de contacto — opcional</Label>
               <Input
                 id="contactEmail"
                 name="contactEmail"
                 type="email"
                 defaultValue={profile?.contact_email ?? ''}
-                placeholder="Ej: otro@email.com"
+                placeholder="Ej: familia@email.com"
               />
             </div>
 

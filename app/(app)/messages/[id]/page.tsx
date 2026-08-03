@@ -84,7 +84,7 @@ export default function ConversationPage() {
     if (!myProfile) return
     const lines = [`Email: ${myProfile.loginEmail}`]
     if (myProfile.phone) lines.push(`Teléfono: ${myProfile.phone}`)
-    if (myProfile.contact_email) lines.push(`Otro email: ${myProfile.contact_email}`)
+    if (myProfile.contact_email) lines.push(`Email de contacto: ${myProfile.contact_email}`)
 
     setSharing(true)
     setError('')
