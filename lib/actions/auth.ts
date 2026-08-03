@@ -240,3 +240,42 @@ export async function updateProfile(formData: FormData) {
 
   return { success: true }
 }
+
+export async function deleteMyAccount(formData: FormData) {
+  const confirmation = formData.get('confirmation')
+  if (confirmation !== 'ELIMINAR') {
+    return { error: 'Escribí ELIMINAR para confirmar' }
+  }
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'No autenticado' }
+
+  const service = createServiceClient()
+
+  await service.from('ratings').delete().or(`rater_family_id.eq.${user.id},rated_family_id.eq.${user.id}`)
+  await service.from('conversations').delete().or(`family_a_id.eq.${user.id},family_b_id.eq.${user.id}`)
+
+  const { data: familyListings } = await service.from('listings').select('id').eq('family_id', user.id)
+  const listingIds = (familyListings ?? []).map((l) => l.id)
+  if (listingIds.length > 0) {
+    await service.from('contacts').delete().in('listing_id', listingIds)
+  }
+  await service.from('contacts').delete().eq('buyer_family_id', user.id)
+
+  // Todas las fotos que haya subido esta familia, no solo las de publicaciones activas
+  const { data: files } = await service.storage.from('listing-images').list(user.id)
+  if (files && files.length > 0) {
+    await service.storage.from('listing-images').remove(files.map((f) => `${user.id}/${f.name}`))
+  }
+
+  await service.from('listings').delete().eq('family_id', user.id)
+  await service.from('invitations').update({ used_by: null, used_at: null }).eq('used_by', user.id)
+  await service.from('invitations').update({ created_by: null }).eq('created_by', user.id)
+
+  const { error } = await service.auth.admin.deleteUser(user.id)
+  if (error) return { error: 'No se pudo eliminar la cuenta. Probá de nuevo.' }
+
+  await supabase.auth.signOut()
+  redirect('/')
+}

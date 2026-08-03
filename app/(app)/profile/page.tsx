@@ -13,6 +13,7 @@ import { updateProfile } from '@/lib/actions/auth'
 import { ChildrenManager } from '@/components/ChildrenManager'
 import { NotificationToggle } from '@/components/NotificationToggle'
 import { InstallAppButton } from '@/components/InstallAppButton'
+import { DeleteAccountSection } from '@/components/DeleteAccountSection'
 
 interface ProfileData {
   display_name: string
@@ -152,6 +153,8 @@ export default function ProfilePage() {
           <ChildrenManager />
         </CardContent>
       </Card>
+
+      <DeleteAccountSection />
     </div>
   )
 }

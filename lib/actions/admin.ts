@@ -111,6 +111,7 @@ export async function deleteFamily(familyId: string) {
 
   await service.from('listings').delete().eq('family_id', familyId)
   await service.from('invitations').update({ used_by: null, used_at: null }).eq('used_by', familyId)
+  await service.from('invitations').update({ created_by: null }).eq('created_by', familyId)
 
   const { error } = await service.auth.admin.deleteUser(familyId)
   if (error) return { error: 'No se pudo eliminar la familia' }
