@@ -85,10 +85,15 @@ export const ratingSchema = z.object({
 
 // ── Profile schema ────────────────────────────────────────────
 export const profileSchema = z.object({
+  displayName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(60),
   phone: z.string().min(8, 'Teléfono inválido').max(20).regex(/^[\d\s\+\-\(\)]+$/, 'Solo números y símbolos de teléfono'),
   email: z.string().email('Email inválido'),
   socialHandle: z.string().max(50).optional().nullable(),
   contactNote: z.string().max(280).optional().nullable(),
+})
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email('Email inválido'),
 })
 
 // ── Child schema ─────────────────────────────────────────────
@@ -121,3 +126,4 @@ export type ProfileInput = z.infer<typeof profileSchema>
 export type ChildInput = z.infer<typeof childSchema>
 export type SchoolInput = z.infer<typeof schoolSchema>
 export type MessageInput = z.infer<typeof messageSchema>
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>

@@ -176,6 +176,11 @@ function ListingRow({
           >
             Marcar como vendida
           </Button>
+          <Link href={`/listings/${listing.id}/edit`}>
+            <Button size="sm" variant="outline" disabled={pending} className="text-xs">
+              Editar
+            </Button>
+          </Link>
           <Button
             size="sm"
             variant="ghost"

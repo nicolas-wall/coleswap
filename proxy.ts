@@ -26,9 +26,11 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
-  const isAuthRoute = pathname === '/login' || pathname === '/signup'
+  const isAuthRoute = pathname === '/login' || pathname === '/signup' || pathname === '/forgot-password'
   const isPublicApiRoute = pathname === '/api/schools'
-  const isPublicContentRoute = pathname === '/' || pathname === '/legal' || pathname === '/faq'
+  // /reset-password: el link de recuperación establece la sesión del lado del cliente
+  // (fragment #access_token), así que el middleware todavía no ve al usuario logueado
+  const isPublicContentRoute = pathname === '/' || pathname === '/legal' || pathname === '/faq' || pathname === '/reset-password'
 
   if (!user && !isAuthRoute && !isPublicApiRoute && !isPublicContentRoute) {
     const url = request.nextUrl.clone()

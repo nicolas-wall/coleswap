@@ -1,10 +1,18 @@
 'use server'
 
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
-import { signupSchema, requestJoinSchema, loginSchema, profileSchema } from '@/lib/schemas'
+import { signupSchema, requestJoinSchema, loginSchema, profileSchema, forgotPasswordSchema } from '@/lib/schemas'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 import type { Invitation, Family } from '@/types/database'
+
+async function getOrigin() {
+  const h = await headers()
+  const host = h.get('host')
+  const proto = h.get('x-forwarded-proto') ?? (host?.startsWith('localhost') ? 'http' : 'https')
+  return `${proto}://${host}`
+}
 
 export async function signUp(formData: FormData) {
   const raw = {
@@ -177,8 +185,35 @@ export async function signOut() {
   redirect('/login')
 }
 
+export async function requestPasswordReset(formData: FormData) {
+  const raw = { email: formData.get('email') }
+  const parsed = forgotPasswordSchema.safeParse(raw)
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
+
+  const ip = await getClientIp()
+  const allowed = await checkRateLimit(`password-reset:${ip}`, 5, 3600)
+  if (!allowed) return { error: 'Demasiados intentos. Probá de nuevo más tarde.' }
+
+  const origin = await getOrigin()
+  const supabase = await createClient()
+  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+    redirectTo: `${origin}/reset-password`,
+  })
+
+  // Si Supabase no pudo enviar el mail por su propio límite de envíos, avisamos
+  // (esto no revela si el email existe, solo que el envío en sí falló)
+  if (error?.message?.toLowerCase().includes('rate limit')) {
+    return { error: 'No pudimos enviar el email en este momento. Probá de nuevo en un rato.' }
+  }
+
+  // Para el resto de los casos, siempre "success" exista o no la cuenta,
+  // para no revelar qué emails están registrados
+  return { success: true }
+}
+
 export async function updateProfile(formData: FormData) {
   const raw = {
+    displayName: formData.get('displayName'),
     phone: formData.get('phone'),
     email: formData.get('email'),
     socialHandle: formData.get('socialHandle') || null,
@@ -197,6 +232,7 @@ export async function updateProfile(formData: FormData) {
   const { error } = await supabase
     .from('families')
     .update({
+      display_name: parsed.data.displayName,
       phone: parsed.data.phone,
       email: parsed.data.email,
       social_handle: parsed.data.socialHandle,

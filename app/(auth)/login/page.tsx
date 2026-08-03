@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/ui/password-input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -41,8 +42,13 @@ export default function LoginPage() {
             <Input id="email" name="email" type="email" required autoComplete="email" />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="password">Contraseña</Label>
-            <Input id="password" name="password" type="password" required autoComplete="current-password" />
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">Contraseña</Label>
+              <Link href="/forgot-password" className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2">
+                ¿Olvidaste tu contraseña?
+              </Link>
+            </div>
+            <PasswordInput id="password" name="password" required autoComplete="current-password" />
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-3">

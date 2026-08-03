@@ -8,8 +8,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 
 const MAX_IMAGES = 4
 
-export function ImageUploader() {
-  const [urls, setUrls] = useState<string[]>([])
+export function ImageUploader({ initialUrls = [] }: { initialUrls?: string[] }) {
+  const [urls, setUrls] = useState<string[]>(initialUrls)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
 

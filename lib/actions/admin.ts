@@ -1,7 +1,14 @@
 'use server'
 
 import { createClient, createServiceClient } from '@/lib/supabase/server'
-import type { Family } from '@/types/database'
+import type { Family, Listing } from '@/types/database'
+
+const IMAGE_PATH_MARKER = '/listing-images/'
+
+function extractImagePath(url: string): string | null {
+  const idx = url.indexOf(IMAGE_PATH_MARKER)
+  return idx === -1 ? null : url.slice(idx + IMAGE_PATH_MARKER.length)
+}
 
 async function requireSchoolAdmin() {
   const supabase = await createClient()
@@ -96,6 +103,12 @@ export async function deleteFamily(familyId: string) {
   }
   await service.from('contacts').delete().eq('buyer_family_id', familyId)
 
+  // Limpiar todas las fotos que haya subido esta familia, no solo las de listings actuales
+  const { data: files } = await service.storage.from('listing-images').list(familyId)
+  if (files && files.length > 0) {
+    await service.storage.from('listing-images').remove(files.map((f) => `${familyId}/${f.name}`))
+  }
+
   await service.from('listings').delete().eq('family_id', familyId)
   await service.from('invitations').update({ used_by: null, used_at: null }).eq('used_by', familyId)
 
@@ -109,12 +122,25 @@ export async function adminRemoveListing(listingId: string) {
   const { supabase, error: authErr } = await requireSchoolAdmin()
   if (authErr) return { error: authErr }
 
+  const { data: existing } = await supabase
+    .from('listings')
+    .select('images')
+    .eq('id', listingId)
+    .single() as { data: Pick<Listing, 'images'> | null; error: unknown }
+
   const { error } = await supabase
     .from('listings')
     .update({ status: 'removed' as const })
     .eq('id', listingId)
 
   if (error) return { error: 'No se pudo remover la publicación' }
+
+  const paths = (existing?.images ?? []).map(extractImagePath).filter((p): p is string => !!p)
+  if (paths.length > 0) {
+    // El admin no es dueño de las fotos, así que necesita el service role para borrarlas
+    const service = createServiceClient()
+    await service.storage.from('listing-images').remove(paths)
+  }
 
   return { success: true }
 }

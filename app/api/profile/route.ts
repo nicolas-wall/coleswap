@@ -8,9 +8,9 @@ export async function GET() {
 
   const { data: profile } = await supabase
     .from('families')
-    .select('phone, email, social_handle, contact_note')
+    .select('display_name, phone, email, social_handle, contact_note')
     .eq('id', user.id)
     .single()
 
-  return NextResponse.json({ profile: profile ?? null })
+  return NextResponse.json({ profile: profile ?? null, loginEmail: user.email ?? null })
 }

@@ -13,6 +13,7 @@ import { updateProfile } from '@/lib/actions/auth'
 import { ChildrenManager } from '@/components/ChildrenManager'
 
 interface ProfileData {
+  display_name: string
   phone: string
   email: string
   social_handle: string | null
@@ -21,6 +22,7 @@ interface ProfileData {
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<ProfileData | null>(null)
+  const [loginEmail, setLoginEmail] = useState('')
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -28,7 +30,7 @@ export default function ProfilePage() {
   useEffect(() => {
     fetch('/api/profile')
       .then(r => r.json())
-      .then(d => { setProfile(d.profile); setLoading(false) })
+      .then(d => { setProfile(d.profile); setLoginEmail(d.loginEmail ?? ''); setLoading(false) })
       .catch(() => setLoading(false))
   }, [])
 
@@ -65,6 +67,25 @@ export default function ProfilePage() {
           </CardHeader>
           <CardContent className="space-y-5">
             <div className="space-y-1.5">
+              <Label htmlFor="displayName">Nombre de familia *</Label>
+              <Input
+                id="displayName"
+                name="displayName"
+                required
+                defaultValue={profile?.display_name ?? ''}
+                placeholder="Ej: Familia García"
+              />
+            </div>
+
+            {loginEmail && (
+              <div className="space-y-1.5">
+                <Label className="text-muted-foreground">Email de acceso</Label>
+                <Input value={loginEmail} disabled readOnly />
+                <p className="text-xs text-muted-foreground">Es el email con el que ingresás. No se cambia desde acá.</p>
+              </div>
+            )}
+
+            <div className="space-y-1.5">
               <Label htmlFor="phone">Teléfono *</Label>
               <Input
                 id="phone"
@@ -77,7 +98,7 @@ export default function ProfilePage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="email">Email *</Label>
+              <Label htmlFor="email">Email de contacto *</Label>
               <Input
                 id="email"
                 name="email"
@@ -85,6 +106,7 @@ export default function ProfilePage() {
                 required
                 defaultValue={profile?.email ?? ''}
               />
+              <p className="text-xs text-muted-foreground">El que ven otras familias del colegio — puede ser distinto al de acceso.</p>
             </div>
 
             <div className="space-y-1.5">

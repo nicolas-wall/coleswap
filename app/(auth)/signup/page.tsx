@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/ui/password-input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -117,7 +118,7 @@ export default function SignupPage() {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="password">Contraseña</Label>
-            <Input id="password" name="password" type="password" minLength={8} required autoComplete="new-password" />
+            <PasswordInput id="password" name="password" minLength={8} required autoComplete="new-password" />
             <p className="text-xs text-muted-foreground">Mínimo 8 caracteres</p>
           </div>
         </CardContent>
