@@ -27,8 +27,9 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl
   const isAuthRoute = pathname === '/login' || pathname === '/signup'
+  const isPublicApiRoute = pathname === '/api/schools'
 
-  if (!user && !isAuthRoute) {
+  if (!user && !isAuthRoute && !isPublicApiRoute) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
@@ -40,16 +41,24 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  if (user && request.method === 'GET' && pathname !== '/suspended' && !isAuthRoute) {
+  const isGateRoute = pathname === '/suspended' || pathname === '/pending'
+
+  if (user && request.method === 'GET' && !isGateRoute && !isAuthRoute) {
     const { data: family } = await supabase
       .from('families')
-      .select('suspended')
+      .select('suspended, approved')
       .eq('id', user.id)
       .single()
 
     if (family?.suspended) {
       const url = request.nextUrl.clone()
       url.pathname = '/suspended'
+      return NextResponse.redirect(url)
+    }
+
+    if (family && !family.approved) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/pending'
       return NextResponse.redirect(url)
     }
   }

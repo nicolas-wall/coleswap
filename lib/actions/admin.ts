@@ -35,6 +35,41 @@ export async function setFamilySuspended(familyId: string, suspended: boolean) {
   return { success: true }
 }
 
+export async function approveFamily(familyId: string) {
+  const { supabase, error: authErr } = await requireSchoolAdmin()
+  if (authErr) return { error: authErr }
+
+  const { error } = await supabase
+    .from('families')
+    .update({ approved: true })
+    .eq('id', familyId)
+
+  if (error) return { error: 'No se pudo aprobar la solicitud' }
+
+  return { success: true }
+}
+
+export async function rejectFamily(familyId: string) {
+  const { supabase, error: authErr } = await requireSchoolAdmin()
+  if (authErr) return { error: authErr }
+
+  const { data: target } = await supabase
+    .from('families')
+    .select('approved')
+    .eq('id', familyId)
+    .single() as { data: Pick<Family, 'approved'> | null }
+
+  if (!target || target.approved) {
+    return { error: 'Esta familia ya fue aprobada' }
+  }
+
+  const service = createServiceClient()
+  const { error } = await service.auth.admin.deleteUser(familyId)
+  if (error) return { error: 'No se pudo rechazar la solicitud' }
+
+  return { success: true }
+}
+
 export async function deleteFamily(familyId: string) {
   const { supabase, error: authErr } = await requireSchoolAdmin()
   if (authErr) return { error: authErr }

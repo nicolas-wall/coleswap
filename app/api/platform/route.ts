@@ -21,8 +21,13 @@ export async function GET() {
 
   const { data: families } = await supabase
     .from('families')
-    .select('id, school_id, display_name, email, role')
+    .select('id, school_id, display_name, email, role, approved')
     .order('display_name', { ascending: true })
 
-  return NextResponse.json({ schools: schools ?? [], families: families ?? [] })
+  const { data: invitations } = await supabase
+    .from('invitations')
+    .select('id, school_id, code, multi_use, expires_at, used_by, created_at')
+    .order('created_at', { ascending: false })
+
+  return NextResponse.json({ schools: schools ?? [], families: families ?? [], invitations: invitations ?? [] })
 }

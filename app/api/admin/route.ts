@@ -19,7 +19,7 @@ export async function GET() {
 
   const { data: families } = await supabase
     .from('families')
-    .select('id, display_name, phone, email, role, suspended, rating_avg, rating_count, created_at')
+    .select('id, display_name, phone, email, role, suspended, approved, joined_via_code, rating_avg, rating_count, created_at')
     .order('created_at', { ascending: false })
 
   const { data: listings } = await supabase
@@ -32,5 +32,16 @@ export async function GET() {
     `)
     .order('created_at', { ascending: false })
 
-  return NextResponse.json({ families: families ?? [], listings: listings ?? [] })
+  const { data: invitations } = await supabase
+    .from('invitations')
+    .select('id, code, multi_use, expires_at, used_by, created_at')
+    .eq('school_id', me!.school_id)
+    .order('created_at', { ascending: false })
+
+  return NextResponse.json({
+    schoolId: me!.school_id,
+    families: families ?? [],
+    listings: listings ?? [],
+    invitations: invitations ?? [],
+  })
 }

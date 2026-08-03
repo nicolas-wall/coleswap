@@ -31,12 +31,21 @@ export const GENDER_LABELS: Record<string, string> = {
 }
 
 // ── Auth schemas ──────────────────────────────────────────────
-export const signupSchema = z.object({
-  invitationCode: z.string().min(1, 'El código de invitación es requerido').trim().toUpperCase(),
+const baseSignupFields = {
   displayName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(60),
   phone: z.string().min(8, 'Teléfono inválido').max(20).regex(/^[\d\s\+\-\(\)]+$/, 'Solo números y símbolos de teléfono'),
   email: z.string().email('Email inválido'),
   password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres'),
+}
+
+export const signupSchema = z.object({
+  invitationCode: z.string().min(1, 'El código de invitación es requerido').trim().toUpperCase(),
+  ...baseSignupFields,
+})
+
+export const requestJoinSchema = z.object({
+  schoolId: z.string().uuid('Elegí un colegio'),
+  ...baseSignupFields,
 })
 
 export const loginSchema = z.object({
@@ -103,6 +112,7 @@ export const messageSchema = z.object({
 })
 
 export type SignupInput = z.infer<typeof signupSchema>
+export type RequestJoinInput = z.infer<typeof requestJoinSchema>
 export type LoginInput = z.infer<typeof loginSchema>
 export type BookListingInput = z.infer<typeof bookListingSchema>
 export type UniformListingInput = z.infer<typeof uniformListingSchema>

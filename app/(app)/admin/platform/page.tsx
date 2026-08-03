@@ -10,10 +10,11 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { CrestUploader } from '@/components/CrestUploader'
-import { createSchool, updateSchool, generateInvitation, setSchoolAdminRole } from '@/lib/actions/platform'
+import { createSchool, updateSchool, setSchoolAdminRole } from '@/lib/actions/platform'
+import { generateInvitation } from '@/lib/actions/invitations'
 import type { School, Family } from '@/types/database'
 
-type AdminFamily = Pick<Family, 'id' | 'school_id' | 'display_name' | 'email' | 'role'>
+type AdminFamily = Pick<Family, 'id' | 'school_id' | 'display_name' | 'email' | 'role' | 'approved'>
 
 export default function PlatformAdminPage() {
   const [schools, setSchools] = useState<School[]>([])
@@ -72,8 +73,8 @@ export default function PlatformAdminPage() {
     setCreating(false)
   }
 
-  async function handleGenerateCode(schoolId: string) {
-    const result = await generateInvitation(schoolId)
+  async function handleGenerateCode(schoolId: string, options: { multiUse: boolean; expiresInDays?: number }) {
+    const result = await generateInvitation(schoolId, options)
     if (result?.success && result.code) {
       setCodesBySchool((prev) => ({ ...prev, [schoolId]: result.code }))
       toast.success('Código generado')
@@ -166,7 +167,7 @@ export default function PlatformAdminPage() {
             families={families.filter((f) => f.school_id === school.id)}
             isPending={isPending}
             generatedCode={codesBySchool[school.id]}
-            onGenerateCode={() => handleGenerateCode(school.id)}
+            onGenerateCode={(options) => handleGenerateCode(school.id, options)}
             onToggleAdmin={handleToggleAdmin}
             onSaved={load}
           />
@@ -189,7 +190,7 @@ function SchoolCard({
   families: AdminFamily[]
   isPending: boolean
   generatedCode?: string
-  onGenerateCode: () => void
+  onGenerateCode: (options: { multiUse: boolean; expiresInDays?: number }) => void
   onToggleAdmin: (familyId: string, isAdmin: boolean) => void
   onSaved: () => void
 }) {
@@ -201,6 +202,8 @@ function SchoolCard({
   const [crestUrl, setCrestUrl] = useState<string | null>(school.crest_url)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [multiUse, setMultiUse] = useState(false)
+  const [expiryDays, setExpiryDays] = useState('7')
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
@@ -287,9 +290,30 @@ function SchoolCard({
           </Button>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button size="sm" variant="outline" disabled={isPending} onClick={onGenerateCode}>
-            Generar código de invitación
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="flex items-center gap-1.5 text-xs">
+            <input type="radio" checked={!multiUse} onChange={() => setMultiUse(false)} />
+            Una familia
+          </label>
+          <label className="flex items-center gap-1.5 text-xs">
+            <input type="radio" checked={multiUse} onChange={() => setMultiUse(true)} />
+            Varias, con vencimiento
+          </label>
+          {multiUse && (
+            <select value={expiryDays} onChange={(e) => setExpiryDays(e.target.value)} className="text-xs border rounded-md px-2 py-1">
+              <option value="1">1 día</option>
+              <option value="3">3 días</option>
+              <option value="7">7 días</option>
+              <option value="30">30 días</option>
+            </select>
+          )}
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={isPending}
+            onClick={() => onGenerateCode({ multiUse, expiresInDays: multiUse ? Number(expiryDays) : undefined })}
+          >
+            Generar código
           </Button>
           {generatedCode && (
             <code className="text-xs bg-muted px-2 py-1 rounded">{generatedCode}</code>
@@ -303,6 +327,7 @@ function SchoolCard({
                 <span>
                   {f.display_name} <span className="text-xs text-muted-foreground">{f.email}</span>
                   {f.role === 'school_admin' && <Badge variant="secondary" className="text-xs ml-2">Admin</Badge>}
+                  {!f.approved && <Badge variant="outline" className="text-xs ml-2">Pendiente</Badge>}
                 </span>
                 <Button
                   size="sm"

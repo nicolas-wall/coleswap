@@ -60,6 +60,9 @@ export interface Database {
           code: string
           used_by: string | null
           used_at: string | null
+          expires_at: string | null
+          multi_use: boolean
+          created_by: string | null
           created_at: string
         }
         Insert: {
@@ -68,6 +71,9 @@ export interface Database {
           code: string
           used_by?: string | null
           used_at?: string | null
+          expires_at?: string | null
+          multi_use?: boolean
+          created_by?: string | null
           created_at?: string
         }
         Update: {
@@ -76,6 +82,9 @@ export interface Database {
           code?: string
           used_by?: string | null
           used_at?: string | null
+          expires_at?: string | null
+          multi_use?: boolean
+          created_by?: string | null
           created_at?: string
         }
         Relationships: []
@@ -91,6 +100,8 @@ export interface Database {
           contact_note: string | null
           role: FamilyRole
           suspended: boolean
+          approved: boolean
+          joined_via_code: string | null
           rating_avg: number | null
           rating_count: number
           created_at: string
@@ -105,6 +116,8 @@ export interface Database {
           contact_note?: string | null
           role?: FamilyRole
           suspended?: boolean
+          approved?: boolean
+          joined_via_code?: string | null
           rating_avg?: number | null
           rating_count?: number
           created_at?: string
@@ -118,6 +131,8 @@ export interface Database {
           contact_note?: string | null
           role?: FamilyRole
           suspended?: boolean
+          approved?: boolean
+          joined_via_code?: string | null
           rating_avg?: number | null
           rating_count?: number
           created_at?: string

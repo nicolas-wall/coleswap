@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { schoolSchema } from '@/lib/schemas'
 
 async function requirePlatformAdmin() {
@@ -80,24 +80,6 @@ export async function updateSchool(schoolId: string, formData: FormData) {
   if (error) return { error: error.message.includes('duplicate') ? 'Ese slug ya existe' : 'No se pudo actualizar el colegio' }
 
   return { success: true }
-}
-
-export async function generateInvitation(schoolId: string) {
-  const { error: authErr } = await requirePlatformAdmin()
-  if (authErr) return { error: authErr }
-
-  const service = await createServiceClient()
-
-  const { data: school } = await service.from('schools').select('slug').eq('id', schoolId).single()
-  if (!school) return { error: 'Colegio no encontrado' }
-
-  const suffix = Math.random().toString(36).slice(2, 6).toUpperCase()
-  const code = `${school.slug.toUpperCase()}-${suffix}`
-
-  const { error } = await service.from('invitations').insert({ school_id: schoolId, code })
-  if (error) return { error: 'No se pudo generar el código' }
-
-  return { success: true, code }
 }
 
 export async function setSchoolAdminRole(familyId: string, isAdmin: boolean) {
