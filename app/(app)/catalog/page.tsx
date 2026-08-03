@@ -37,7 +37,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
     query = query.eq('condition', params.condition as 'como_nuevo' | 'buen_estado' | 'regular')
   }
 
-  const { data: listings } = await query
+  const { data: listings, error: listingsError } = await query
 
   const { data: children } = await supabase
     .from('children')
@@ -141,15 +141,32 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
       </form>
 
       {/* Grid */}
-      {rest.length === 0 && !(!hasActiveFilters && recommended && recommended.length > 0) ? (
+      {listingsError ? (
         <div className="text-center py-20 text-muted-foreground">
           <PackageSearch className="size-12 mx-auto mb-4 text-muted-foreground/40" strokeWidth={1.25} />
-          <p className="text-lg font-medium text-foreground mb-1">No hay publicaciones</p>
-          <p className="text-sm mb-6">Sé el primero en publicar un artículo para tu colegio.</p>
-          <div className="flex gap-3 justify-center">
-            <Link href="/sell/book"><Button variant="outline">Publicar libro</Button></Link>
-            <Link href="/sell/uniform"><Button variant="outline">Publicar uniforme</Button></Link>
-          </div>
+          <p className="text-lg font-medium text-foreground mb-1">No pudimos cargar el catálogo</p>
+          <p className="text-sm mb-6">Puede ser un problema momentáneo. Probá de nuevo en un rato.</p>
+          <Link href="/catalog"><Button variant="outline">Reintentar</Button></Link>
+        </div>
+      ) : rest.length === 0 && !(!hasActiveFilters && recommended && recommended.length > 0) ? (
+        <div className="text-center py-20 text-muted-foreground">
+          <PackageSearch className="size-12 mx-auto mb-4 text-muted-foreground/40" strokeWidth={1.25} />
+          {hasActiveFilters ? (
+            <>
+              <p className="text-lg font-medium text-foreground mb-1">Sin resultados</p>
+              <p className="text-sm mb-6">Probá con otras palabras o quitá los filtros.</p>
+              <Link href="/catalog"><Button variant="outline">Limpiar búsqueda</Button></Link>
+            </>
+          ) : (
+            <>
+              <p className="text-lg font-medium text-foreground mb-1">No hay publicaciones</p>
+              <p className="text-sm mb-6">Sé el primero en publicar un artículo para tu colegio.</p>
+              <div className="flex gap-3 justify-center">
+                <Link href="/sell/book"><Button variant="outline">Publicar libro</Button></Link>
+                <Link href="/sell/uniform"><Button variant="outline">Publicar uniforme</Button></Link>
+              </div>
+            </>
+          )}
         </div>
       ) : (
         <>

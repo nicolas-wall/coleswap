@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { MessageCircle } from 'lucide-react'
+import { MessageCircle, WifiOff } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatRelativeTime, cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
@@ -18,12 +19,19 @@ interface ConversationSummary {
 export default function MessagesPage() {
   const [conversations, setConversations] = useState<ConversationSummary[]>([])
   const [loading, setLoading] = useState(true)
+  const [failed, setFailed] = useState(false)
+  const [reloadKey, setReloadKey] = useState(0)
 
   useEffect(() => {
     function refresh() {
       fetch('/api/messages')
-        .then((r) => r.json())
-        .then((d) => setConversations(d.conversations ?? []))
+        .then((r) => {
+          if (!r.ok) throw new Error('fetch failed')
+          return r.json()
+        })
+        .then((d) => { setConversations(d.conversations ?? []); setFailed(false) })
+        // Sin esto, una caída del servidor se veía igual que "no tenés mensajes"
+        .catch(() => setFailed(true))
         .finally(() => setLoading(false))
     }
 
@@ -36,7 +44,7 @@ export default function MessagesPage() {
       .subscribe()
 
     return () => { supabase.removeChannel(channel) }
-  }, [])
+  }, [reloadKey])
 
   if (loading) {
     return (
@@ -51,7 +59,16 @@ export default function MessagesPage() {
     <div className="max-w-2xl mx-auto">
       <h1 className="text-xl font-bold mb-4">Mensajes</h1>
 
-      {conversations.length === 0 ? (
+      {failed ? (
+        <div className="text-center py-16 text-muted-foreground">
+          <WifiOff className="size-10 mx-auto mb-3 opacity-40" />
+          <p>No pudimos cargar tus mensajes.</p>
+          <p className="text-sm mt-1">Puede ser un problema de conexión.</p>
+          <Button variant="outline" className="mt-4" onClick={() => { setLoading(true); setReloadKey((k) => k + 1) }}>
+            Reintentar
+          </Button>
+        </div>
+      ) : conversations.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground">
           <MessageCircle className="size-10 mx-auto mb-3 opacity-40" />
           <p>Todavía no tenés conversaciones.</p>

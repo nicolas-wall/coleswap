@@ -71,10 +71,10 @@ export default function ListingDetailPage() {
       </Link>
 
       {listing.images && listing.images.length > 0 && (
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {listing.images.map((url) => (
             <div key={url} className="relative aspect-square rounded-lg overflow-hidden border bg-muted">
-              <Image src={url} alt="" fill className="object-cover" sizes="150px" />
+              <Image src={url} alt="" fill className="object-cover" sizes="(max-width: 640px) 50vw, 150px" />
             </div>
           ))}
         </div>

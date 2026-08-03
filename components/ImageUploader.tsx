@@ -62,7 +62,7 @@ export function ImageUploader({ initialUrls = [] }: { initialUrls?: string[] }) 
         <input key={url} type="hidden" name="images" value={url} />
       ))}
 
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {urls.map((url) => (
           // eslint-disable-next-line @next/next/no-img-element
           <div key={url} className="relative aspect-square rounded-md overflow-hidden border">
