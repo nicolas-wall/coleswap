@@ -2,6 +2,9 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { childSchema } from '@/lib/schemas'
+import { checkRateLimit } from '@/lib/rate-limit'
+
+const MAX_CHILDREN_PER_FAMILY = 10
 
 export async function addChild(formData: FormData) {
   const raw = {
@@ -17,6 +20,18 @@ export async function addChild(formData: FormData) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'No autenticado' }
+
+  const allowed = await checkRateLimit(`add-child:${user.id}`, 10, 3600)
+  if (!allowed) return { error: 'Demasiados intentos. Esperá un rato y probá de nuevo.' }
+
+  const { count } = await supabase
+    .from('children')
+    .select('id', { count: 'exact', head: true })
+    .eq('family_id', user.id)
+
+  if ((count ?? 0) >= MAX_CHILDREN_PER_FAMILY) {
+    return { error: `Máximo ${MAX_CHILDREN_PER_FAMILY} hijos por familia` }
+  }
 
   const { error } = await supabase.from('children').insert({
     family_id: user.id,

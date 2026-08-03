@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { bookListingSchema, uniformListingSchema } from '@/lib/schemas'
+import { checkRateLimit } from '@/lib/rate-limit'
 import type { Family, Listing } from '@/types/database'
 
 export async function createBookListing(formData: FormData) {
@@ -27,6 +28,9 @@ export async function createBookListing(formData: FormData) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'No autenticado' }
+
+  const allowed = await checkRateLimit(`create-listing:${user.id}`, 20, 86400)
+  if (!allowed) return { error: 'Publicaste demasiadas cosas hoy. Probá de nuevo mañana.' }
 
   const { data: family } = await supabase
     .from('families')
@@ -92,6 +96,9 @@ export async function createUniformListing(formData: FormData) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'No autenticado' }
+
+  const allowed = await checkRateLimit(`create-listing:${user.id}`, 20, 86400)
+  if (!allowed) return { error: 'Publicaste demasiadas cosas hoy. Probá de nuevo mañana.' }
 
   const { data: family } = await supabase
     .from('families')

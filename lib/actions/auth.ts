@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { signupSchema, requestJoinSchema, loginSchema, profileSchema } from '@/lib/schemas'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 import type { Invitation, Family } from '@/types/database'
 
 export async function signUp(formData: FormData) {
@@ -18,6 +19,10 @@ export async function signUp(formData: FormData) {
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message }
   }
+
+  const ip = await getClientIp()
+  const allowed = await checkRateLimit(`signup:${ip}`, 10, 3600)
+  if (!allowed) return { error: 'Demasiados intentos de registro. Probá de nuevo más tarde.' }
 
   const { invitationCode, displayName, phone, email, password } = parsed.data
 
@@ -95,6 +100,10 @@ export async function requestJoin(formData: FormData) {
     return { error: parsed.error.issues[0].message }
   }
 
+  const ip = await getClientIp()
+  const allowed = await checkRateLimit(`request-join:${ip}`, 5, 3600)
+  if (!allowed) return { error: 'Demasiadas solicitudes. Probá de nuevo más tarde.' }
+
   const { schoolId, displayName, phone, email, password } = parsed.data
 
   const service = await createServiceClient()
@@ -147,6 +156,10 @@ export async function signIn(formData: FormData) {
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message }
   }
+
+  const ip = await getClientIp()
+  const allowed = await checkRateLimit(`login:${ip}`, 15, 900)
+  if (!allowed) return { error: 'Demasiados intentos. Esperá unos minutos y probá de nuevo.' }
 
   const supabase = await createClient()
   const { error } = await supabase.auth.signInWithPassword(parsed.data)

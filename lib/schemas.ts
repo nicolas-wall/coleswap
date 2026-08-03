@@ -56,11 +56,11 @@ export const loginSchema = z.object({
 // ── Book schema ───────────────────────────────────────────────
 export const bookListingSchema = z.object({
   isbn: z.string().min(10, 'ISBN inválido').max(13, 'ISBN inválido').regex(/^\d+$/, 'El ISBN solo contiene números'),
-  title: z.string().min(1, 'El título es requerido'),
-  author: z.string().min(1, 'El autor es requerido'),
-  publisher: z.string().max(100).optional().nullable(),
-  subject: z.string().min(1, 'La materia es requerida'),
-  grade: z.string().min(1, 'El grado es requerido'),
+  title: z.string().min(1, 'El título es requerido').max(200),
+  author: z.string().min(1, 'El autor es requerido').max(150),
+  publisher: z.string().max(150).optional().nullable(),
+  subject: z.string().min(1, 'La materia es requerida').max(100),
+  grade: z.string().min(1, 'El grado es requerido').max(50),
   condition: z.enum(['como_nuevo', 'buen_estado', 'regular']),
   price: z.coerce.number().min(0).max(999999).optional().nullable(),
   notes: z.string().max(280).optional().nullable(),
@@ -69,7 +69,7 @@ export const bookListingSchema = z.object({
 // ── Uniform schema ────────────────────────────────────────────
 export const uniformListingSchema = z.object({
   garmentType: z.enum(GARMENT_TYPES),
-  size: z.string().min(1, 'El talle es requerido'),
+  size: z.string().min(1, 'El talle es requerido').max(20),
   gender: z.enum(['masculino', 'femenino', 'unisex']),
   color: z.string().max(30).optional().nullable(),
   condition: z.enum(['como_nuevo', 'buen_estado', 'regular']),
@@ -94,7 +94,7 @@ export const profileSchema = z.object({
 // ── Child schema ─────────────────────────────────────────────
 export const childSchema = z.object({
   name: z.string().max(60).optional().nullable(),
-  grade: z.string().min(1, 'El grado es requerido'),
+  grade: z.string().min(1, 'El grado es requerido').max(50),
 })
 
 // ── School schema ────────────────────────────────────────────

@@ -3,12 +3,16 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { messageSchema } from '@/lib/schemas'
+import { checkRateLimit } from '@/lib/rate-limit'
 import type { Listing } from '@/types/database'
 
 export async function startConversation(listingId: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'No autenticado' }
+
+  const allowed = await checkRateLimit(`start-conversation:${user.id}`, 20, 3600)
+  if (!allowed) return { error: 'Iniciaste demasiadas conversaciones. Esperá un rato y probá de nuevo.' }
 
   const { data: listing } = await supabase
     .from('listings')
@@ -59,6 +63,9 @@ export async function sendMessage(conversationId: string, body: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'No autenticado' }
+
+  const allowed = await checkRateLimit(`send-message:${user.id}`, 30, 300)
+  if (!allowed) return { error: 'Estás enviando mensajes muy rápido. Esperá un momento.' }
 
   const { error } = await supabase.from('messages').insert({
     conversation_id: conversationId,

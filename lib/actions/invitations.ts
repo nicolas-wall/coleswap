@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { checkRateLimit } from '@/lib/rate-limit'
 import type { Family } from '@/types/database'
 
 async function authorizeForSchool(schoolId: string) {
@@ -33,6 +34,13 @@ export async function generateInvitation(schoolId: string, options: { multiUse: 
   const { error: authErr, userId } = await authorizeForSchool(schoolId)
   if (authErr) return { error: authErr }
 
+  if (options.multiUse && !options.expiresInDays) {
+    return { error: 'Un código multiuso necesita una fecha de vencimiento' }
+  }
+
+  const allowed = await checkRateLimit(`generate-invitation:${userId}`, 30, 3600)
+  if (!allowed) return { error: 'Generaste demasiados códigos. Esperá un rato y probá de nuevo.' }
+
   const service = createServiceClient()
 
   const { data: school } = await service.from('schools').select('slug').eq('id', schoolId).single()
@@ -40,8 +48,8 @@ export async function generateInvitation(schoolId: string, options: { multiUse: 
 
   const suffix = Math.random().toString(36).slice(2, 6).toUpperCase()
   const code = `${school.slug.toUpperCase()}-${suffix}`
-  const expiresAt = options.multiUse && options.expiresInDays
-    ? new Date(Date.now() + options.expiresInDays * 86400000).toISOString()
+  const expiresAt = options.multiUse
+    ? new Date(Date.now() + options.expiresInDays! * 86400000).toISOString()
     : null
 
   const { error } = await service.from('invitations').insert({
