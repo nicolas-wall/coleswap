@@ -13,11 +13,11 @@ declare global {
   }
 }
 
-export type InstallStatus = 'hidden' | 'installable' | 'ios' | 'installed'
+export type InstallStatus = 'checking' | 'installable' | 'ios' | 'android-manual' | 'manual' | 'installed'
 
 export function useInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
-  const [status, setStatus] = useState<InstallStatus>('hidden')
+  const [status, setStatus] = useState<InstallStatus>('checking')
 
   useEffect(() => {
     const standalone = window.matchMedia('(display-mode: standalone)').matches
@@ -27,8 +27,15 @@ export function useInstallPrompt() {
       return
     }
 
-    if (/iphone|ipad|ipod/i.test(window.navigator.userAgent)) {
+    const ua = window.navigator.userAgent
+    if (/iphone|ipad|ipod/i.test(ua)) {
       setStatus('ios')
+    } else if (/android/i.test(ua)) {
+      // Puede no disparar el evento nativo (varía según versión/heurística de
+      // Chrome) — mostramos instrucciones manuales salvo que sí lo dispare.
+      setStatus('android-manual')
+    } else {
+      setStatus('manual')
     }
 
     // El layout raíz ya pudo haber capturado el evento antes de que este hook
