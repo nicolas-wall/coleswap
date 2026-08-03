@@ -12,11 +12,12 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { updateProfile } from '@/lib/actions/auth'
 import { ChildrenManager } from '@/components/ChildrenManager'
 import { NotificationToggle } from '@/components/NotificationToggle'
+import { InstallAppButton } from '@/components/InstallAppButton'
 
 interface ProfileData {
   display_name: string
   phone: string | null
-  social_handle: string | null
+  contact_email: string | null
   contact_note: string | null
 }
 
@@ -102,13 +103,13 @@ export default function ProfilePage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="socialHandle">Red social / usuario — opcional</Label>
+              <Label htmlFor="contactEmail">Otro email de contacto — opcional</Label>
               <Input
-                id="socialHandle"
-                name="socialHandle"
-                maxLength={50}
-                defaultValue={profile?.social_handle ?? ''}
-                placeholder="Ej: @familia_apellido"
+                id="contactEmail"
+                name="contactEmail"
+                type="email"
+                defaultValue={profile?.contact_email ?? ''}
+                placeholder="Ej: otro@email.com"
               />
             </div>
 
@@ -137,11 +138,8 @@ export default function ProfilePage() {
         </Card>
       </form>
 
-      <Card className="mt-6">
-        <CardContent className="pt-4">
-          <NotificationToggle />
-        </CardContent>
-      </Card>
+      <NotificationToggle />
+      <InstallAppButton />
 
       <Card className="mt-6">
         <CardHeader>

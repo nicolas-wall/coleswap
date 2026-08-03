@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Bell, BellOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import { savePushSubscription, removePushSubscription } from '@/lib/actions/push'
 
 function urlBase64ToUint8Array(base64String: string) {
@@ -93,25 +94,27 @@ export function NotificationToggle() {
   if (!supported) return null
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-sm font-medium">Notificaciones de mensajes</p>
-          <p className="text-xs text-muted-foreground">Enterate cuando te llega un mensaje, sin tener la web abierta.</p>
+    <Card className="mt-6">
+      <CardContent className="pt-4 space-y-2">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-medium">Notificaciones de mensajes</p>
+            <p className="text-xs text-muted-foreground">Enterate cuando te llega un mensaje, sin tener la web abierta.</p>
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            variant={subscribed ? 'outline' : 'default'}
+            disabled={loading}
+            onClick={subscribed ? handleDisable : handleEnable}
+            className="gap-1.5 shrink-0"
+          >
+            {subscribed ? <BellOff className="size-3.5" /> : <Bell className="size-3.5" />}
+            {loading ? '…' : subscribed ? 'Desactivar' : 'Activar'}
+          </Button>
         </div>
-        <Button
-          type="button"
-          size="sm"
-          variant={subscribed ? 'outline' : 'default'}
-          disabled={loading}
-          onClick={subscribed ? handleDisable : handleEnable}
-          className="gap-1.5 shrink-0"
-        >
-          {subscribed ? <BellOff className="size-3.5" /> : <Bell className="size-3.5" />}
-          {loading ? '…' : subscribed ? 'Desactivar' : 'Activar'}
-        </Button>
-      </div>
-      {error && <p className="text-xs text-destructive">{error}</p>}
-    </div>
+        {error && <p className="text-xs text-destructive">{error}</p>}
+      </CardContent>
+    </Card>
   )
 }

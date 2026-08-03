@@ -96,7 +96,7 @@ export interface Database {
           display_name: string
           phone: string | null
           email: string
-          social_handle: string | null
+          contact_email: string | null
           contact_note: string | null
           role: FamilyRole
           suspended: boolean
@@ -112,7 +112,7 @@ export interface Database {
           display_name: string
           phone?: string | null
           email: string
-          social_handle?: string | null
+          contact_email?: string | null
           contact_note?: string | null
           role?: FamilyRole
           suspended?: boolean
@@ -127,7 +127,7 @@ export interface Database {
           display_name?: string
           phone?: string | null
           email?: string
-          social_handle?: string | null
+          contact_email?: string | null
           contact_note?: string | null
           role?: FamilyRole
           suspended?: boolean

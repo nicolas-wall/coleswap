@@ -70,7 +70,7 @@ export async function signUp(formData: FormData) {
     display_name: displayName,
     phone: null,
     email,
-    social_handle: null,
+    contact_email: null,
     contact_note: null,
     role: 'user',
     suspended: false,
@@ -136,7 +136,7 @@ export async function requestJoin(formData: FormData) {
     display_name: displayName,
     phone: null,
     email,
-    social_handle: null,
+    contact_email: null,
     contact_note: null,
     role: 'user',
     suspended: false,
@@ -213,7 +213,7 @@ export async function updateProfile(formData: FormData) {
   const raw = {
     displayName: formData.get('displayName'),
     phone: formData.get('phone') || undefined,
-    socialHandle: formData.get('socialHandle') || null,
+    contactEmail: formData.get('contactEmail') || undefined,
     contactNote: formData.get('contactNote') || null,
   }
 
@@ -231,7 +231,7 @@ export async function updateProfile(formData: FormData) {
     .update({
       display_name: parsed.data.displayName,
       phone: parsed.data.phone || null,
-      social_handle: parsed.data.socialHandle,
+      contact_email: parsed.data.contactEmail || null,
       contact_note: parsed.data.contactNote,
     })
     .eq('id', user.id)

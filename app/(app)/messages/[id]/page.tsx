@@ -13,7 +13,7 @@ import { createClient } from '@/lib/supabase/client'
 interface MyProfile {
   loginEmail: string
   phone: string | null
-  social_handle: string | null
+  contact_email: string | null
 }
 
 interface ThreadMessage {
@@ -53,7 +53,7 @@ export default function ConversationPage() {
       .then((d) => setMyProfile({
         loginEmail: d.loginEmail ?? '',
         phone: d.profile?.phone ?? null,
-        social_handle: d.profile?.social_handle ?? null,
+        contact_email: d.profile?.contact_email ?? null,
       }))
       .catch(() => {})
   }, [])
@@ -84,7 +84,7 @@ export default function ConversationPage() {
     if (!myProfile) return
     const lines = [`Email: ${myProfile.loginEmail}`]
     if (myProfile.phone) lines.push(`Teléfono: ${myProfile.phone}`)
-    if (myProfile.social_handle) lines.push(`Red social: ${myProfile.social_handle}`)
+    if (myProfile.contact_email) lines.push(`Otro email: ${myProfile.contact_email}`)
 
     setSharing(true)
     setError('')

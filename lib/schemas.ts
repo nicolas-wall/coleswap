@@ -84,11 +84,12 @@ export const ratingSchema = z.object({
 
 // ── Profile schema ────────────────────────────────────────────
 const optionalPhone = z.string().max(20).regex(/^[\d\s\+\-\(\)]+$/, 'Solo números y símbolos de teléfono').optional().or(z.literal(''))
+const optionalEmail = z.string().email('Email inválido').optional().or(z.literal(''))
 
 export const profileSchema = z.object({
   displayName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(60),
   phone: optionalPhone,
-  socialHandle: z.string().max(50).optional().nullable(),
+  contactEmail: optionalEmail,
   contactNote: z.string().max(280).optional().nullable(),
 })
 
