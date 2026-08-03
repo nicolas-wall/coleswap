@@ -44,7 +44,7 @@ export default function LandingPage() {
         {/* Hero */}
         <section className="max-w-5xl mx-auto px-4 pt-16 pb-14 text-center">
           <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-balance">
-            Comprá y vendé libros y uniformes<br className="hidden sm:block" /> con las familias de tu colegio
+            Compra y venta de libros y uniformes<br className="hidden sm:block" /> con las familias de tu colegio
           </h1>
           <p className="mt-5 text-muted-foreground text-lg max-w-2xl mx-auto text-balance">
             SchoolShop es un mercado de segunda mano cerrado por colegio: solo lo usan familias

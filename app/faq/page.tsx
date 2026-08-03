@@ -19,8 +19,20 @@ const FAQS: { q: string; a: string }[] = [
     a: 'SchoolShop no procesa pagos. Te mensajeás con la otra familia dentro de la app, se ponen de acuerdo en precio y forma de pago, y coordinan el intercambio en persona (por ejemplo, en la puerta del colegio).',
   },
   {
+    q: '¿Cómo me contacto con otra familia?',
+    a: 'Por el chat interno de la app: al entrar a una publicación que te interesa, le mandás un mensaje a esa familia. Los mensajes con una misma familia quedan agrupados en una sola conversación, sin importar de qué publicación hayan hablado. Desde el chat también podés tocar "Compartir mis datos" para enviarle tu teléfono y/o email de contacto en un solo paso, si querés.',
+  },
+  {
     q: '¿Puedo ver el teléfono o el email de otras familias?',
-    a: 'No se muestran automáticamente. Coordinás todo por el chat interno de la app; los datos de contacto quedan entre ustedes si deciden compartirlos por ese medio.',
+    a: 'No se muestran automáticamente. Coordinás todo por el chat interno de la app; los datos de contacto quedan entre ustedes solo si deciden compartirlos ahí, con el botón "Compartir mis datos" o escribiéndolos directamente.',
+  },
+  {
+    q: '¿Cómo sé si me llegó un mensaje nuevo sin tener la web abierta?',
+    a: 'Activando las notificaciones desde Mi perfil ("Notificaciones de mensajes" → Activar). Una vez activadas, tu navegador te avisa con una notificación push cuando te escriben, aunque no tengas SchoolShop abierto en ese momento.',
+  },
+  {
+    q: '¿Puedo instalar SchoolShop como una app en mi celular?',
+    a: 'Sí. Desde Mi perfil vas a encontrar una tarjeta "Instalar la app": en Android te muestra un botón para instalarla directo, o te indica cómo hacerlo desde el menú ⋮ de Chrome ("Instalar aplicación"); en iPhone se hace desde Safari, tocando el botón Compartir y eligiendo "Agregar a pantalla de inicio". Una vez instalada, se abre como una app aparte, con ícono propio.',
   },
   {
     q: '¿Qué pasa si alguien no cumple lo acordado?',
@@ -37,6 +49,14 @@ const FAQS: { q: string; a: string }[] = [
   {
     q: '¿Qué puedo publicar?',
     a: 'Libros de texto y uniformes en buen estado que ya no uses. No es un espacio para vender productos nuevos ni artículos que no sean de uso escolar.',
+  },
+  {
+    q: '¿Puedo editar o eliminar una publicación después de crearla?',
+    a: 'Sí, desde "Mis publicaciones" podés editar los datos de cualquier publicación tuya o marcarla como vendida en cualquier momento.',
+  },
+  {
+    q: 'Me olvidé la contraseña, ¿qué hago?',
+    a: 'En la pantalla de ingreso tocá "¿Olvidaste tu contraseña?" e ingresá tu email. Te llega un link para elegir una contraseña nueva.',
   },
 ]
 
