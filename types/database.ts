@@ -94,7 +94,7 @@ export interface Database {
           id: string
           school_id: string
           display_name: string
-          phone: string
+          phone: string | null
           email: string
           social_handle: string | null
           contact_note: string | null
@@ -110,7 +110,7 @@ export interface Database {
           id: string
           school_id: string
           display_name: string
-          phone: string
+          phone?: string | null
           email: string
           social_handle?: string | null
           contact_note?: string | null
@@ -125,7 +125,7 @@ export interface Database {
         Update: {
           school_id?: string
           display_name?: string
-          phone?: string
+          phone?: string | null
           email?: string
           social_handle?: string | null
           contact_note?: string | null
@@ -351,6 +351,26 @@ export interface Database {
         }
         Relationships: []
       }
+      push_subscriptions: {
+        Row: {
+          id: string
+          family_id: string
+          endpoint: string
+          p256dh: string
+          auth: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          family_id: string
+          endpoint: string
+          p256dh: string
+          auth: string
+          created_at?: string
+        }
+        Update: Record<string, never>
+        Relationships: []
+      }
     }
     Views: Record<string, unknown>
     Functions: {
@@ -393,6 +413,7 @@ export type Child = Database['public']['Tables']['children']['Row']
 export type Conversation = Database['public']['Tables']['conversations']['Row']
 export type Message = Database['public']['Tables']['messages']['Row']
 export type ConversationRead = Database['public']['Tables']['conversation_reads']['Row']
+export type PushSubscriptionRow = Database['public']['Tables']['push_subscriptions']['Row']
 
 // Tipos compuestos para queries con join
 export type ListingWithDetails = Listing & {

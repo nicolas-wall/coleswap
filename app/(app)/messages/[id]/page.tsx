@@ -3,12 +3,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, MessageCircle, Send } from 'lucide-react'
+import { ArrowLeft, MessageCircle, Send, Contact } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatRelativeTime, cn } from '@/lib/utils'
 import { sendMessage, markConversationRead } from '@/lib/actions/messages'
 import { createClient } from '@/lib/supabase/client'
+
+interface MyProfile {
+  loginEmail: string
+  phone: string | null
+  social_handle: string | null
+}
 
 interface ThreadMessage {
   id: string
@@ -27,9 +33,11 @@ export default function ConversationPage() {
   const { id } = useParams()
   const conversationId = id as string
   const [conversation, setConversation] = useState<ConversationDetail | null>(null)
+  const [myProfile, setMyProfile] = useState<MyProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [body, setBody] = useState('')
   const [sending, setSending] = useState(false)
+  const [sharing, setSharing] = useState(false)
   const [error, setError] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
 
@@ -38,6 +46,17 @@ export default function ConversationPage() {
       .then((r) => r.json())
       .then((d) => setConversation(d.conversation ?? null))
   }
+
+  useEffect(() => {
+    fetch('/api/profile')
+      .then((r) => r.json())
+      .then((d) => setMyProfile({
+        loginEmail: d.loginEmail ?? '',
+        phone: d.profile?.phone ?? null,
+        social_handle: d.profile?.social_handle ?? null,
+      }))
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     refresh().finally(() => setLoading(false))
@@ -60,6 +79,23 @@ export default function ConversationPage() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [conversation?.messages.length])
+
+  async function handleShareContact() {
+    if (!myProfile) return
+    const lines = [`Email: ${myProfile.loginEmail}`]
+    if (myProfile.phone) lines.push(`Teléfono: ${myProfile.phone}`)
+    if (myProfile.social_handle) lines.push(`Red social: ${myProfile.social_handle}`)
+
+    setSharing(true)
+    setError('')
+    const result = await sendMessage(conversationId, `Mis datos de contacto:\n${lines.join('\n')}`)
+    if ('error' in result && result.error) {
+      setError(result.error)
+    } else {
+      await refresh()
+    }
+    setSharing(false)
+  }
 
   async function handleSend(e: React.FormEvent) {
     e.preventDefault()
@@ -95,11 +131,24 @@ export default function ConversationPage() {
           <ArrowLeft className="size-3.5" />
           Mensajes
         </Link>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center justify-center size-9 rounded-full bg-muted text-muted-foreground shrink-0">
-            <MessageCircle className="size-4" />
-          </span>
-          <p className="font-medium text-sm truncate">{conversation.otherParticipant.displayName}</p>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="inline-flex items-center justify-center size-9 rounded-full bg-muted text-muted-foreground shrink-0">
+              <MessageCircle className="size-4" />
+            </span>
+            <p className="font-medium text-sm truncate">{conversation.otherParticipant.displayName}</p>
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="shrink-0 gap-1.5 text-xs"
+            onClick={handleShareContact}
+            disabled={sharing || !myProfile}
+          >
+            <Contact className="size-3.5" />
+            {sharing ? 'Compartiendo…' : 'Compartir mis datos'}
+          </Button>
         </div>
       </div>
 

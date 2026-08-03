@@ -109,10 +109,6 @@ export default function SignupPage() {
             <Input id="displayName" name="displayName" placeholder="Familia García" required />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="phone">Teléfono de contacto</Label>
-            <Input id="phone" name="phone" type="tel" placeholder="+54 11 1234-5678" required />
-          </div>
-          <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>
             <Input id="email" name="email" type="email" required autoComplete="email" />
           </div>

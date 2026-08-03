@@ -18,7 +18,6 @@ export async function signUp(formData: FormData) {
   const raw = {
     invitationCode: formData.get('invitationCode'),
     displayName: formData.get('displayName'),
-    phone: formData.get('phone'),
     email: formData.get('email'),
     password: formData.get('password'),
   }
@@ -32,7 +31,7 @@ export async function signUp(formData: FormData) {
   const allowed = await checkRateLimit(`signup:${ip}`, 10, 3600)
   if (!allowed) return { error: 'Demasiados intentos de registro. Probá de nuevo más tarde.' }
 
-  const { invitationCode, displayName, phone, email, password } = parsed.data
+  const { invitationCode, displayName, email, password } = parsed.data
 
   const service = await createServiceClient()
 
@@ -69,7 +68,7 @@ export async function signUp(formData: FormData) {
     id: userId,
     school_id: invitation.school_id,
     display_name: displayName,
-    phone,
+    phone: null,
     email,
     social_handle: null,
     contact_note: null,
@@ -98,7 +97,6 @@ export async function requestJoin(formData: FormData) {
   const raw = {
     schoolId: formData.get('schoolId'),
     displayName: formData.get('displayName'),
-    phone: formData.get('phone'),
     email: formData.get('email'),
     password: formData.get('password'),
   }
@@ -112,7 +110,7 @@ export async function requestJoin(formData: FormData) {
   const allowed = await checkRateLimit(`request-join:${ip}`, 5, 3600)
   if (!allowed) return { error: 'Demasiadas solicitudes. Probá de nuevo más tarde.' }
 
-  const { schoolId, displayName, phone, email, password } = parsed.data
+  const { schoolId, displayName, email, password } = parsed.data
 
   const service = await createServiceClient()
 
@@ -136,7 +134,7 @@ export async function requestJoin(formData: FormData) {
     id: userId,
     school_id: schoolId,
     display_name: displayName,
-    phone,
+    phone: null,
     email,
     social_handle: null,
     contact_note: null,
@@ -214,8 +212,7 @@ export async function requestPasswordReset(formData: FormData) {
 export async function updateProfile(formData: FormData) {
   const raw = {
     displayName: formData.get('displayName'),
-    phone: formData.get('phone'),
-    email: formData.get('email'),
+    phone: formData.get('phone') || undefined,
     socialHandle: formData.get('socialHandle') || null,
     contactNote: formData.get('contactNote') || null,
   }
@@ -233,8 +230,7 @@ export async function updateProfile(formData: FormData) {
     .from('families')
     .update({
       display_name: parsed.data.displayName,
-      phone: parsed.data.phone,
-      email: parsed.data.email,
+      phone: parsed.data.phone || null,
       social_handle: parsed.data.socialHandle,
       contact_note: parsed.data.contactNote,
     })

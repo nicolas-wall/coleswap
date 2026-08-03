@@ -4,7 +4,8 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { messageSchema } from '@/lib/schemas'
 import { checkRateLimit } from '@/lib/rate-limit'
-import type { Listing } from '@/types/database'
+import { sendPushToFamily } from '@/lib/push'
+import type { Listing, Conversation, Family } from '@/types/database'
 
 export async function startConversation(listingId: string) {
   const supabase = await createClient()
@@ -77,6 +78,30 @@ export async function sendMessage(conversationId: string, body: string) {
 
   revalidatePath(`/messages/${conversationId}`)
   revalidatePath('/messages')
+
+  // Push al otro participante, sin bloquear la respuesta si falla
+  const { data: conversation } = await supabase
+    .from('conversations')
+    .select('family_a_id, family_b_id')
+    .eq('id', conversationId)
+    .single() as { data: Pick<Conversation, 'family_a_id' | 'family_b_id'> | null; error: unknown }
+
+  if (conversation) {
+    const recipientId = conversation.family_a_id === user.id ? conversation.family_b_id : conversation.family_a_id
+
+    const { data: sender } = await supabase
+      .from('families')
+      .select('display_name')
+      .eq('id', user.id)
+      .single() as { data: Pick<Family, 'display_name'> | null; error: unknown }
+
+    sendPushToFamily(recipientId, {
+      title: sender?.display_name ?? 'Nuevo mensaje',
+      body: parsed.data.body.slice(0, 120),
+      url: `/messages/${conversationId}`,
+    }).catch(() => {})
+  }
+
   return { success: true }
 }
 

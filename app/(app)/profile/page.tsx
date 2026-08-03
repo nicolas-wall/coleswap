@@ -11,11 +11,11 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
 import { updateProfile } from '@/lib/actions/auth'
 import { ChildrenManager } from '@/components/ChildrenManager'
+import { NotificationToggle } from '@/components/NotificationToggle'
 
 interface ProfileData {
   display_name: string
-  phone: string
-  email: string
+  phone: string | null
   social_handle: string | null
   contact_note: string | null
 }
@@ -63,7 +63,7 @@ export default function ProfilePage() {
       <form onSubmit={handleSubmit}>
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Datos de contacto</CardTitle>
+            <CardTitle className="text-base">Datos</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
             <div className="space-y-1.5">
@@ -79,34 +79,26 @@ export default function ProfilePage() {
 
             {loginEmail && (
               <div className="space-y-1.5">
-                <Label className="text-muted-foreground">Email de acceso</Label>
+                <Label className="text-muted-foreground">Email</Label>
                 <Input value={loginEmail} disabled readOnly />
                 <p className="text-xs text-muted-foreground">Es el email con el que ingresás. No se cambia desde acá.</p>
               </div>
             )}
 
+            <p className="text-xs text-muted-foreground border-t pt-4">
+              Lo de abajo es opcional — coordinás todo por el chat, y ahí podés compartir estos
+              datos con quien estés hablando si querés.
+            </p>
+
             <div className="space-y-1.5">
-              <Label htmlFor="phone">Teléfono *</Label>
+              <Label htmlFor="phone">Teléfono — opcional</Label>
               <Input
                 id="phone"
                 name="phone"
                 type="tel"
-                required
                 defaultValue={profile?.phone ?? ''}
                 placeholder="Ej: +54 911 2345-6789"
               />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="email">Email de contacto *</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                required
-                defaultValue={profile?.email ?? ''}
-              />
-              <p className="text-xs text-muted-foreground">El que ven otras familias del colegio — puede ser distinto al de acceso.</p>
             </div>
 
             <div className="space-y-1.5">
@@ -121,7 +113,7 @@ export default function ProfilePage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="contactNote">Nota de contacto — opcional (máx. 280 caracteres)</Label>
+              <Label htmlFor="contactNote">Nota — opcional (máx. 280 caracteres)</Label>
               <Textarea
                 id="contactNote"
                 name="contactNote"
@@ -144,6 +136,12 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
       </form>
+
+      <Card className="mt-6">
+        <CardContent className="pt-4">
+          <NotificationToggle />
+        </CardContent>
+      </Card>
 
       <Card className="mt-6">
         <CardHeader>

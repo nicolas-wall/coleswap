@@ -9,6 +9,12 @@ const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin']
 export const metadata: Metadata = {
   title: 'SchoolShop',
   description: 'Mercado de insumos escolares de tu colegio',
+  manifest: '/manifest.json',
+  icons: { icon: '/icon.svg' },
+}
+
+export const viewport = {
+  themeColor: '#1f6b45',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -1,0 +1,12 @@
+{
+  "name": "SchoolShop",
+  "short_name": "SchoolShop",
+  "description": "Mercado de insumos escolares de tu colegio",
+  "start_url": "/catalog",
+  "display": "standalone",
+  "background_color": "#fafaf5",
+  "theme_color": "#1f6b45",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

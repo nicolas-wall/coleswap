@@ -154,7 +154,7 @@ export default function AdminPage() {
                 <CardContent className="pt-4 pb-3 flex items-center justify-between gap-3">
                   <div>
                     <p className="font-medium text-sm">{f.display_name}</p>
-                    <p className="text-xs text-muted-foreground">{f.email} · {f.phone}</p>
+                    <p className="text-xs text-muted-foreground">{f.email}{f.phone ? ` · ${f.phone}` : ''}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <Button size="sm" disabled={isPending} className="text-xs" onClick={() => handleApprove(f.id)}>

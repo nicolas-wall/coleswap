@@ -33,7 +33,6 @@ export const GENDER_LABELS: Record<string, string> = {
 // ── Auth schemas ──────────────────────────────────────────────
 const baseSignupFields = {
   displayName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(60),
-  phone: z.string().min(8, 'Teléfono inválido').max(20).regex(/^[\d\s\+\-\(\)]+$/, 'Solo números y símbolos de teléfono'),
   email: z.string().email('Email inválido'),
   password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres'),
 }
@@ -84,10 +83,11 @@ export const ratingSchema = z.object({
 })
 
 // ── Profile schema ────────────────────────────────────────────
+const optionalPhone = z.string().max(20).regex(/^[\d\s\+\-\(\)]+$/, 'Solo números y símbolos de teléfono').optional().or(z.literal(''))
+
 export const profileSchema = z.object({
   displayName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(60),
-  phone: z.string().min(8, 'Teléfono inválido').max(20).regex(/^[\d\s\+\-\(\)]+$/, 'Solo números y símbolos de teléfono'),
-  email: z.string().email('Email inválido'),
+  phone: optionalPhone,
   socialHandle: z.string().max(50).optional().nullable(),
   contactNote: z.string().max(280).optional().nullable(),
 })
