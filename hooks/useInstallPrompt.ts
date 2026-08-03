@@ -7,6 +7,12 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
 }
 
+declare global {
+  interface Window {
+    __installPrompt?: BeforeInstallPromptEvent
+  }
+}
+
 export type InstallStatus = 'hidden' | 'installable' | 'ios' | 'installed'
 
 export function useInstallPrompt() {
@@ -25,14 +31,23 @@ export function useInstallPrompt() {
       setStatus('ios')
     }
 
+    // El layout raíz ya pudo haber capturado el evento antes de que este hook
+    // montara (ver el script inline en app/layout.tsx).
+    if (window.__installPrompt) {
+      setDeferredPrompt(window.__installPrompt)
+      setStatus('installable')
+    }
+
     function onBeforeInstallPrompt(e: Event) {
       e.preventDefault()
+      window.__installPrompt = e as BeforeInstallPromptEvent
       setDeferredPrompt(e as BeforeInstallPromptEvent)
       setStatus('installable')
     }
     function onInstalled() {
       setStatus('installed')
       setDeferredPrompt(null)
+      delete window.__installPrompt
     }
 
     window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt)
@@ -49,6 +64,7 @@ export function useInstallPrompt() {
     const { outcome } = await deferredPrompt.userChoice
     if (outcome === 'accepted') setStatus('installed')
     setDeferredPrompt(null)
+    delete window.__installPrompt
   }
 
   return { status, promptInstall }

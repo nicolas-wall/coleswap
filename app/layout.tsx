@@ -21,6 +21,17 @@ export const viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <head>
+        {/* Chrome puede disparar beforeinstallprompt antes de que React hidrate
+            (sobre todo si el sitio ya era instalable de una visita anterior),
+            así que lo capturamos apenas se parsea el documento, no en un
+            useEffect que podría llegar tarde. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); window.__installPrompt = e; });`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         {children}
         <ServiceWorkerRegistrar />
