@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: 'SchoolShop',
   description: 'Mercado de insumos escolares de tu colegio',
   manifest: '/manifest.json',
-  icons: { icon: '/icon.svg' },
+  icons: { icon: '/icon.svg', apple: '/icon-192.png' },
 }
 
 export const viewport = {
