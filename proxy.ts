@@ -28,8 +28,9 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const isAuthRoute = pathname === '/login' || pathname === '/signup'
   const isPublicApiRoute = pathname === '/api/schools'
+  const isPublicContentRoute = pathname === '/' || pathname === '/legal' || pathname === '/faq'
 
-  if (!user && !isAuthRoute && !isPublicApiRoute) {
+  if (!user && !isAuthRoute && !isPublicApiRoute && !isPublicContentRoute) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
@@ -41,9 +42,16 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // La landing (/) es para visitantes sin cuenta; si ya estás logueado vas directo a la app
+  if (user && pathname === '/') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/catalog'
+    return NextResponse.redirect(url)
+  }
+
   const isGateRoute = pathname === '/suspended' || pathname === '/pending'
 
-  if (user && request.method === 'GET' && !isGateRoute && !isAuthRoute) {
+  if (user && request.method === 'GET' && !isGateRoute && !isAuthRoute && !isPublicContentRoute) {
     const { data: family } = await supabase
       .from('families')
       .select('suspended, approved')
