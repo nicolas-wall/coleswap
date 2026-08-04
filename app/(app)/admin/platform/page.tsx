@@ -116,7 +116,7 @@ export default function PlatformAdminPage() {
 
   return (
     <div className="space-y-8 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold">Admin de plataforma</h1>
+      <h1 className="font-display text-3xl font-semibold">Admin de plataforma</h1>
 
       <Card>
         <CardHeader>

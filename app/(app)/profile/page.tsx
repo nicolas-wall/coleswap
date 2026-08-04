@@ -61,7 +61,7 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Mi perfil</h1>
+      <h1 className="font-display text-3xl font-semibold mb-6">Mi perfil</h1>
       <form onSubmit={handleSubmit}>
         <Card>
           <CardHeader>

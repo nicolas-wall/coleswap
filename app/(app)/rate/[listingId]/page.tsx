@@ -41,7 +41,7 @@ export default function RatePage() {
     return (
       <div className="max-w-sm mx-auto text-center py-16 space-y-4">
         <div className="text-4xl">⭐</div>
-        <h1 className="text-xl font-bold">¡Calificación enviada!</h1>
+        <h1 className="font-display text-2xl font-semibold">¡Calificación enviada!</h1>
         <p className="text-muted-foreground text-sm">Gracias por ayudar a construir la confianza de la comunidad.</p>
         <Link href="/my-listings"><Button variant="outline">Ver mis publicaciones</Button></Link>
       </div>

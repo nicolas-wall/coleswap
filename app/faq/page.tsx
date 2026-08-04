@@ -65,7 +65,7 @@ export default function FaqPage() {
     <div className="min-h-screen flex flex-col">
       <header className="border-b">
         <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 font-bold tracking-tight">
+          <Link href="/" className="flex items-center gap-2 font-display font-semibold text-xl">
             <span className="inline-flex items-center justify-center size-8 rounded-lg bg-primary text-primary-foreground">
               <GraduationCap className="size-4" />
             </span>
@@ -79,7 +79,7 @@ export default function FaqPage() {
       </header>
 
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-12">
-        <h1 className="text-2xl font-bold mb-8">Preguntas frecuentes</h1>
+        <h1 className="font-display text-3xl font-semibold mb-8">Preguntas frecuentes</h1>
         <div className="space-y-6">
           {FAQS.map((item) => (
             <div key={item.q}>

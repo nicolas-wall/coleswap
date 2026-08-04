@@ -73,7 +73,7 @@ export default function MyListingsPage() {
   return (
     <div className="space-y-8 max-w-2xl mx-auto">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Mis publicaciones</h1>
+        <h1 className="font-display text-3xl font-semibold">Mis publicaciones</h1>
         <div className="flex gap-2">
           <Link href="/sell/book"><Button size="sm" variant="outline">+ Libro</Button></Link>
           <Link href="/sell/uniform"><Button size="sm" variant="outline">+ Uniforme</Button></Link>

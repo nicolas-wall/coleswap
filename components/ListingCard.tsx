@@ -36,7 +36,7 @@ export function ListingCard({ listing }: Props) {
 
   return (
     <Link href={`/listings/${listing.id}`} className="block group">
-      <Card className="h-full gap-0 overflow-hidden py-0 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+      <Card className="h-full gap-0 overflow-hidden py-0 transition-all duration-200 hover:-translate-y-1 hover:shadow-warm-lg hover:ring-primary/20">
         <div className="relative aspect-square bg-muted overflow-hidden">
           {listing.images?.[0] ? (
             <Image
@@ -60,7 +60,7 @@ export function ListingCard({ listing }: Props) {
             <TypeIcon className="size-3" strokeWidth={2} />
             <span>{isBook ? 'Libro' : 'Uniforme'}</span>
           </div>
-          <h3 className="font-semibold text-sm leading-tight line-clamp-2 mb-1">{title}</h3>
+          <h3 className="font-display font-semibold text-[0.95rem] leading-snug line-clamp-2 mb-1">{title}</h3>
           {subtitle && <p className="text-xs text-muted-foreground line-clamp-1">{subtitle}</p>}
           {meta && <p className="text-xs text-muted-foreground/80 mt-0.5">{meta}</p>}
         </CardContent>

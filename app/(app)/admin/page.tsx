@@ -141,7 +141,7 @@ export default function AdminPage() {
 
   return (
     <div className="space-y-8 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold">Admin del colegio</h1>
+      <h1 className="font-display text-3xl font-semibold">Admin del colegio</h1>
 
       {pendingFamilies.length > 0 && (
         <section>

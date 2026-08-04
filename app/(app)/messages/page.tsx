@@ -49,7 +49,7 @@ export default function MessagesPage() {
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto space-y-3">
-        <h1 className="text-xl font-bold mb-4">Mensajes</h1>
+        <h1 className="font-display text-2xl font-semibold mb-4">Mensajes</h1>
         {[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full rounded-xl" />)}
       </div>
     )
@@ -57,7 +57,7 @@ export default function MessagesPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-xl font-bold mb-4">Mensajes</h1>
+      <h1 className="font-display text-2xl font-semibold mb-4">Mensajes</h1>
 
       {failed ? (
         <div className="text-center py-16 text-muted-foreground">

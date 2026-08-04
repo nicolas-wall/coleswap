@@ -15,9 +15,9 @@ import { Card, CardContent } from '@/components/ui/card'
 export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="border-b">
+      <header className="sticky top-0 z-20 border-b bg-background/80 backdrop-blur-md">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 font-bold text-lg tracking-tight">
+          <Link href="/" className="flex items-center gap-2 font-display font-semibold text-xl">
             <span className="inline-flex items-center justify-center size-8 rounded-lg bg-primary text-primary-foreground">
               <GraduationCap className="size-4" />
             </span>
@@ -42,120 +42,139 @@ export default function LandingPage() {
 
       <main className="flex-1">
         {/* Hero */}
-        <section className="max-w-5xl mx-auto px-4 pt-16 pb-14 text-center">
-          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-balance">
-            Compra y venta de libros y uniformes<br className="hidden sm:block" /> con las familias de tu colegio
-          </h1>
-          <p className="mt-5 text-muted-foreground text-lg max-w-2xl mx-auto text-balance">
-            SchoolShop es un mercado de segunda mano cerrado por colegio: solo lo usan familias
-            de tu propia comunidad escolar, para pasar de mano en mano lo que ya no usan.
-          </p>
-          <div className="mt-8 flex items-center justify-center gap-3">
-            <Link href="/signup">
-              <Button size="lg">Crear cuenta</Button>
-            </Link>
-            <Link href="/login">
-              <Button size="lg" variant="outline">Ya tengo cuenta</Button>
-            </Link>
+        <section className="relative overflow-hidden">
+          {/* Halo cálido detrás del título, para que la página no arranque en blanco plano */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 -top-32 h-[28rem] bg-[radial-gradient(60%_60%_at_50%_50%,var(--color-accent)_0%,transparent_70%)] opacity-70"
+          />
+          <div className="relative max-w-5xl mx-auto px-4 pt-16 pb-16 text-center">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-card ring-1 ring-primary/15 px-3 py-1 text-xs font-medium text-primary shadow-warm">
+              <ShieldCheck className="size-3.5" />
+              Solo para familias de tu colegio
+            </span>
+
+            <h1 className="font-display mt-5 text-4xl sm:text-6xl font-semibold leading-[1.05] text-balance">
+              Compra y venta de libros y uniformes<br className="hidden sm:block" />{' '}
+              <span className="text-primary">con las familias de tu colegio</span>
+            </h1>
+
+            <p className="mt-6 text-muted-foreground text-lg max-w-xl mx-auto text-balance leading-relaxed">
+              Un mercado de segunda mano cerrado por colegio: lo que a tus hijos ya no les sirve,
+              le sirve a otra familia de la misma comunidad.
+            </p>
+
+            <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Link href="/signup" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto shadow-warm">Crear cuenta</Button>
+              </Link>
+              <Link href="/login" className="w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="w-full sm:w-auto bg-card">Ya tengo cuenta</Button>
+              </Link>
+            </div>
+
+            <p className="mt-5 text-xs text-muted-foreground">
+              Gratis · Sin comisiones · Coordinan entre ustedes
+            </p>
           </div>
         </section>
 
         {/* Cómo funciona */}
-        <section className="border-t bg-muted/30">
-          <div className="max-w-5xl mx-auto px-4 py-14">
-            <h2 className="text-xl font-semibold text-center mb-10">Cómo funciona</h2>
-            <div className="grid sm:grid-cols-3 gap-6">
-              <div className="text-center space-y-2">
-                <div className="inline-flex items-center justify-center size-11 rounded-full bg-primary/10 text-primary">
-                  <Search className="size-5" />
-                </div>
-                <h3 className="font-medium">Buscá o publicá</h3>
-                <p className="text-sm text-muted-foreground">
-                  Encontrá libros y uniformes de tu colegio, o publicá en minutos lo que te sobró.
-                </p>
-              </div>
-              <div className="text-center space-y-2">
-                <div className="inline-flex items-center justify-center size-11 rounded-full bg-primary/10 text-primary">
-                  <MessageCircle className="size-5" />
-                </div>
-                <h3 className="font-medium">Mensajeate</h3>
-                <p className="text-sm text-muted-foreground">
-                  Escribile directo a la otra familia por el chat de la app para ponerse de acuerdo.
-                </p>
-              </div>
-              <div className="text-center space-y-2">
-                <div className="inline-flex items-center justify-center size-11 rounded-full bg-primary/10 text-primary">
-                  <HandCoins className="size-5" />
-                </div>
-                <h3 className="font-medium">Coordiná en el cole</h3>
-                <p className="text-sm text-muted-foreground">
-                  Se encuentran en persona para el intercambio. Nosotros no procesamos pagos.
-                </p>
-              </div>
-            </div>
+        <section className="border-t bg-muted/40">
+          <div className="max-w-5xl mx-auto px-4 py-16">
+            <h2 className="font-display text-3xl font-semibold text-center mb-12">Cómo funciona</h2>
+            <ol className="grid sm:grid-cols-3 gap-4">
+              {[
+                {
+                  icon: Search,
+                  title: 'Buscá o publicá',
+                  body: 'Encontrá libros y uniformes de tu colegio, o publicá en minutos lo que te sobró.',
+                },
+                {
+                  icon: MessageCircle,
+                  title: 'Mensajeate',
+                  body: 'Escribile directo a la otra familia por el chat de la app para ponerse de acuerdo.',
+                },
+                {
+                  icon: HandCoins,
+                  title: 'Coordiná en el cole',
+                  body: 'Se encuentran en persona para el intercambio. Nosotros no procesamos pagos.',
+                },
+              ].map((step, i) => (
+                <li
+                  key={step.title}
+                  className="relative rounded-2xl bg-card p-6 ring-1 ring-foreground/5 shadow-warm"
+                >
+                  <span className="absolute -top-3 left-6 inline-flex size-7 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-semibold ring-4 ring-muted/40">
+                    {i + 1}
+                  </span>
+                  <step.icon className="size-6 text-primary mt-2" strokeWidth={1.75} />
+                  <h3 className="font-display text-lg font-semibold mt-3">{step.title}</h3>
+                  <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{step.body}</p>
+                </li>
+              ))}
+            </ol>
           </div>
         </section>
 
         {/* Por qué */}
-        <section className="max-w-5xl mx-auto px-4 py-14">
+        <section className="max-w-5xl mx-auto px-4 py-16">
+          <h2 className="font-display text-3xl font-semibold text-center mb-10">Por qué es distinto</h2>
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card>
-              <CardContent className="pt-5 flex gap-3">
-                <ShieldCheck className="size-5 text-primary shrink-0 mt-0.5" />
+            {[
+              {
+                icon: ShieldCheck,
+                title: 'Cerrado por colegio',
+                body: 'Solo entran familias invitadas o aprobadas por un moderador de tu propio colegio.',
+              },
+              {
+                icon: BookOpen,
+                title: 'Libros y uniformes',
+                body: 'Buscá por materia, grado o talle — lo que necesitás para este año lectivo.',
+              },
+              {
+                icon: Star,
+                title: 'Calificaciones',
+                body: 'Después de cada intercambio, comprador y vendedor se califican mutuamente.',
+              },
+              {
+                icon: Shirt,
+                title: 'Moderado por tu colegio',
+                body: 'Un moderador de la comunidad puede suspender cuentas que no cumplan las reglas.',
+              },
+            ].map((f) => (
+              <div
+                key={f.title}
+                className="flex gap-4 rounded-2xl bg-card p-5 ring-1 ring-foreground/5 transition-shadow hover:shadow-warm"
+              >
+                <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <f.icon className="size-5" strokeWidth={1.75} />
+                </span>
                 <div>
-                  <h3 className="font-medium text-sm">Cerrado por colegio</h3>
-                  <p className="text-sm text-muted-foreground mt-0.5">
-                    Solo entran familias invitadas o aprobadas por un moderador de tu propio colegio.
-                  </p>
+                  <h3 className="font-display text-base font-semibold">{f.title}</h3>
+                  <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{f.body}</p>
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-5 flex gap-3">
-                <BookOpen className="size-5 text-primary shrink-0 mt-0.5" />
-                <div>
-                  <h3 className="font-medium text-sm">Libros y uniformes</h3>
-                  <p className="text-sm text-muted-foreground mt-0.5">
-                    Buscá por materia, grado o talle — lo que necesitás para este año lectivo.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-5 flex gap-3">
-                <Star className="size-5 text-primary shrink-0 mt-0.5" />
-                <div>
-                  <h3 className="font-medium text-sm">Calificaciones</h3>
-                  <p className="text-sm text-muted-foreground mt-0.5">
-                    Después de cada intercambio, comprador y vendedor se califican mutuamente.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-5 flex gap-3">
-                <Shirt className="size-5 text-primary shrink-0 mt-0.5" />
-                <div>
-                  <h3 className="font-medium text-sm">Moderado por tu colegio</h3>
-                  <p className="text-sm text-muted-foreground mt-0.5">
-                    Un moderador de la comunidad puede suspender cuentas que no cumplan las reglas.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            ))}
           </div>
         </section>
 
         {/* CTA final */}
-        <section className="border-t bg-primary text-primary-foreground">
-          <div className="max-w-5xl mx-auto px-4 py-14 text-center">
-            <h2 className="text-2xl font-bold">¿Tu colegio ya usa SchoolShop?</h2>
-            <p className="mt-2 text-primary-foreground/80">
-              Pedí el código de invitación al moderador, o solicitá acceso directamente desde la app.
-            </p>
-            <Link href="/signup" className="inline-block mt-6">
-              <Button size="lg" variant="secondary">Crear cuenta</Button>
-            </Link>
+        <section className="px-4 pb-16">
+          <div className="relative max-w-5xl mx-auto overflow-hidden rounded-3xl bg-primary text-primary-foreground px-6 py-14 text-center shadow-warm-lg">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_120%_at_50%_0%,rgba(255,255,255,0.16)_0%,transparent_60%)]"
+            />
+            <div className="relative">
+              <h2 className="font-display text-3xl font-semibold">¿Tu colegio ya usa SchoolShop?</h2>
+              <p className="mt-3 text-primary-foreground/80 max-w-md mx-auto leading-relaxed">
+                Pedí el código de invitación al moderador, o solicitá acceso directamente desde la app.
+              </p>
+              <Link href="/signup" className="inline-block mt-7">
+                <Button size="lg" variant="secondary" className="shadow-warm">Crear cuenta</Button>
+              </Link>
+            </div>
           </div>
         </section>
       </main>

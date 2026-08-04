@@ -1,11 +1,19 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Geist, Geist_Mono, Fraunces } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
 import { ServiceWorkerRegistrar } from '@/components/ServiceWorkerRegistrar'
 import './globals.css'
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] })
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] })
+
+// Serif cálida para títulos: le da carácter de "libro/colegio" y contrasta con
+// la sans neutra que sigue manejando toda la interfaz.
+const fraunces = Fraunces({
+  variable: '--font-display',
+  subsets: ['latin'],
+  axes: ['SOFT', 'WONK', 'opsz'],
+})
 
 export const metadata: Metadata = {
   title: 'SchoolShop',
@@ -20,7 +28,7 @@ export const viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="es" className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}>
       <head>
         {/* Chrome puede disparar beforeinstallprompt antes de que React hidrate
             (sobre todo si el sitio ya era instalable de una visita anterior),

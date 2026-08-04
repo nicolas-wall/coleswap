@@ -7,7 +7,7 @@ export default function LegalPage() {
     <div className="min-h-screen flex flex-col">
       <header className="border-b">
         <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 font-bold tracking-tight">
+          <Link href="/" className="flex items-center gap-2 font-display font-semibold text-xl">
             <span className="inline-flex items-center justify-center size-8 rounded-lg bg-primary text-primary-foreground">
               <GraduationCap className="size-4" />
             </span>
@@ -22,7 +22,7 @@ export default function LegalPage() {
 
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-12 space-y-10 text-sm leading-relaxed text-muted-foreground [&_h2]:text-foreground [&_h2]:font-semibold [&_h2]:text-base [&_h2]:mb-2 [&_p+p]:mt-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground mb-1">Términos y privacidad</h1>
+          <h1 className="font-display text-3xl font-semibold text-foreground mb-1">Términos y privacidad</h1>
           <p>Última actualización: agosto de 2026.</p>
         </div>
 

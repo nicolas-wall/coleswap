@@ -41,7 +41,7 @@ export function AppHeader({ schoolName, crestUrl, displayName, isSchoolAdmin, is
   return (
     <header className="sticky top-0 z-10 bg-primary text-primary-foreground">
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center gap-3">
-        <Link href="/catalog" className="flex items-center gap-1.5 font-bold text-lg tracking-tight shrink-0">
+        <Link href="/catalog" className="flex items-center gap-1.5 font-display font-semibold text-xl shrink-0">
           <span className="inline-flex items-center justify-center size-7 rounded-lg bg-primary-foreground/15">
             <GraduationCap className="size-4" />
           </span>

@@ -8,7 +8,7 @@ export default function NotFound() {
       <span className="inline-flex items-center justify-center size-12 rounded-2xl bg-primary text-primary-foreground">
         <GraduationCap className="size-6" />
       </span>
-      <h1 className="text-2xl font-bold">Página no encontrada</h1>
+      <h1 className="font-display text-3xl font-semibold">Página no encontrada</h1>
       <p className="text-muted-foreground max-w-sm">
         No encontramos lo que buscabas. Puede que el link esté roto o la publicación ya no exista.
       </p>

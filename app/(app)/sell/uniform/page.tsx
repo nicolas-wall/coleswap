@@ -31,7 +31,7 @@ export default function SellUniformPage() {
 
   return (
     <div className="max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
+      <h1 className="font-display text-3xl font-semibold mb-6 flex items-center gap-2">
         <Shirt className="size-6 text-primary" />
         Publicar uniforme
       </h1>

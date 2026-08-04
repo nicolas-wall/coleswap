@@ -89,7 +89,7 @@ export default function ListingDetailPage() {
           <Badge variant="outline">{CONDITION_LABELS[listing.condition]}</Badge>
         </div>
 
-        <h1 className="text-2xl font-bold">
+        <h1 className="font-display text-3xl font-semibold">
           {isBook ? listing.book_details?.title : GARMENT_LABELS[listing.uniform_details?.garment_type ?? '']}
         </h1>
 

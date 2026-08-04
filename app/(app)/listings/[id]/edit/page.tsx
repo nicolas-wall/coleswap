@@ -118,7 +118,7 @@ export default function EditListingPage() {
 
   return (
     <div className="max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
+      <h1 className="font-display text-3xl font-semibold mb-6 flex items-center gap-2">
         {isBook ? <BookOpen className="size-6 text-primary" /> : <Shirt className="size-6 text-primary" />}
         Editar {isBook ? 'libro' : 'uniforme'}
       </h1>
