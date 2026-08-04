@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ArrowLeft, GraduationCap } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
+import { SupportLink } from '@/components/SupportLink'
 
 export default function LegalPage() {
   return (
@@ -90,9 +91,12 @@ export default function LegalPage() {
       </main>
 
       <footer className="border-t">
-        <div className="max-w-3xl mx-auto px-4 py-8 text-sm text-muted-foreground flex items-center justify-between">
+        <div className="max-w-3xl mx-auto px-4 py-8 text-sm text-muted-foreground flex items-center justify-between gap-4">
           <p>© {new Date().getFullYear()} SchoolShop</p>
-          <Link href="/faq" className="hover:text-foreground transition-colors">Preguntas frecuentes</Link>
+          <div className="flex items-center gap-4">
+            <Link href="/faq" className="hover:text-foreground transition-colors">Preguntas frecuentes</Link>
+            <SupportLink />
+          </div>
         </div>
       </footer>
     </div>

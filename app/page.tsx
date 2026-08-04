@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { SupportLink } from '@/components/SupportLink'
 
 export default function LandingPage() {
   return (
@@ -236,6 +237,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-4">
             <Link href="/faq" className="hover:text-foreground transition-colors">Preguntas frecuentes</Link>
             <Link href="/legal" className="hover:text-foreground transition-colors">Legales</Link>
+            <SupportLink />
           </div>
         </div>
       </footer>

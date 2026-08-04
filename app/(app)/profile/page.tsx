@@ -13,6 +13,7 @@ import { updateProfile } from '@/lib/actions/auth'
 import { ChildrenManager } from '@/components/ChildrenManager'
 import { NotificationToggle } from '@/components/NotificationToggle'
 import { InstallAppButton } from '@/components/InstallAppButton'
+import { SupportCard } from '@/components/SupportCard'
 import { DeleteAccountSection } from '@/components/DeleteAccountSection'
 
 interface ProfileData {
@@ -141,6 +142,7 @@ export default function ProfilePage() {
 
       <NotificationToggle />
       <InstallAppButton />
+      <SupportCard />
 
       <Card className="mt-6">
         <CardHeader>

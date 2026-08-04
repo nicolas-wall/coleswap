@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { ArrowLeft, GraduationCap } from 'lucide-react'
+import { SupportLink } from '@/components/SupportLink'
 
 const FAQS: { q: string; a: string }[] = [
   {
@@ -12,7 +13,11 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: '¿Tiene algún costo usar la plataforma?',
-    a: 'No, SchoolShop no cobra nada por publicar, buscar o contactar a otra familia.',
+    a: 'No, SchoolShop no cobra nada por publicar, buscar o contactar a otra familia, y no se lleva ninguna comisión de lo que vendas.',
+  },
+  {
+    q: '¿Y entonces cómo se mantiene?',
+    a: 'Con aportes voluntarios de las familias que la usan. Mantener la app online tiene un costo mensual fijo (servidor y base de datos), y la idea es cubrir eso para que siga siendo gratis para todos. Si te resultó útil, en Mi perfil vas a encontrar la opción para colaborar. Es totalmente opcional: no cambia en nada lo que podés hacer dentro de la app.',
   },
   {
     q: '¿Cómo pago lo que compro?',
@@ -91,9 +96,12 @@ export default function FaqPage() {
       </main>
 
       <footer className="border-t">
-        <div className="max-w-3xl mx-auto px-4 py-8 text-sm text-muted-foreground flex items-center justify-between">
+        <div className="max-w-3xl mx-auto px-4 py-8 text-sm text-muted-foreground flex items-center justify-between gap-4">
           <p>© {new Date().getFullYear()} SchoolShop</p>
-          <Link href="/legal" className="hover:text-foreground transition-colors">Legales</Link>
+          <div className="flex items-center gap-4">
+            <Link href="/legal" className="hover:text-foreground transition-colors">Legales</Link>
+            <SupportLink />
+          </div>
         </div>
       </footer>
     </div>
