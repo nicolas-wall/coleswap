@@ -8,6 +8,8 @@ import {
   Search,
   HandCoins,
   Star,
+  Check,
+  X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -114,6 +116,55 @@ export default function LandingPage() {
                 </li>
               ))}
             </ol>
+          </div>
+        </section>
+
+        {/* Comparación con el grupo del cole */}
+        <section className="max-w-4xl mx-auto px-4 py-16">
+          <h2 className="font-display text-3xl font-semibold text-center">
+            ¿Y si ya tenemos el grupo del cole?
+          </h2>
+          <p className="text-center text-muted-foreground mt-3 max-w-xl mx-auto leading-relaxed">
+            En un grupo de Facebook o WhatsApp todo se mezcla y se pierde entre mensajes.
+            Acá cada cosa está donde tiene que estar.
+          </p>
+
+          <div className="mt-10 grid sm:grid-cols-2 gap-4">
+            <div className="rounded-2xl border border-dashed p-6">
+              <h3 className="font-display text-lg font-semibold text-muted-foreground">
+                En el grupo del cole
+              </h3>
+              <ul className="mt-4 space-y-3">
+                {[
+                  'Scrolleás cientos de mensajes para encontrar un libro',
+                  'Escribís título, autor y materia a mano cada vez',
+                  'Ves todo, aunque no sea del grado de tus hijos',
+                  'Publicás y a los dos días tu mensaje quedó enterrado',
+                ].map((t) => (
+                  <li key={t} className="flex gap-2.5 text-sm text-muted-foreground">
+                    <X className="size-4 shrink-0 mt-0.5 opacity-50" />
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="rounded-2xl bg-card p-6 ring-1 ring-primary/20 shadow-warm">
+              <h3 className="font-display text-lg font-semibold text-primary">En SchoolShop</h3>
+              <ul className="mt-4 space-y-3">
+                {[
+                  'Buscador por título, autor, materia o talle',
+                  'Cargás el ISBN y los datos del libro se completan solos',
+                  'Recomendaciones según el grado de cada hijo',
+                  'Tu publicación queda listada hasta que la vendas',
+                ].map((t) => (
+                  <li key={t} className="flex gap-2.5 text-sm">
+                    <Check className="size-4 shrink-0 mt-0.5 text-primary" />
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </section>
 
