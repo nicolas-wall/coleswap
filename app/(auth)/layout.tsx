@@ -1,4 +1,5 @@
-import { GraduationCap } from 'lucide-react'
+import Link from 'next/link'
+import { GraduationCap, X } from 'lucide-react'
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -8,6 +9,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-96 bg-[radial-gradient(50%_60%_at_50%_0%,var(--color-accent)_0%,transparent_70%)] opacity-60"
       />
+
+      <Link
+        href="/"
+        aria-label="Cerrar y volver al inicio"
+        className="absolute top-4 right-4 z-10 inline-flex size-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-card hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 outline-none"
+      >
+        <X className="size-5" />
+      </Link>
       <div className="relative w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center size-12 rounded-2xl bg-primary text-primary-foreground mb-3 shadow-warm">
