@@ -26,6 +26,9 @@ export function SupportCard() {
             render={
               <a href={DONATION_URL} target="_blank" rel="noopener noreferrer" />
             }
+            // Renderiza un <a>, no un <button>: sin esto Base UI avisa que se
+            // pierden las semánticas nativas de botón.
+            nativeButton={false}
             size="sm"
             variant="outline"
             className="gap-1.5 shrink-0"

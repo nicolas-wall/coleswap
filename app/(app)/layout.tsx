@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { AppHeader } from '@/components/AppHeader'
+import { AppFooter } from '@/components/AppFooter'
 import { createClient } from '@/lib/supabase/server'
 
 interface FamilyWithSchool {
@@ -49,6 +50,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         />
       </Suspense>
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-6">{children}</main>
+      <AppFooter />
     </div>
   )
 }
