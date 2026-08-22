@@ -4,9 +4,12 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { bookListingSchema, uniformListingSchema } from '@/lib/schemas'
 import { checkRateLimit } from '@/lib/rate-limit'
-import type { Family, Listing } from '@/types/database'
+import type { Family, Listing, ListingStatus } from '@/types/database'
 
 const IMAGE_PATH_MARKER = '/listing-images/'
+
+/** Pausada también se puede editar: bajás, corregís el precio y la reactivás. */
+const EDITABLE_STATUSES: ListingStatus[] = ['active', 'paused']
 
 function extractImagePath(url: string): string | null {
   const idx = url.indexOf(IMAGE_PATH_MARKER)
@@ -193,7 +196,9 @@ export async function updateBookListing(listingId: string, formData: FormData) {
     .single() as { data: Pick<Listing, 'images' | 'status'> | null; error: unknown }
 
   if (!existing) return { error: 'Publicación no encontrada' }
-  if (existing.status !== 'active') return { error: 'Solo se pueden editar publicaciones activas' }
+  if (!EDITABLE_STATUSES.includes(existing.status)) {
+    return { error: 'Solo se pueden editar publicaciones activas o pausadas' }
+  }
 
   const { error: listErr } = await supabase
     .from('listings')
@@ -202,6 +207,9 @@ export async function updateBookListing(listingId: string, formData: FormData) {
       price: parsed.data.price ?? null,
       notes: parsed.data.notes ?? null,
       images,
+      // Editarla es confirmar que seguís teniéndola: el reloj vuelve a cero.
+      renewed_at: new Date().toISOString(),
+      nudged_at: null,
     })
     .eq('id', listingId)
 
@@ -255,7 +263,9 @@ export async function updateUniformListing(listingId: string, formData: FormData
     .single() as { data: Pick<Listing, 'images' | 'status'> | null; error: unknown }
 
   if (!existing) return { error: 'Publicación no encontrada' }
-  if (existing.status !== 'active') return { error: 'Solo se pueden editar publicaciones activas' }
+  if (!EDITABLE_STATUSES.includes(existing.status)) {
+    return { error: 'Solo se pueden editar publicaciones activas o pausadas' }
+  }
 
   const { error: listErr } = await supabase
     .from('listings')
@@ -264,6 +274,9 @@ export async function updateUniformListing(listingId: string, formData: FormData
       price: parsed.data.price ?? null,
       notes: parsed.data.notes ?? null,
       images,
+      // Editarla es confirmar que seguís teniéndola: el reloj vuelve a cero.
+      renewed_at: new Date().toISOString(),
+      nudged_at: null,
     })
     .eq('id', listingId)
 
@@ -299,6 +312,75 @@ export async function markSold(listingId: string) {
     .eq('family_id', user.id)
 
   if (error) return { error: 'No se pudo marcar como vendido' }
+
+  return { success: true }
+}
+
+/**
+ * "Sí, sigue disponible": reinicia el reloj de los 45/60 días sin tocar nada más.
+ */
+export async function confirmListingActive(listingId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'No autenticado' }
+
+  const { error } = await supabase
+    .from('listings')
+    .update({ renewed_at: new Date().toISOString(), nudged_at: null })
+    .eq('id', listingId)
+    .eq('family_id', user.id)
+    .eq('status', 'active')
+
+  if (error) return { error: 'No se pudo confirmar la publicación' }
+
+  return { success: true }
+}
+
+/**
+ * Bajarla del catálogo sin perderla: conserva fotos, datos y conversaciones.
+ * Es lo opuesto a removeListing, que borra las imágenes y no tiene vuelta atrás.
+ */
+export async function pauseListing(listingId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'No autenticado' }
+
+  const { error } = await supabase
+    .from('listings')
+    .update({
+      status: 'paused' as const,
+      paused_at: new Date().toISOString(),
+      paused_reason: 'manual' as const,
+    })
+    .eq('id', listingId)
+    .eq('family_id', user.id)
+    .eq('status', 'active')
+
+  if (error) return { error: 'No se pudo pausar la publicación' }
+
+  return { success: true }
+}
+
+/** Vuelve al catálogo con el reloj en cero. */
+export async function reactivateListing(listingId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'No autenticado' }
+
+  const { error } = await supabase
+    .from('listings')
+    .update({
+      status: 'active' as const,
+      renewed_at: new Date().toISOString(),
+      nudged_at: null,
+      paused_at: null,
+      paused_reason: null,
+    })
+    .eq('id', listingId)
+    .eq('family_id', user.id)
+    .eq('status', 'paused')
+
+  if (error) return { error: 'No se pudo reactivar la publicación' }
 
   return { success: true }
 }

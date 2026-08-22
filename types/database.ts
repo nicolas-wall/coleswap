@@ -1,7 +1,8 @@
 export type Json = string | number | boolean | null | { [key: string]: Json } | Json[]
 
 export type ListingType = 'book' | 'uniform'
-export type ListingStatus = 'active' | 'sold' | 'removed'
+export type ListingStatus = 'active' | 'paused' | 'sold' | 'removed'
+export type PausedReason = 'manual' | 'expired'
 export type ConditionType = 'como_nuevo' | 'buen_estado' | 'regular'
 export type GarmentType = 'remera' | 'camisa' | 'swetear' | 'buzo' | 'campera' | 'pantalon' | 'pollera' | 'zapatos'
 export type GenderType = 'masculino' | 'femenino' | 'unisex'
@@ -152,6 +153,10 @@ export interface Database {
           images: string[]
           created_at: string
           sold_at: string | null
+          renewed_at: string
+          nudged_at: string | null
+          paused_at: string | null
+          paused_reason: PausedReason | null
         }
         Insert: {
           id?: string
@@ -165,6 +170,10 @@ export interface Database {
           images?: string[]
           created_at?: string
           sold_at?: string | null
+          renewed_at?: string
+          nudged_at?: string | null
+          paused_at?: string | null
+          paused_reason?: PausedReason | null
         }
         Update: {
           school_id?: string
@@ -177,6 +186,10 @@ export interface Database {
           images?: string[]
           created_at?: string
           sold_at?: string | null
+          renewed_at?: string
+          nudged_at?: string | null
+          paused_at?: string | null
+          paused_reason?: PausedReason | null
         }
         Relationships: []
       }

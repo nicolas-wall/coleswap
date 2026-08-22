@@ -12,7 +12,14 @@ import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { CONDITION_LABELS, GARMENT_LABELS } from '@/lib/schemas'
-import { markSold, removeListing } from '@/lib/actions/listings'
+import {
+  markSold,
+  removeListing,
+  pauseListing,
+  reactivateListing,
+  confirmListingActive,
+} from '@/lib/actions/listings'
+import { needsRenewal, daysUntilAutoPause, relativeAge } from '@/lib/lifecycle'
 import type { ListingWithDetails } from '@/types/database'
 
 export default function MyListingsPage() {
@@ -47,7 +54,35 @@ export default function MyListingsPage() {
     })
   }
 
+  async function handlePause(id: string) {
+    startTransition(async () => {
+      const result = await pauseListing(id)
+      if (result?.error) toast.error(result.error)
+      else toast.success('Pausada. Se guarda todo y la reactivás cuando quieras.')
+      load()
+    })
+  }
+
+  async function handleReactivate(id: string) {
+    startTransition(async () => {
+      const result = await reactivateListing(id)
+      if (result?.error) toast.error(result.error)
+      else toast.success('Volvió al catálogo')
+      load()
+    })
+  }
+
+  async function handleConfirm(id: string) {
+    startTransition(async () => {
+      const result = await confirmListingActive(id)
+      if (result?.error) toast.error(result.error)
+      else toast.success('Confirmada por 45 días más')
+      load()
+    })
+  }
+
   const active = listings.filter(l => l.status === 'active')
+  const paused = listings.filter(l => l.status === 'paused')
   const sold = listings.filter(l => l.status === 'sold')
   const removed = listings.filter(l => l.status === 'removed')
 
@@ -92,7 +127,38 @@ export default function MyListingsPage() {
         <section>
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Activas ({active.length})</h2>
           <div className="space-y-3">
-            {active.map(l => <ListingRow key={l.id} listing={l} onMarkSold={handleMarkSold} onRemove={handleRemove} pending={isPending} />)}
+            {active.map(l => (
+              <ListingRow
+                key={l.id}
+                listing={l}
+                onMarkSold={handleMarkSold}
+                onRemove={handleRemove}
+                onPause={handlePause}
+                onConfirm={handleConfirm}
+                pending={isPending}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {paused.length > 0 && (
+        <section>
+          <Separator className="mb-6" />
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1">Pausadas ({paused.length})</h2>
+          <p className="text-xs text-muted-foreground mb-3">
+            No aparecen en el catálogo, pero no se borró nada. Reactivalas cuando quieras.
+          </p>
+          <div className="space-y-3">
+            {paused.map(l => (
+              <ListingRow
+                key={l.id}
+                listing={l}
+                onRemove={handleRemove}
+                onReactivate={handleReactivate}
+                pending={isPending}
+              />
+            ))}
           </div>
         </section>
       )}
@@ -124,11 +190,17 @@ function ListingRow({
   listing,
   onMarkSold,
   onRemove,
+  onPause,
+  onReactivate,
+  onConfirm,
   pending,
 }: {
   listing: ListingWithDetails
   onMarkSold?: (id: string) => void
   onRemove?: (id: string) => void
+  onPause?: (id: string) => void
+  onReactivate?: (id: string) => void
+  onConfirm?: (id: string) => void
   pending: boolean
 }) {
   const isBook = listing.type === 'book'
@@ -139,10 +211,18 @@ function ListingRow({
 
   const statusColors: Record<string, string> = {
     active: 'bg-primary/10 text-primary',
+    paused: 'bg-muted text-muted-foreground',
     sold: 'bg-accent text-accent-foreground',
     removed: 'bg-muted text-muted-foreground',
   }
-  const statusLabels: Record<string, string> = { active: 'Activa', sold: 'Vendida', removed: 'Eliminada' }
+  const statusLabels: Record<string, string> = {
+    active: 'Activa',
+    paused: 'Pausada',
+    sold: 'Vendida',
+    removed: 'Eliminada',
+  }
+  const stale = needsRenewal(listing)
+  const daysLeft = daysUntilAutoPause(listing)
 
   return (
     <Card>
@@ -169,6 +249,9 @@ function ListingRow({
             </div>
             <p className="font-medium text-sm truncate">{title}</p>
             <p className="text-xs text-muted-foreground">{CONDITION_LABELS[listing.condition]}{listing.price != null ? ` · $${listing.price.toLocaleString('es-AR')}` : ''}</p>
+            {(listing.status === 'active' || listing.status === 'paused') && (
+              <p className="text-xs text-muted-foreground/70">Publicada {relativeAge(listing.renewed_at)}</p>
+            )}
           </div>
 
           {listing.status === 'sold' && (
@@ -177,6 +260,27 @@ function ListingRow({
             </Link>
           )}
         </div>
+
+        {stale && (
+          <div className="mt-3 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 flex flex-wrap items-center gap-2">
+            <p className="text-xs flex-1 min-w-[10rem]">
+              <span className="font-medium">¿La seguís teniendo?</span>{' '}
+              <span className="text-muted-foreground">
+                {daysLeft === 0
+                  ? 'Se baja hoy si no confirmás.'
+                  : `Se baja sola en ${daysLeft} día${daysLeft !== 1 ? 's' : ''}.`}
+              </span>
+            </p>
+            <Button
+              size="sm"
+              disabled={pending}
+              className="text-xs shrink-0"
+              onClick={() => onConfirm?.(listing.id)}
+            >
+              Sí, sigue disponible
+            </Button>
+          </div>
+        )}
       </CardContent>
       {listing.status === 'active' && (
         <CardFooter className="pt-0 pb-3 gap-2 flex-wrap">
@@ -189,6 +293,15 @@ function ListingRow({
           >
             Marcar como vendida
           </ConfirmDialog>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={pending}
+            className="text-xs"
+            onClick={() => onPause?.(listing.id)}
+          >
+            Pausar
+          </Button>
           <Link href={`/listings/${listing.id}/edit`}>
             <Button size="sm" variant="outline" disabled={pending} className="text-xs">
               Editar
@@ -197,7 +310,35 @@ function ListingRow({
           <ConfirmDialog
             trigger={<Button size="sm" variant="ghost" disabled={pending} className="text-xs text-muted-foreground" />}
             title="¿Eliminar esta publicación?"
-            description="Deja de aparecer en el catálogo de tu colegio. No se puede deshacer."
+            description="Se borra junto con sus fotos y no se puede deshacer. Si solo querés sacarla del catálogo por un tiempo, usá Pausar."
+            confirmLabel="Eliminar"
+            destructive
+            onConfirm={() => onRemove?.(listing.id)}
+          >
+            Eliminar
+          </ConfirmDialog>
+        </CardFooter>
+      )}
+
+      {listing.status === 'paused' && (
+        <CardFooter className="pt-0 pb-3 gap-2 flex-wrap">
+          <Button
+            size="sm"
+            disabled={pending}
+            className="text-xs"
+            onClick={() => onReactivate?.(listing.id)}
+          >
+            Reactivar
+          </Button>
+          <Link href={`/listings/${listing.id}/edit`}>
+            <Button size="sm" variant="outline" disabled={pending} className="text-xs">
+              Editar
+            </Button>
+          </Link>
+          <ConfirmDialog
+            trigger={<Button size="sm" variant="ghost" disabled={pending} className="text-xs text-muted-foreground" />}
+            title="¿Eliminar esta publicación?"
+            description="Se borra junto con sus fotos y no se puede deshacer."
             confirmLabel="Eliminar"
             destructive
             onConfirm={() => onRemove?.(listing.id)}

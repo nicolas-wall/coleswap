@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Sparkles, PackageSearch, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { ListingCard } from '@/components/ListingCard'
+import { ListingLifecycleBanner } from '@/components/ListingLifecycleBanner'
 import { Button } from '@/components/ui/button'
 import type { ListingWithDetails } from '@/types/database'
 
@@ -83,6 +84,8 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
 
   return (
     <div className="space-y-6">
+      <ListingLifecycleBanner />
+
       {!hasActiveFilters && recommended && recommended.length > 0 && (
         <div className="space-y-2 bg-accent/40 border border-accent rounded-xl p-4">
           <h2 className="text-sm font-semibold text-accent-foreground flex items-center gap-1.5">

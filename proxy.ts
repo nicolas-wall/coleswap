@@ -27,7 +27,9 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl
   const isAuthRoute = pathname === '/login' || pathname === '/signup' || pathname === '/forgot-password'
-  const isPublicApiRoute = pathname === '/api/schools'
+  // Los crons llegan sin sesión y se autentican solos con CRON_SECRET;
+  // sin esto el middleware los redirigiría a /login y nunca correrían.
+  const isPublicApiRoute = pathname === '/api/schools' || pathname.startsWith('/api/cron/')
   // /reset-password: el link de recuperación establece la sesión del lado del cliente
   // (fragment #access_token), así que el middleware todavía no ve al usuario logueado
   const isPublicContentRoute = pathname === '/' || pathname === '/legal' || pathname === '/faq' || pathname === '/reset-password'

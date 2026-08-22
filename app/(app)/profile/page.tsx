@@ -15,6 +15,8 @@ import { NotificationToggle } from '@/components/NotificationToggle'
 import { InstallAppButton } from '@/components/InstallAppButton'
 import { SupportCard } from '@/components/SupportCard'
 import { DeleteAccountSection } from '@/components/DeleteAccountSection'
+import { ListingLifecycleBanner } from '@/components/ListingLifecycleBanner'
+import { MyListingsCard } from '@/components/MyListingsCard'
 
 interface ProfileData {
   display_name: string
@@ -63,6 +65,9 @@ export default function ProfilePage() {
   return (
     <div className="max-w-lg mx-auto">
       <h1 className="font-display text-3xl font-semibold mb-6">Mi perfil</h1>
+
+      <ListingLifecycleBanner className="mb-6" />
+
       <form onSubmit={handleSubmit}>
         <Card>
           <CardHeader>
@@ -139,6 +144,8 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
       </form>
+
+      <MyListingsCard />
 
       <NotificationToggle />
       <InstallAppButton />
