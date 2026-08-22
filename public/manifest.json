@@ -1,7 +1,7 @@
 {
   "name": "ColeSwap",
   "short_name": "ColeSwap",
-  "description": "Mercado de insumos escolares de tu colegio",
+  "description": "El marketplace de tu colegio: compra y venta de libros y uniformes entre familias.",
   "start_url": "/catalog",
   "display": "standalone",
   "background_color": "#fafaf5",

@@ -101,7 +101,7 @@ export default function LandingPage() {
                 {
                   icon: HandCoins,
                   title: 'Coordiná en el cole',
-                  body: 'Se encuentran en persona para el intercambio. Nosotros no procesamos pagos.',
+                  body: 'Se encuentran en persona para la entrega. Nosotros no procesamos pagos.',
                 },
               ].map((step, i) => (
                 <li
@@ -187,7 +187,7 @@ export default function LandingPage() {
               {
                 icon: Star,
                 title: 'Calificaciones',
-                body: 'Después de cada intercambio, comprador y vendedor se califican mutuamente.',
+                body: 'Después de cada venta, comprador y vendedor se califican mutuamente.',
               },
               {
                 icon: Shirt,

@@ -23,7 +23,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <GraduationCap className="size-6" />
           </div>
           <h1 className="font-display text-3xl font-semibold">ColeSwap</h1>
-          <p className="text-sm text-muted-foreground mt-1">Insumos escolares de tu colegio</p>
+          <p className="text-sm text-muted-foreground mt-1">El marketplace de tu colegio</p>
         </div>
         <div className="shadow-warm rounded-xl">{children}</div>
       </div>

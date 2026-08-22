@@ -21,7 +21,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: '¿Cómo pago lo que compro?',
-    a: 'ColeSwap no procesa pagos. Te mensajeás con la otra familia dentro de la app, se ponen de acuerdo en precio y forma de pago, y coordinan el intercambio en persona (por ejemplo, en la puerta del colegio).',
+    a: 'ColeSwap no procesa pagos. Te mensajeás con la otra familia dentro de la app, se ponen de acuerdo en precio y forma de pago, y coordinan la entrega en persona (por ejemplo, en la puerta del colegio).',
   },
   {
     q: '¿Cómo me contacto con otra familia?',
