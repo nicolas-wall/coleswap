@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
+import { useCallback, useEffect, useState, useTransition } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { toast } from 'sonner'
@@ -27,14 +27,29 @@ export default function MyListingsPage() {
   const [loading, setLoading] = useState(true)
   const [isPending, startTransition] = useTransition()
 
-  async function load() {
-    const res = await fetch('/api/my-listings')
+  // fetchListings no toca estado a propósito: así el efecto puede llamarla y
+  // actualizar en el callback, que es el patrón que espera React (y lo que
+  // pedía react-hooks/set-state-in-effect).
+  const fetchListings = useCallback(async (signal?: AbortSignal) => {
+    const res = await fetch('/api/my-listings', { signal })
     const data = await res.json()
-    setListings(data.listings ?? [])
-    setLoading(false)
-  }
+    return (data.listings ?? []) as ListingWithDetails[]
+  }, [])
 
-  useEffect(() => { load() }, [])
+  const load = useCallback(() => {
+    fetchListings().then(setListings).catch(() => {})
+  }, [fetchListings])
+
+  useEffect(() => {
+    const ac = new AbortController()
+    fetchListings(ac.signal)
+      .then((l) => {
+        setListings(l)
+        setLoading(false)
+      })
+      .catch(() => {})
+    return () => ac.abort()
+  }, [fetchListings])
 
   async function handleMarkSold(id: string) {
     startTransition(async () => {

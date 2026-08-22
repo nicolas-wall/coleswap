@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
+import { useCallback, useEffect, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import { BookOpen, Shirt } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -33,22 +33,46 @@ export default function AdminPage() {
   const [generating, setGenerating] = useState(false)
   const [latestCode, setLatestCode] = useState('')
 
-  async function load() {
-    const res = await fetch('/api/admin')
+  // fetchAdmin no toca estado a propósito: así el efecto la llama y actualiza
+  // en el callback, que es el patrón que espera React (y lo que pedía
+  // react-hooks/set-state-in-effect).
+  const fetchAdmin = useCallback(async (signal?: AbortSignal) => {
+    const res = await fetch('/api/admin', { signal })
     const data = await res.json()
-    if (!res.ok) {
-      setError(data.error ?? 'No autorizado')
-      setLoading(false)
-      return
+    if (!res.ok) throw new Error(data.error ?? 'No autorizado')
+    return data as {
+      schoolId?: string
+      families?: AdminFamily[]
+      listings?: ListingWithDetails[]
+      invitations?: AdminInvitation[]
     }
+  }, [])
+
+  const apply = useCallback((data: Awaited<ReturnType<typeof fetchAdmin>>) => {
     setSchoolId(data.schoolId ?? '')
     setFamilies(data.families ?? [])
     setListings(data.listings ?? [])
     setInvitations(data.invitations ?? [])
     setLoading(false)
-  }
+  }, [])
 
-  useEffect(() => { load() }, [])
+  const load = useCallback(() => {
+    fetchAdmin()
+      .then(apply)
+      .catch((e: Error) => setError(e.message))
+  }, [fetchAdmin, apply])
+
+  useEffect(() => {
+    const ac = new AbortController()
+    fetchAdmin(ac.signal)
+      .then(apply)
+      .catch((e: Error) => {
+        if (ac.signal.aborted) return
+        setError(e.message)
+        setLoading(false)
+      })
+    return () => ac.abort()
+  }, [fetchAdmin, apply])
 
   function handleToggleSuspend(familyId: string, suspended: boolean) {
     setConfirming(null)

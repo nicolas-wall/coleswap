@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { Bell, BellOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -15,6 +15,13 @@ function urlBase64ToUint8Array(base64String: string) {
   return outputArray
 }
 
+// El soporte de push solo se puede leer en el cliente. useSyncExternalStore es
+// la forma correcta de hacerlo sin romper la hidratación: el server devuelve
+// true (igual que el estado inicial de antes) y el cliente corrige al montar.
+const subscribeNoop = () => () => {}
+const readCapability = () => 'serviceWorker' in navigator && 'PushManager' in window
+const capabilityOnServer = () => true
+
 interface Props {
   /** Copy alternativo: en /pending el motivo para activarlas es otro. */
   title?: string
@@ -25,21 +32,24 @@ export function NotificationToggle({
   title = 'Notificaciones de mensajes',
   description = 'Enterate cuando te llega un mensaje, sin tener la web abierta.',
 }: Props = {}) {
-  const [supported, setSupported] = useState(true)
+  const capable = useSyncExternalStore(subscribeNoop, readCapability, capabilityOnServer)
+  const [registrationFailed, setRegistrationFailed] = useState(false)
   const [subscribed, setSubscribed] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
+  const supported = capable && !registrationFailed
+
   useEffect(() => {
-    if (typeof window === 'undefined' || !('serviceWorker' in navigator) || !('PushManager' in window)) {
-      setSupported(false)
-      return
-    }
-    navigator.serviceWorker.register('/sw.js').then(async (reg) => {
-      const sub = await reg.pushManager.getSubscription()
-      setSubscribed(!!sub)
-    }).catch(() => setSupported(false))
-  }, [])
+    if (!capable) return
+    let cancelled = false
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then((reg) => reg.pushManager.getSubscription())
+      .then((sub) => { if (!cancelled) setSubscribed(!!sub) })
+      .catch(() => { if (!cancelled) setRegistrationFailed(true) })
+    return () => { cancelled = true }
+  }, [capable])
 
   async function handleEnable() {
     setLoading(true)

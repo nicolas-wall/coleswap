@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Camera, ImagePlus } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { compressImage } from '@/lib/compress-image'
@@ -64,13 +65,19 @@ export function ImageUploader({ initialUrls = [] }: { initialUrls?: string[] }) 
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {urls.map((url) => (
-          // eslint-disable-next-line @next/next/no-img-element
           <div key={url} className="relative aspect-square rounded-md overflow-hidden border">
-            <img src={url} alt="" className="w-full h-full object-cover" />
+            <Image
+              src={url}
+              alt=""
+              fill
+              sizes="(max-width: 640px) 50vw, 120px"
+              className="object-cover"
+            />
             <button
               type="button"
               onClick={() => removeImage(url)}
-              className="absolute top-1 right-1 bg-background/90 rounded-full w-5 h-5 text-xs leading-none flex items-center justify-center border"
+              aria-label="Quitar foto"
+              className="absolute top-1 right-1 flex size-7 items-center justify-center rounded-full border bg-background/90 text-sm leading-none"
             >
               ×
             </button>

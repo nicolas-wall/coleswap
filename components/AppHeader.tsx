@@ -20,13 +20,19 @@ export function AppHeader({ schoolName, crestUrl, displayName, isSchoolAdmin, is
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const [q, setQ] = useState('')
+  // El buscador es estado del usuario pero tiene que seguir a la URL (volver
+  // atrás, limpiar filtros). Es el ajuste durante el render que documenta
+  // React, no un efecto: así no hay un render extra con el valor viejo.
+  const urlQuery = pathname === '/catalog' ? (searchParams.get('q') ?? '') : ''
+  const [q, setQ] = useState(urlQuery)
+  const [syncedQuery, setSyncedQuery] = useState(urlQuery)
+  if (urlQuery !== syncedQuery) {
+    setSyncedQuery(urlQuery)
+    setQ(urlQuery)
+  }
+
   const [mobileOpen, setMobileOpen] = useState(false)
   const mobileInputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    setQ(pathname === '/catalog' ? (searchParams.get('q') ?? '') : '')
-  }, [pathname, searchParams])
 
   useEffect(() => {
     if (mobileOpen) mobileInputRef.current?.focus()

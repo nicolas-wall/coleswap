@@ -52,6 +52,8 @@ if (process.argv.includes('--clean')) {
     await db.from('listings').delete().in('id', lstIds)
   }
   if (famIds.length) {
+    // platform_admins referencia al usuario: si queda, bloquea el borrado.
+    await db.from('platform_admins').delete().in('user_id', famIds)
     await db.from('children').delete().in('family_id', famIds)
     await db.from('push_subscriptions').delete().in('family_id', famIds).then(() => {}, () => {})
     await db.from('invitations').update({ used_by: null, used_at: null }).in('used_by', famIds)

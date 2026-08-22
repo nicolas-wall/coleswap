@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
+import { useCallback, useEffect, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -33,20 +33,39 @@ export default function PlatformAdminPage() {
 
   const [codesBySchool, setCodesBySchool] = useState<Record<string, string>>({})
 
-  async function load() {
-    const res = await fetch('/api/platform')
+  // fetchPlatform no toca estado a propósito: así el efecto la llama y
+  // actualiza en el callback, que es el patrón que espera React (y lo que
+  // pedía react-hooks/set-state-in-effect).
+  const fetchPlatform = useCallback(async (signal?: AbortSignal) => {
+    const res = await fetch('/api/platform', { signal })
     const data = await res.json()
-    if (!res.ok) {
-      setAccessError(data.error ?? 'No autorizado')
-      setLoading(false)
-      return
-    }
+    if (!res.ok) throw new Error(data.error ?? 'No autorizado')
+    return data as { schools?: School[]; families?: AdminFamily[] }
+  }, [])
+
+  const apply = useCallback((data: Awaited<ReturnType<typeof fetchPlatform>>) => {
     setSchools(data.schools ?? [])
     setFamilies(data.families ?? [])
     setLoading(false)
-  }
+  }, [])
 
-  useEffect(() => { load() }, [])
+  const load = useCallback(() => {
+    fetchPlatform()
+      .then(apply)
+      .catch((e: Error) => setAccessError(e.message))
+  }, [fetchPlatform, apply])
+
+  useEffect(() => {
+    const ac = new AbortController()
+    fetchPlatform(ac.signal)
+      .then(apply)
+      .catch((e: Error) => {
+        if (ac.signal.aborted) return
+        setAccessError(e.message)
+        setLoading(false)
+      })
+    return () => ac.abort()
+  }, [fetchPlatform, apply])
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault()
