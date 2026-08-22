@@ -82,6 +82,49 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Demo en video */}
+        <section className="px-4 pb-16">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="font-display text-3xl font-semibold text-center">
+              Mirá cómo funciona por dentro
+            </h2>
+            <p className="text-center text-muted-foreground mt-3 max-w-lg mx-auto leading-relaxed">
+              Un minuto recorriendo la app: buscar, mensajearte con la otra familia y publicar
+              lo que te sobró.
+            </p>
+
+            {/* Marco de navegador para que se lea como una captura de la app */}
+            <div className="mt-9 rounded-2xl bg-card ring-1 ring-foreground/10 shadow-warm-lg overflow-hidden">
+              <div className="flex items-center gap-2 border-b bg-muted/60 px-4 py-2.5">
+                <span className="flex gap-1.5" aria-hidden>
+                  <span className="size-2.5 rounded-full bg-foreground/15" />
+                  <span className="size-2.5 rounded-full bg-foreground/15" />
+                  <span className="size-2.5 rounded-full bg-foreground/15" />
+                </span>
+                <span className="mx-auto rounded-full bg-background px-3 py-1 text-xs text-muted-foreground">
+                  coleswap.com.ar/catalog
+                </span>
+              </div>
+              <video
+                className="block w-full aspect-[16/10] bg-muted"
+                src="/demo.mp4"
+                poster="/demo-poster.jpg"
+                autoPlay
+                loop
+                muted
+                playsInline
+                controls
+                preload="metadata"
+                aria-label="Recorrido en video por ColeSwap: catálogo del colegio, búsqueda, chat entre familias y publicación de un libro por ISBN"
+              />
+            </div>
+
+            <p className="mt-4 text-center text-xs text-muted-foreground">
+              Grabado con un colegio de prueba. Los nombres y las publicaciones son ficticios.
+            </p>
+          </div>
+        </section>
+
         {/* Cómo funciona */}
         <section className="border-t bg-muted/40">
           <div className="max-w-5xl mx-auto px-4 py-16">
