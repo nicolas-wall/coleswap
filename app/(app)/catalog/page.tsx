@@ -108,7 +108,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
             {params.q}
             <Link
               href={{ pathname: '/catalog', query: { type: params.type, condition: params.condition } }}
-              className="hover:text-destructive transition-colors"
+              className="-m-1.5 inline-flex size-6 items-center justify-center rounded-full hover:text-destructive transition-colors"
               aria-label="Quitar búsqueda"
             >
               <X className="size-3.5" />
@@ -120,6 +120,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
         {params.q && <input type="hidden" name="q" value={params.q} />}
         <select
           name="type"
+          aria-label="Filtrar por tipo de publicación"
           defaultValue={params.type ?? ''}
           className="border border-input rounded-lg px-3 py-1.5 text-sm bg-background outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 transition-colors"
         >
@@ -129,6 +130,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
         </select>
         <select
           name="condition"
+          aria-label="Filtrar por estado"
           defaultValue={params.condition ?? ''}
           className="border border-input rounded-lg px-3 py-1.5 text-sm bg-background outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 transition-colors"
         >

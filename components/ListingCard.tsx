@@ -64,16 +64,20 @@ export function ListingCard({ listing }: Props) {
           {subtitle && <p className="text-xs text-muted-foreground line-clamp-1">{subtitle}</p>}
           {meta && <p className="text-xs text-muted-foreground/80 mt-0.5">{meta}</p>}
         </CardContent>
-        <CardFooter className="pt-1 pb-3 flex items-center justify-between">
+        {/* En el grid de dos columnas la tarjeta mide ~170px: precio, familia y
+            cinco estrellas no entran en una sola línea, así que van apilados. */}
+        <CardFooter className="pt-1 pb-3 flex flex-col items-start gap-0.5">
           <div className="text-base font-bold text-primary">
             {listing.price != null
               ? `$${listing.price.toLocaleString('es-AR')}`
               : <span className="text-muted-foreground text-xs font-medium">A consultar</span>}
           </div>
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <span className="truncate max-w-[80px]">{listing.family.display_name}</span>
+          <div className="flex w-full min-w-0 items-center gap-1 text-xs text-muted-foreground">
+            <span className="truncate">{listing.family.display_name}</span>
             {listing.family.rating_avg != null && (
-              <RatingStars value={listing.family.rating_avg} size="xs" readonly />
+              <span className="shrink-0">
+                <RatingStars value={listing.family.rating_avg} size="xs" readonly />
+              </span>
             )}
           </div>
         </CardFooter>

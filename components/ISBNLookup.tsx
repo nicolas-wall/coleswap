@@ -84,6 +84,7 @@ export function ISBNLookup({ onFound, onISBNChange }: Props) {
       <div className="flex gap-2">
         <Input
           placeholder="ISBN (ej: 9789500728461)"
+          aria-label="ISBN del libro"
           value={isbn}
           onChange={(e) => setIsbn(e.target.value.replace(/\D/g, ''))}
           maxLength={13}

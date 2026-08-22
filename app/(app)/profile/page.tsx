@@ -87,8 +87,8 @@ export default function ProfilePage() {
 
             {loginEmail && (
               <div className="space-y-1.5">
-                <Label className="text-muted-foreground">Email</Label>
-                <Input value={loginEmail} disabled readOnly />
+                <Label htmlFor="loginEmail" className="text-muted-foreground">Email</Label>
+                <Input id="loginEmail" value={loginEmail} disabled readOnly />
                 <p className="text-xs text-muted-foreground">Es el email con el que ingresás. No se cambia desde acá.</p>
               </div>
             )}

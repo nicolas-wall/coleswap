@@ -32,7 +32,10 @@ export default function LandingPage() {
             <Link href="/legal" className="hidden sm:inline-block text-sm text-muted-foreground hover:text-foreground px-3 py-2 transition-colors">
               Legales
             </Link>
-            <Link href="/login">
+            {/* Abajo de 360px el logo + los dos botones no entran y "Crear
+                cuenta" se salía del viewport. Ingresar sigue disponible en el
+                hero como "Ya tengo cuenta". */}
+            <Link href="/login" className="hidden min-[360px]:inline-block">
               <Button variant="ghost" size="sm">Ingresar</Button>
             </Link>
             <Link href="/signup">
@@ -92,7 +95,9 @@ export default function LandingPage() {
                   acuerdo con la otra familia y publicar lo que te sobró.
                 </p>
 
-                <ol className="mt-9 space-y-6">
+                {/* max-w corta el renglón: entre 768 y 1024 la sección todavía
+                    está apilada y el texto se estiraba a todo el ancho. */}
+                <ol className="mt-9 space-y-6 max-w-md">
                   {[
                     {
                       icon: Search,
@@ -157,7 +162,7 @@ export default function LandingPage() {
         </section>
 
         {/* Comparación con el grupo del cole */}
-        <section className="max-w-4xl mx-auto px-4 py-16">
+        <section className="max-w-5xl mx-auto px-4 py-16">
           <h2 className="font-display text-3xl font-semibold text-center">
             ¿Y si ya tenemos el grupo del cole?
           </h2>

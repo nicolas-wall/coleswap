@@ -55,6 +55,7 @@ export function AppHeader({ schoolName, crestUrl, displayName, isSchoolAdmin, is
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Buscar título, autor…"
+            aria-label="Buscar publicaciones por título, autor o materia"
             className="w-full h-10 pl-10 pr-4 rounded-full border-0 bg-background text-foreground text-sm outline-none ring-1 ring-transparent focus-visible:ring-3 focus-visible:ring-ring/50 transition-shadow"
           />
         </form>
@@ -107,6 +108,7 @@ export function AppHeader({ schoolName, crestUrl, displayName, isSchoolAdmin, is
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Buscar título, autor…"
+              aria-label="Buscar publicaciones por título, autor o materia"
               className="w-full h-9 pl-10 pr-3 rounded-full border-0 bg-background text-foreground text-sm outline-none ring-1 ring-transparent focus-visible:ring-3 focus-visible:ring-ring/50 transition-shadow"
             />
             <button

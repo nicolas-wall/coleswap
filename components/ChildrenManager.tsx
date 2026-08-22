@@ -65,8 +65,9 @@ export function ChildrenManager() {
               <button
                 type="button"
                 onClick={() => handleRemove(child.id)}
-                className="text-muted-foreground hover:text-destructive transition-colors"
-                aria-label="Eliminar"
+                // -my-1 evita que el área táctil agrande la fila.
+                className="-my-1 -mr-1.5 inline-flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:text-destructive transition-colors"
+                aria-label={`Eliminar ${child.name ? `${child.name} — ${child.grade}` : child.grade}`}
               >
                 <X className="size-3.5" />
               </button>
@@ -77,12 +78,13 @@ export function ChildrenManager() {
 
       <form onSubmit={handleAdd} className="flex gap-2 items-end flex-wrap">
         <div className="space-y-1.5">
-          <label className="text-xs text-muted-foreground">Nombre — opcional</label>
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ej: Sofía" className="w-36" />
+          <label htmlFor="child-name" className="text-xs text-muted-foreground">Nombre — opcional</label>
+          <Input id="child-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ej: Sofía" className="w-36" />
         </div>
         <div className="space-y-1.5">
-          <label className="text-xs text-muted-foreground">Grado</label>
+          <label htmlFor="child-grade" className="text-xs text-muted-foreground">Grado</label>
           <select
+            id="child-grade"
             value={grade}
             onChange={(e) => setGrade(e.target.value)}
             className="border border-input rounded-lg px-3 py-2 text-sm bg-background h-9 outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
