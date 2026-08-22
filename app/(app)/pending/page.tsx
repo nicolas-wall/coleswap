@@ -1,8 +1,11 @@
+import { redirect } from 'next/navigation'
 import { Clock } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { NotificationToggle } from '@/components/NotificationToggle'
 import { createClient } from '@/lib/supabase/server'
 
 interface FamilyWithSchool {
+  approved: boolean
   schools: { name: string } | null
 }
 
@@ -14,9 +17,14 @@ export default async function PendingPage() {
   if (user) {
     const { data: family } = await supabase
       .from('families')
-      .select('schools(name)')
+      .select('approved, schools(name)')
       .eq('id', user.id)
       .maybeSingle() as { data: FamilyWithSchool | null; error: unknown }
+
+    // Si ya la aprobaron mientras tenía esta pestaña abierta, que no se quede
+    // leyendo "esperá" habiendo sido aprobada.
+    if (family?.approved) redirect('/catalog')
+
     schoolName = family?.schools?.name ?? ''
   }
 
@@ -29,9 +37,20 @@ export default async function PendingPage() {
           {schoolName
             ? `Un moderador de ${schoolName} tiene que aprobar tu cuenta antes de que puedas entrar.`
             : 'Un moderador de tu colegio tiene que aprobar tu cuenta antes de que puedas entrar.'}
-          {' '}Volvé a intentar más tarde.
+          {' '}Ya le avisamos que estás esperando.
         </AlertDescription>
       </Alert>
+
+      {/* Único lugar donde una familia pendiente puede suscribirse: el resto de
+          la app —incluido /profile, donde vive el toggle normal— la rebota acá
+          hasta que la aprueben. Sin esto, el aviso de aprobación no le llegaría
+          nunca a nadie. */}
+      <div className="text-left">
+        <NotificationToggle
+          title="Avisame cuando me aprueben"
+          description="Te mandamos una notificación apenas te habiliten, así no tenés que estar probando."
+        />
+      </div>
     </div>
   )
 }

@@ -13,6 +13,31 @@ function ensureConfigured() {
   configured = true
 }
 
+/**
+ * Avisa a los admins de un colegio. Sin esto las solicitudes de ingreso se
+ * pudren: el admin no tiene ningún motivo para entrar a mirar si hay alguien
+ * esperando, y la familia queda en /pending sin que nadie la apruebe nunca.
+ */
+export async function sendPushToSchoolAdmins(
+  schoolId: string,
+  payload: { title: string; body: string; url?: string }
+) {
+  if (!process.env.VAPID_PRIVATE_KEY) return
+
+  const service = createServiceClient()
+  const { data: admins } = await service
+    .from('families')
+    .select('id')
+    .eq('school_id', schoolId)
+    .eq('role', 'school_admin')
+    .eq('approved', true)
+    .eq('suspended', false)
+
+  if (!admins || admins.length === 0) return
+
+  await Promise.all(admins.map((a) => sendPushToFamily(a.id, payload)))
+}
+
 export async function sendPushToFamily(familyId: string, payload: { title: string; body: string; url?: string }) {
   if (!process.env.VAPID_PRIVATE_KEY) return
   ensureConfigured()

@@ -15,7 +15,16 @@ function urlBase64ToUint8Array(base64String: string) {
   return outputArray
 }
 
-export function NotificationToggle() {
+interface Props {
+  /** Copy alternativo: en /pending el motivo para activarlas es otro. */
+  title?: string
+  description?: string
+}
+
+export function NotificationToggle({
+  title = 'Notificaciones de mensajes',
+  description = 'Enterate cuando te llega un mensaje, sin tener la web abierta.',
+}: Props = {}) {
   const [supported, setSupported] = useState(true)
   const [subscribed, setSubscribed] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -98,8 +107,8 @@ export function NotificationToggle() {
       <CardContent className="pt-4 space-y-2">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-medium">Notificaciones de mensajes</p>
-            <p className="text-xs text-muted-foreground">Enterate cuando te llega un mensaje, sin tener la web abierta.</p>
+            <p className="text-sm font-medium">{title}</p>
+            <p className="text-xs text-muted-foreground">{description}</p>
           </div>
           <Button
             type="button"

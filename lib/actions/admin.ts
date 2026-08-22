@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { sendPushToFamily } from '@/lib/push'
 import type { Family, Listing } from '@/types/database'
 
 const IMAGE_PATH_MARKER = '/listing-images/'
@@ -80,6 +81,24 @@ export async function approveFamily(familyId: string) {
     .eq('id', familyId)
 
   if (error) return { error: 'No se pudo aprobar la solicitud' }
+
+  // Hasta acá la familia quedaba esperando en /pending sin que nadie le avisara
+  // nunca: tenía que adivinar y volver a probar. El push falla en silencio si
+  // no activó las notificaciones, así que no puede romper la aprobación.
+  const { data: school } = await service
+    .from('families')
+    .select('schools(name)')
+    .eq('id', familyId)
+    .single() as { data: { schools: { name: string } | null } | null }
+
+  const nombre = school?.schools?.name
+  await sendPushToFamily(familyId, {
+    title: 'Ya podés entrar',
+    body: nombre
+      ? `Aprobaron tu cuenta en ${nombre}. Entrá a ver los libros y uniformes del colegio.`
+      : 'Aprobaron tu cuenta. Entrá a ver los libros y uniformes del colegio.',
+    url: '/catalog',
+  })
 
   return { success: true }
 }
