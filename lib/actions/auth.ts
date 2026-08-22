@@ -6,6 +6,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { signupSchema, requestJoinSchema, loginSchema, profileSchema, forgotPasswordSchema } from '@/lib/schemas'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 import { sendPushToSchoolAdmins } from '@/lib/push'
+import { sendPendingRequestEmail } from '@/lib/email'
 import type { Invitation, Family } from '@/types/database'
 
 async function getOrigin() {
@@ -166,11 +167,14 @@ export async function requestJoin(formData: FormData) {
   // esperando aprobación, así que sin este aviso la solicitud queda dando
   // vueltas indefinidamente. Si el admin no activó notificaciones no pasa nada:
   // sendPush falla en silencio y el registro ya está hecho.
-  await sendPushToSchoolAdmins(schoolId, {
-    title: 'Una familia quiere entrar',
-    body: `${displayName} pidió sumarse al colegio. Entrá a aprobar o rechazar la solicitud.`,
-    url: '/admin',
-  })
+  await Promise.all([
+    sendPushToSchoolAdmins(schoolId, {
+      title: 'Una familia quiere entrar',
+      body: `${displayName} pidió sumarse al colegio. Entrá a aprobar o rechazar la solicitud.`,
+      url: '/admin',
+    }),
+    sendPendingRequestEmail(schoolId, displayName),
+  ])
 
   redirect('/pending')
 }

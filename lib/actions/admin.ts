@@ -2,6 +2,7 @@
 
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sendPushToFamily } from '@/lib/push'
+import { sendApprovalEmail } from '@/lib/email'
 import type { Family, Listing } from '@/types/database'
 
 const IMAGE_PATH_MARKER = '/listing-images/'
@@ -92,13 +93,20 @@ export async function approveFamily(familyId: string) {
     .single() as { data: { schools: { name: string } | null } | null }
 
   const nombre = school?.schools?.name
-  await sendPushToFamily(familyId, {
-    title: 'Ya podés entrar',
-    body: nombre
-      ? `Aprobaron tu cuenta en ${nombre}. Entrá a ver los libros y uniformes del colegio.`
-      : 'Aprobaron tu cuenta. Entrá a ver los libros y uniformes del colegio.',
-    url: '/catalog',
-  })
+
+  // Los dos canales: el push llega al instante pero solo a quien lo activó (y
+  // en iPhone solo si instaló la PWA); el mail llega siempre. Ninguno de los
+  // dos puede tirar excepción, así que la aprobación ya está hecha pase lo que pase.
+  await Promise.all([
+    sendPushToFamily(familyId, {
+      title: 'Ya podés entrar',
+      body: nombre
+        ? `Aprobaron tu cuenta en ${nombre}. Entrá a ver los libros y uniformes del colegio.`
+        : 'Aprobaron tu cuenta. Entrá a ver los libros y uniformes del colegio.',
+      url: '/catalog',
+    }),
+    sendApprovalEmail(familyId),
+  ])
 
   return { success: true }
 }
