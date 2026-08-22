@@ -82,7 +82,11 @@ export const config = {
   // Los estáticos de public/ tienen que quedar fuera: si no, el proxy los trata
   // como rutas y los manda a /login para el visitante sin sesión — que es
   // justamente quien ve la landing.
+  //
+  // robots.txt, sitemap.xml y opengraph-image entran en la misma bolsa y no
+  // estaban: /robots.txt devolvía 307 a /login, y la imagen de preview la piden
+  // los scrapers de WhatsApp y Google sin sesión, así que nunca la habrían visto.
   matcher: [
-    '/((?!_next/static|_next/image|favicon\\.ico|manifest\\.json|sw\\.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico|mp4|webm)$).*)',
+    '/((?!_next/static|_next/image|favicon\\.ico|manifest\\.json|sw\\.js|robots\\.txt|sitemap\\.xml|opengraph-image|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico|mp4|webm)$).*)',
   ],
 }

@@ -15,11 +15,32 @@ const fraunces = Fraunces({
   axes: ['SOFT', 'WONK', 'opsz'],
 })
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://coleswap.vercel.app'
+const DESCRIPTION =
+  'El marketplace de tu colegio: compra y venta de libros y uniformes entre familias.'
+
 export const metadata: Metadata = {
+  // La app se comparte por el grupo de WhatsApp del colegio: sin estas tags el
+  // link aparece pelado, sin título ni imagen, y parece spam. metadataBase es
+  // obligatorio para que las URLs relativas de la imagen se resuelvan.
+  metadataBase: new URL(SITE_URL),
   title: 'ColeSwap',
-  description: 'El marketplace de tu colegio: compra y venta de libros y uniformes entre familias.',
+  description: DESCRIPTION,
   manifest: '/manifest.json',
   icons: { icon: '/icon.svg', apple: '/icon-192.png' },
+  openGraph: {
+    type: 'website',
+    siteName: 'ColeSwap',
+    title: 'ColeSwap — el mercado de libros y uniformes de tu colegio',
+    description: DESCRIPTION,
+    locale: 'es_AR',
+    url: SITE_URL,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ColeSwap — el mercado de libros y uniformes de tu colegio',
+    description: DESCRIPTION,
+  },
 }
 
 export const viewport = {
