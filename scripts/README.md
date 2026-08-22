@@ -4,6 +4,10 @@ El recorrido que se ve en la home es una grabación real de la app, hecha con
 Playwright sobre el colegio de prueba **Colegio San Martín** (el del seed
 `003_seed.sql`). Nunca se graba sobre datos de familias reales.
 
+Se graba en **viewport de teléfono** (390×844), porque en la landing va dentro
+de un marco de celular, en la columna de al lado de los pasos de "Cómo
+funciona".
+
 ## Regrabar
 
 1. **Levantá la app con el código que querés mostrar.** Conviene hacerlo desde un
@@ -33,21 +37,34 @@ Playwright sobre el colegio de prueba **Colegio San Martín** (el del seed
    DEMO_OUT=./demo-out node scripts/record-demo.mjs
    ```
 
-4. **Codificá** a MP4 y sacá el póster. El `-ss 1.4` descarta el skeleton de
-   carga inicial y el `setpts` acelera un 15 % para que el recorrido no se haga
+4. **Codificá** a MP4 y sacá el póster. El `-ss 1.0` descarta el skeleton de
+   carga inicial y el `setpts` acelera un 30 % para que el recorrido no se haga
    largo:
 
    ```bash
-   ffmpeg -y -ss 1.4 -i demo-out/demo.webm -vf "setpts=PTS/1.15,fps=25" -an \
-     -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 26 -preset slow \
+   ffmpeg -y -ss 1.0 -i demo-out/demo.webm -vf "setpts=PTS/1.3,fps=25" -an \
+     -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 25 -preset slow \
      -movflags +faststart public/demo.mp4
-   ffmpeg -y -ss 2.2 -i public/demo.mp4 -frames:v 1 -q:v 4 public/demo-poster.jpg
+   ffmpeg -y -ss 2.0 -i public/demo.mp4 -frames:v 1 -q:v 3 public/demo-poster.jpg
+   ```
+
+   Verificá que el frame llene el cuadro antes de dar por buena la corrida:
+
+   ```bash
+   ffmpeg -y -ss 6 -i public/demo.mp4 -frames:v 1 /tmp/chk.png
    ```
 
 ## Detalles que importan
 
-- Los subtítulos se dibujan a `bottom: 104px` a propósito: más abajo quedan
-  tapados por la barra de controles del `<video>` en la landing.
+- **`recordVideo.size` solo sabe achicar.** El video sale al tamaño del viewport
+  en px CSS y `deviceScaleFactor` no lo sube: si le pedís más que el viewport,
+  Playwright no escala, rasteriza en la esquina y rellena el resto de gris. Por
+  eso `size` va igual al viewport. El `deviceScaleFactor: 2` igual sirve, porque
+  el frame se captura supersampleado y baja más limpio.
+- Los subtítulos se dibujan a `bottom: 74px` a propósito: más abajo quedan
+  tapados por la barra de controles del `<video>` en la landing. Con el teléfono
+  a ~244 px de ancho el margen es de pocos píxeles, así que si movés esa
+  posición conviene volver a mirarlo con el video en pausa.
 - El script oculta el indicador de `next dev` (logo, "Compiling…", contador de
   issues), que si no sale en cámara.
 - La escena del ISBN depende de una API externa. El script verifica antes de

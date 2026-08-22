@@ -17,8 +17,14 @@ const PASSWORD = process.env.DEMO_PASSWORD ?? 'ColeSwapDemo2026!'
 const OUT = process.env.DEMO_OUT ?? path.resolve('demo-out')
 const ISBN = process.env.DEMO_ISBN ?? '9788420471839'
 
-const W = 1280
-const H = 800
+// Se graba en viewport de teléfono: en la landing el video va dentro de un
+// marco de celular, en una columna angosta al lado de "Cómo funciona".
+const W = 390
+const H = 844
+// Rasterizamos a 2x para que el frame capturado venga supersampleado, pero el
+// video sale sí o sí al tamaño del viewport en px CSS: `recordVideo.size` solo
+// sabe achicar. Pedirle más que el viewport no escala, rellena con gris.
+const SCALE = 2
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
@@ -49,18 +55,18 @@ function overlay() {
         'position:fixed;inset:0;z-index:2147483647;pointer-events:none;' +
         'font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif'
       layer.innerHTML =
-        '<div id="__demo_cursor" style="position:absolute;left:0;top:0;width:26px;height:26px;' +
-        'border-radius:50%;background:rgba(20,20,24,.5);border:2.5px solid #fff;' +
+        '<div id="__demo_cursor" style="position:absolute;left:0;top:0;width:22px;height:22px;' +
+        'border-radius:50%;background:rgba(20,20,24,.5);border:2px solid #fff;' +
         'box-shadow:0 3px 14px rgba(0,0,0,.45);transform:translate(-50%,-50%);' +
         'transition:left .55s cubic-bezier(.22,.61,.36,1),top .55s cubic-bezier(.22,.61,.36,1),' +
         'width .16s ease,height .16s ease"></div>' +
         // Los subtítulos van bien por encima del borde inferior: ahí aparece la
         // barra de controles del <video> cuando se embebe en la landing.
-        '<div style="position:absolute;left:0;right:0;bottom:104px;display:flex;justify-content:center">' +
-        '<div id="__demo_caption" style="max-width:78%;text-align:center;background:rgba(14,14,17,.88);' +
-        'color:#fff;padding:14px 28px;border-radius:999px;font-size:23px;font-weight:600;' +
-        'line-height:1.25;letter-spacing:-.01em;box-shadow:0 12px 34px rgba(0,0,0,.38);' +
-        'opacity:0;transform:translateY(12px);transition:opacity .38s ease,transform .38s ease"></div>' +
+        '<div style="position:absolute;left:0;right:0;bottom:74px;display:flex;justify-content:center;padding:0 12px">' +
+        '<div id="__demo_caption" style="max-width:100%;text-align:center;background:rgba(14,14,17,.9);' +
+        'color:#fff;padding:10px 18px;border-radius:20px;font-size:18px;font-weight:600;' +
+        'line-height:1.3;letter-spacing:-.01em;box-shadow:0 10px 28px rgba(0,0,0,.4);' +
+        'opacity:0;transform:translateY(10px);transition:opacity .38s ease,transform .38s ease"></div>' +
         '</div>'
       document.body.appendChild(layer)
     }
@@ -200,6 +206,10 @@ async function typeInto(page, locator, text, delay = 80) {
 }
 
 async function pick(page, locator, value) {
+  // En viewport de teléfono los campos del formulario casi nunca entran en
+  // pantalla, así que hay que traerlos antes de apuntar.
+  await locator.scrollIntoViewIfNeeded()
+  await sleep(220)
   await pointAt(page, locator)
   await page.evaluate(() => window.__demo?.pulse()).catch(() => {})
   await sleep(150)
@@ -233,12 +243,15 @@ async function walkthrough(page) {
   await say(page, 'El catálogo de tu colegio, solo para sus familias', 2000)
 
   await say(page, 'Con recomendaciones según el grado de tus hijos')
-  await moveTo(page, 400, 300)
+  await moveTo(page, 195, 300)
   await sleep(1700)
 
   // --- Búsqueda -----------------------------------------------------
   await say(page, 'Buscás por título, autor o materia')
-  const search = page.locator('input[placeholder="Buscar título, autor…"]')
+  // En mobile el buscador está detrás del botón de lupa; el input fijo del
+  // header solo existe de `sm` para arriba.
+  await click(page, page.locator('button[aria-label="Buscar"]'), 600)
+  const search = page.locator('input[placeholder="Buscar título, autor…"]:visible')
   await typeInto(page, search, 'matemática', 65)
   await search.press('Enter')
   await page.waitForURL(/q=/, { timeout: 30000 })
@@ -284,12 +297,16 @@ async function walkthrough(page) {
   await sleep(600)
 
   await typeInto(page, page.locator('input[placeholder^="ISBN"]'), ISBN, 50)
-  await click(page, page.getByRole('button', { name: /^Buscar$/ }), 1600)
+  // Por rol/nombre chocaría con la lupa del header, que también se llama
+  // "Buscar"; lo tomamos como hermano del input de ISBN.
+  await click(page, page.locator('input[placeholder^="ISBN"] ~ button'), 1200)
   await ensureOverlay(page)
+  // En pantalla angosta el título y el autor autocompletados quedan fuera de
+  // cuadro: hay que bajar para que se vea de qué habla el subtítulo.
+  await smoothScroll(page, 215, 750)
   await say(page, '…y los datos del libro se completan solos', 2200)
 
   await say(page, 'Completás el resto en menos de un minuto')
-  await smoothScroll(page, 330, 700)
   await pick(page, page.locator('select#subject'), 'Lengua y Literatura')
   await pick(page, page.locator('select#grade'), 'Secundaria 5°')
   await pick(page, page.locator('select#condition'), 'buen_estado')
@@ -311,7 +328,7 @@ async function walkthrough(page) {
   await page.getByRole('heading', { name: 'Mis publicaciones' }).waitFor({ timeout: 30000 })
   await ensureOverlay(page)
   await sleep(600)
-  await moveTo(page, 640, 330)
+  await moveTo(page, 195, 330)
   await sleep(1800)
 
   await say(page, 'ColeSwap · el marketplace de tu colegio', 2600)
@@ -325,7 +342,12 @@ const browser = await chromium.launch()
 // Pasada de calentamiento: next dev compila cada ruta la primera vez que se
 // visita, y esas esperas quedarían grabadas.
 console.log('→ Precalentando rutas…')
-const warm = await browser.newContext({ viewport: { width: W, height: H } })
+const warm = await browser.newContext({
+  viewport: { width: W, height: H },
+  deviceScaleFactor: SCALE,
+  isMobile: true,
+  hasTouch: true,
+})
 const wp = await warm.newPage()
 await login(wp)
 for (const route of ['/catalog', '/catalog?q=matematica', '/sell/book', '/sell/uniform', '/messages', '/my-listings', '/profile']) {
@@ -357,7 +379,9 @@ mkdirSync(OUT, { recursive: true })
 
 const context = await browser.newContext({
   viewport: { width: W, height: H },
-  deviceScaleFactor: 1,
+  deviceScaleFactor: SCALE,
+  isMobile: true,
+  hasTouch: true,
   locale: 'es-AR',
   timezoneId: 'America/Argentina/Buenos_Aires',
   reducedMotion: 'no-preference',

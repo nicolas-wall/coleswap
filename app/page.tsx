@@ -12,7 +12,6 @@ import {
   X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import { SupportLink } from '@/components/SupportLink'
 
 export default function LandingPage() {
@@ -82,84 +81,78 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Demo en video */}
-        <section className="px-4 pb-16">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="font-display text-3xl font-semibold text-center">
-              Mirá cómo funciona por dentro
-            </h2>
-            <p className="text-center text-muted-foreground mt-3 max-w-lg mx-auto leading-relaxed">
-              Un minuto recorriendo la app: buscar, mensajearte con la otra familia y publicar
-              lo que te sobró.
-            </p>
-
-            {/* Marco de navegador para que se lea como una captura de la app */}
-            <div className="mt-9 rounded-2xl bg-card ring-1 ring-foreground/10 shadow-warm-lg overflow-hidden">
-              <div className="flex items-center gap-2 border-b bg-muted/60 px-4 py-2.5">
-                <span className="flex gap-1.5" aria-hidden>
-                  <span className="size-2.5 rounded-full bg-foreground/15" />
-                  <span className="size-2.5 rounded-full bg-foreground/15" />
-                  <span className="size-2.5 rounded-full bg-foreground/15" />
-                </span>
-                <span className="mx-auto rounded-full bg-background px-3 py-1 text-xs text-muted-foreground">
-                  coleswap.com.ar/catalog
-                </span>
-              </div>
-              <video
-                className="block w-full aspect-[16/10] bg-muted"
-                src="/demo.mp4"
-                poster="/demo-poster.jpg"
-                autoPlay
-                loop
-                muted
-                playsInline
-                controls
-                preload="metadata"
-                aria-label="Recorrido en video por ColeSwap: catálogo del colegio, búsqueda, chat entre familias y publicación de un libro por ISBN"
-              />
-            </div>
-
-            <p className="mt-4 text-center text-xs text-muted-foreground">
-              Grabado con un colegio de prueba. Los nombres y las publicaciones son ficticios.
-            </p>
-          </div>
-        </section>
-
-        {/* Cómo funciona */}
+        {/* Cómo funciona — los pasos a la izquierda, el recorrido real a la derecha */}
         <section className="border-t bg-muted/40">
           <div className="max-w-5xl mx-auto px-4 py-16">
-            <h2 className="font-display text-3xl font-semibold text-center mb-12">Cómo funciona</h2>
-            <ol className="grid sm:grid-cols-3 gap-4">
-              {[
-                {
-                  icon: Search,
-                  title: 'Buscá o publicá',
-                  body: 'Encontrá libros y uniformes de tu colegio, o publicá en minutos lo que te sobró.',
-                },
-                {
-                  icon: MessageCircle,
-                  title: 'Mensajeate',
-                  body: 'Escribile directo a la otra familia por el chat de la app para ponerse de acuerdo.',
-                },
-                {
-                  icon: HandCoins,
-                  title: 'Coordiná en el cole',
-                  body: 'Se encuentran en persona para la entrega. Nosotros no procesamos pagos.',
-                },
-              ].map((step, i) => (
-                <li
-                  key={step.title}
-                  className="relative rounded-2xl bg-card p-6 ring-1 ring-foreground/5 shadow-warm"
-                >
-                  <span className="absolute -top-3 left-6 inline-flex size-7 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-semibold ring-4 ring-muted/40">
-                    {i + 1}
-                  </span>
-                  <step.icon className="size-6 text-primary mt-2" strokeWidth={1.75} />
-                  <h3 className="font-display text-lg font-semibold mt-3">{step.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">{step.body}</p>
-                </li>
-              ))}
-            </ol>
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+              <div>
+                <h2 className="font-display text-3xl font-semibold">Cómo funciona</h2>
+                <p className="mt-3 text-muted-foreground leading-relaxed max-w-md">
+                  Del otro lado está la app de verdad: así se ve buscar un libro, ponerse de
+                  acuerdo con la otra familia y publicar lo que te sobró.
+                </p>
+
+                <ol className="mt-9 space-y-6">
+                  {[
+                    {
+                      icon: Search,
+                      title: 'Buscá o publicá',
+                      body: 'Encontrá libros y uniformes de tu colegio, o publicá en minutos lo que te sobró.',
+                    },
+                    {
+                      icon: MessageCircle,
+                      title: 'Mensajeate',
+                      body: 'Escribile directo a la otra familia por el chat de la app para ponerse de acuerdo.',
+                    },
+                    {
+                      icon: HandCoins,
+                      title: 'Coordiná en el cole',
+                      body: 'Se encuentran en persona para la entrega. Nosotros no procesamos pagos.',
+                    },
+                  ].map((step, i) => (
+                    <li key={step.title} className="flex gap-4">
+                      <span className="relative shrink-0">
+                        <span className="inline-flex size-11 items-center justify-center rounded-xl bg-card text-primary ring-1 ring-foreground/5 shadow-warm">
+                          <step.icon className="size-5" strokeWidth={1.75} />
+                        </span>
+                        <span className="absolute -top-1.5 -left-1.5 inline-flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground text-[0.65rem] font-semibold ring-2 ring-muted/40">
+                          {i + 1}
+                        </span>
+                      </span>
+                      <div className="pt-0.5">
+                        <h3 className="font-display text-lg font-semibold">{step.title}</h3>
+                        <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{step.body}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+
+              {/* Marco de celular: el recorrido está grabado en viewport de teléfono */}
+              <div className="flex flex-col items-center lg:items-end">
+                <div className="relative w-[264px] sm:w-[292px] rounded-[2.25rem] bg-foreground/90 p-2.5 shadow-warm-lg ring-1 ring-foreground/10">
+                  <span
+                    aria-hidden
+                    className="absolute left-1/2 top-[0.9rem] z-10 h-1.5 w-14 -translate-x-1/2 rounded-full bg-background/25"
+                  />
+                  <video
+                    className="block w-full aspect-[390/844] rounded-[1.7rem] bg-muted"
+                    src="/demo.mp4"
+                    poster="/demo-poster.jpg"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    controls
+                    preload="metadata"
+                    aria-label="Recorrido en video por ColeSwap: catálogo del colegio, búsqueda, chat entre familias y publicación de un libro por ISBN"
+                  />
+                </div>
+                <p className="mt-4 max-w-[292px] text-center text-xs text-muted-foreground">
+                  Grabado con un colegio de prueba. Los nombres y las publicaciones son ficticios.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
