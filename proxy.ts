@@ -79,7 +79,10 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
+  // Los estáticos de public/ tienen que quedar fuera: si no, el proxy los trata
+  // como rutas y los manda a /login para el visitante sin sesión — que es
+  // justamente quien ve la landing.
   matcher: [
-    '/((?!_next/static|_next/image|favicon\\.ico|manifest\\.json|sw\\.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon\\.ico|manifest\\.json|sw\\.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico|mp4|webm)$).*)',
   ],
 }
