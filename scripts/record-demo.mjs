@@ -62,7 +62,7 @@ function overlay() {
         'width .16s ease,height .16s ease"></div>' +
         // Los subtítulos van bien por encima del borde inferior: ahí aparece la
         // barra de controles del <video> cuando se embebe en la landing.
-        '<div style="position:absolute;left:0;right:0;bottom:74px;display:flex;justify-content:center;padding:0 12px">' +
+        '<div style="position:absolute;left:0;right:0;bottom:110px;display:flex;justify-content:center;padding:0 12px">' +
         '<div id="__demo_caption" style="max-width:100%;text-align:center;background:rgba(14,14,17,.9);' +
         'color:#fff;padding:10px 18px;border-radius:20px;font-size:18px;font-weight:600;' +
         'line-height:1.3;letter-spacing:-.01em;box-shadow:0 10px 28px rgba(0,0,0,.4);' +

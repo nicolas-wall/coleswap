@@ -31,6 +31,51 @@ const FAMILIES = [
 
 const ids = {}
 
+// `--clean` deshace todo lo que crea este script, incluido el colegio demo, y
+// no toca ningún otro colegio.
+if (process.argv.includes('--clean')) {
+  const { data: fams } = await db.from('families').select('id').eq('school_id', SCHOOL)
+  const famIds = (fams ?? []).map((f) => f.id)
+  const { data: lst } = await db.from('listings').select('id').eq('school_id', SCHOOL)
+  const lstIds = (lst ?? []).map((l) => l.id)
+
+  if (lstIds.length) {
+    await db.from('messages').delete().in(
+      'conversation_id',
+      ((await db.from('conversations').select('id').in('listing_id', lstIds)).data ?? []).map((c) => c.id)
+    )
+    await db.from('conversations').delete().in('listing_id', lstIds)
+    await db.from('contacts').delete().in('listing_id', lstIds)
+    await db.from('ratings').delete().in('listing_id', lstIds)
+    await db.from('book_details').delete().in('listing_id', lstIds)
+    await db.from('uniform_details').delete().in('listing_id', lstIds)
+    await db.from('listings').delete().in('id', lstIds)
+  }
+  if (famIds.length) {
+    await db.from('children').delete().in('family_id', famIds)
+    await db.from('push_subscriptions').delete().in('family_id', famIds).then(() => {}, () => {})
+    await db.from('invitations').update({ used_by: null, used_at: null }).in('used_by', famIds)
+    await db.from('families').delete().in('id', famIds)
+    for (const id of famIds) await db.auth.admin.deleteUser(id).catch(() => {})
+  }
+  await db.from('invitations').delete().eq('school_id', SCHOOL)
+  await db.from('schools').delete().eq('id', SCHOOL)
+  console.log(`✓ Limpiado: ${famIds.length} cuenta(s), ${lstIds.length} publicación(es) y el colegio demo`)
+  process.exit(0)
+}
+
+// El colegio demo puede no existir (el seed 003 no corrió, o se limpió antes).
+{
+  const { error } = await db.from('schools').upsert({
+    id: SCHOOL,
+    name: 'Colegio San Martín',
+    slug: 'san-martin',
+    city: 'Buenos Aires',
+    short_name: 'San Martín',
+  })
+  if (error) throw error
+}
+
 async function ensureUser(email) {
   // La admin API no expone getUserByEmail, así que paginamos el listado.
   let page = 1

@@ -61,10 +61,12 @@ funciona".
   Playwright no escala, rasteriza en la esquina y rellena el resto de gris. Por
   eso `size` va igual al viewport. El `deviceScaleFactor: 2` igual sirve, porque
   el frame se captura supersampleado y baja más limpio.
-- Los subtítulos se dibujan a `bottom: 74px` a propósito: más abajo quedan
-  tapados por la barra de controles del `<video>` en la landing. Con el teléfono
-  a ~244 px de ancho el margen es de pocos píxeles, así que si movés esa
-  posición conviene volver a mirarlo con el video en pausa.
+- Los subtítulos se dibujan a `bottom: 110px` a propósito: más abajo quedan
+  tapados por la barra de controles del `<video>`. El caso ajustado es el
+  teléfono en un viewport de 390 px, donde el video mide 244×528 y la barra de
+  Chrome ocupa ~48 px fijos: `110/844 × 528 ≈ 69 px` de margen. Si movés esa
+  posición, verificalo ahí y con el video en pausa (que es cuando la barra
+  queda fija).
 - El script oculta el indicador de `next dev` (logo, "Compiling…", contador de
   issues), que si no sale en cámara.
 - La escena del ISBN depende de una API externa. El script verifica antes de
