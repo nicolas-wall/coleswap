@@ -12,7 +12,7 @@ export default function LegalPage() {
             <span className="inline-flex items-center justify-center size-8 rounded-lg bg-primary text-primary-foreground">
               <GraduationCap className="size-4" />
             </span>
-            SchoolShop
+            ColeSwap
           </Link>
           <Link href="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="size-3.5" />
@@ -28,9 +28,9 @@ export default function LegalPage() {
         </div>
 
         <section>
-          <h2>Qué es SchoolShop</h2>
+          <h2>Qué es ColeSwap</h2>
           <p>
-            SchoolShop es un espacio para que las familias de un mismo colegio publiquen y encuentren
+            ColeSwap es un espacio para que las familias de un mismo colegio publiquen y encuentren
             libros y uniformes escolares de segunda mano. No somos dueños ni vendedores de ningún
             artículo publicado: solo ponemos en contacto a las familias entre sí.
           </p>
@@ -39,7 +39,7 @@ export default function LegalPage() {
         <section>
           <h2>Sin pagos ni entregas a través de la plataforma</h2>
           <p>
-            SchoolShop no procesa pagos, no cobra comisiones y no interviene en la entrega de los
+            ColeSwap no procesa pagos, no cobra comisiones y no interviene en la entrega de los
             artículos. El precio, la forma de pago y el lugar de encuentro los acuerdan directamente
             comprador y vendedor. No somos parte de esa transacción ni garantizamos el estado,
             autenticidad o cumplimiento de lo acordado entre las partes.
@@ -49,7 +49,7 @@ export default function LegalPage() {
         <section>
           <h2>Tu cuenta</h2>
           <p>
-            Para usar SchoolShop necesitás pertenecer a un colegio participante, mediante un código de
+            Para usar ColeSwap necesitás pertenecer a un colegio participante, mediante un código de
             invitación o la aprobación de un moderador de tu comunidad. Sos responsable de la
             información que publicás y de mantener tu contraseña segura.
           </p>
@@ -92,7 +92,7 @@ export default function LegalPage() {
 
       <footer className="border-t">
         <div className="max-w-3xl mx-auto px-4 py-8 text-sm text-muted-foreground flex items-center justify-between gap-4">
-          <p>© {new Date().getFullYear()} SchoolShop</p>
+          <p>© {new Date().getFullYear()} ColeSwap</p>
           <div className="flex items-center gap-4">
             <Link href="/faq" className="hover:text-foreground transition-colors">Preguntas frecuentes</Link>
             <SupportLink />

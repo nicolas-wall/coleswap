@@ -45,7 +45,7 @@ export function AppHeader({ schoolName, crestUrl, displayName, isSchoolAdmin, is
           <span className="inline-flex items-center justify-center size-7 rounded-lg bg-primary-foreground/15">
             <GraduationCap className="size-4" />
           </span>
-          <span className="hidden sm:inline">SchoolShop</span>
+          <span className="hidden sm:inline">ColeSwap</span>
         </Link>
 
         {/* Desktop search */}

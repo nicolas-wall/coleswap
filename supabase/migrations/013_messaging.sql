@@ -1,5 +1,5 @@
 -- ============================================================
--- SchoolShop: Mensajería entre familias
+-- ColeSwap: Mensajería entre familias
 -- ============================================================
 
 -- Una conversación por (listing, comprador) — el vendedor es el dueño del listing

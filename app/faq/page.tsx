@@ -4,7 +4,7 @@ import { SupportLink } from '@/components/SupportLink'
 
 const FAQS: { q: string; a: string }[] = [
   {
-    q: '¿Qué es SchoolShop?',
+    q: '¿Qué es ColeSwap?',
     a: 'Es un mercado de segunda mano para libros y uniformes escolares, exclusivo para las familias de un mismo colegio. La idea es que lo que a un chico ya no le sirve, le sirva a otra familia de la misma comunidad.',
   },
   {
@@ -13,7 +13,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: '¿Tiene algún costo usar la plataforma?',
-    a: 'No, SchoolShop no cobra nada por publicar, buscar o contactar a otra familia, y no se lleva ninguna comisión de lo que vendas.',
+    a: 'No, ColeSwap no cobra nada por publicar, buscar o contactar a otra familia, y no se lleva ninguna comisión de lo que vendas.',
   },
   {
     q: '¿Y entonces cómo se mantiene?',
@@ -21,7 +21,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: '¿Cómo pago lo que compro?',
-    a: 'SchoolShop no procesa pagos. Te mensajeás con la otra familia dentro de la app, se ponen de acuerdo en precio y forma de pago, y coordinan el intercambio en persona (por ejemplo, en la puerta del colegio).',
+    a: 'ColeSwap no procesa pagos. Te mensajeás con la otra familia dentro de la app, se ponen de acuerdo en precio y forma de pago, y coordinan el intercambio en persona (por ejemplo, en la puerta del colegio).',
   },
   {
     q: '¿Cómo me contacto con otra familia?',
@@ -33,10 +33,10 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: '¿Cómo sé si me llegó un mensaje nuevo sin tener la web abierta?',
-    a: 'Activando las notificaciones desde Mi perfil ("Notificaciones de mensajes" → Activar). Una vez activadas, tu navegador te avisa con una notificación push cuando te escriben, aunque no tengas SchoolShop abierto en ese momento.',
+    a: 'Activando las notificaciones desde Mi perfil ("Notificaciones de mensajes" → Activar). Una vez activadas, tu navegador te avisa con una notificación push cuando te escriben, aunque no tengas ColeSwap abierto en ese momento.',
   },
   {
-    q: '¿Puedo instalar SchoolShop como una app en mi celular?',
+    q: '¿Puedo instalar ColeSwap como una app en mi celular?',
     a: 'Sí. Desde Mi perfil vas a encontrar una tarjeta "Instalar la app": en Android te muestra un botón para instalarla directo, o te indica cómo hacerlo desde el menú ⋮ de Chrome ("Instalar aplicación"); en iPhone se hace desde Safari, tocando el botón Compartir y eligiendo "Agregar a pantalla de inicio". Una vez instalada, se abre como una app aparte, con ícono propio.',
   },
   {
@@ -74,7 +74,7 @@ export default function FaqPage() {
             <span className="inline-flex items-center justify-center size-8 rounded-lg bg-primary text-primary-foreground">
               <GraduationCap className="size-4" />
             </span>
-            SchoolShop
+            ColeSwap
           </Link>
           <Link href="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="size-3.5" />
@@ -97,7 +97,7 @@ export default function FaqPage() {
 
       <footer className="border-t">
         <div className="max-w-3xl mx-auto px-4 py-8 text-sm text-muted-foreground flex items-center justify-between gap-4">
-          <p>© {new Date().getFullYear()} SchoolShop</p>
+          <p>© {new Date().getFullYear()} ColeSwap</p>
           <div className="flex items-center gap-4">
             <Link href="/legal" className="hover:text-foreground transition-colors">Legales</Link>
             <SupportLink />

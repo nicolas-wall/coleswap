@@ -24,7 +24,7 @@ export default function LandingPage() {
             <span className="inline-flex items-center justify-center size-8 rounded-lg bg-primary text-primary-foreground">
               <GraduationCap className="size-4" />
             </span>
-            SchoolShop
+            ColeSwap
           </Link>
           <nav className="flex items-center gap-1 sm:gap-2">
             <Link href="/faq" className="hidden sm:inline-block text-sm text-muted-foreground hover:text-foreground px-3 py-2 transition-colors">
@@ -151,7 +151,7 @@ export default function LandingPage() {
             </div>
 
             <div className="rounded-2xl bg-card p-6 ring-1 ring-primary/20 shadow-warm">
-              <h3 className="font-display text-lg font-semibold text-primary">En SchoolShop</h3>
+              <h3 className="font-display text-lg font-semibold text-primary">En ColeSwap</h3>
               <ul className="mt-4 space-y-3">
                 {[
                   'Buscador por título, autor, materia o talle',
@@ -219,7 +219,7 @@ export default function LandingPage() {
               className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_120%_at_50%_0%,rgba(255,255,255,0.16)_0%,transparent_60%)]"
             />
             <div className="relative">
-              <h2 className="font-display text-3xl font-semibold">¿Tu colegio ya usa SchoolShop?</h2>
+              <h2 className="font-display text-3xl font-semibold">¿Tu colegio ya usa ColeSwap?</h2>
               <p className="mt-3 text-primary-foreground/80 max-w-md mx-auto leading-relaxed">
                 Pedí el código de invitación al moderador, o solicitá acceso directamente desde la app.
               </p>
@@ -233,7 +233,7 @@ export default function LandingPage() {
 
       <footer className="border-t">
         <div className="max-w-5xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} SchoolShop</p>
+          <p>© {new Date().getFullYear()} ColeSwap</p>
           <div className="flex items-center gap-4">
             <Link href="/faq" className="hover:text-foreground transition-colors">Preguntas frecuentes</Link>
             <Link href="/legal" className="hover:text-foreground transition-colors">Legales</Link>

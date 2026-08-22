@@ -1,5 +1,5 @@
 -- ============================================================
--- SchoolShop: Datos iniciales para desarrollo y pruebas
+-- ColeSwap: Datos iniciales para desarrollo y pruebas
 -- ============================================================
 
 -- Colegios demo

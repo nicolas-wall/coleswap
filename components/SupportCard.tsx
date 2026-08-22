@@ -16,7 +16,7 @@ export function SupportCard() {
       <CardContent className="pt-4 space-y-2">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-sm font-medium">Bancá SchoolShop</p>
+            <p className="text-sm font-medium">Bancá ColeSwap</p>
             <p className="text-xs text-muted-foreground">
               La app es gratis y no cobra comisiones. Se mantiene con lo que aportan las
               familias que la usan — sirve para pagar el servidor y que siga andando.

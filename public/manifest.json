@@ -1,6 +1,6 @@
 {
-  "name": "SchoolShop",
-  "short_name": "SchoolShop",
+  "name": "ColeSwap",
+  "short_name": "ColeSwap",
   "description": "Mercado de insumos escolares de tu colegio",
   "start_url": "/catalog",
   "display": "standalone",

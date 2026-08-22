@@ -1,5 +1,5 @@
 -- ============================================================
--- SchoolShop: Row Level Security
+-- ColeSwap: Row Level Security
 -- ============================================================
 
 -- Habilitar RLS en todas las tablas

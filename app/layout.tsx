@@ -16,7 +16,7 @@ const fraunces = Fraunces({
 })
 
 export const metadata: Metadata = {
-  title: 'SchoolShop',
+  title: 'ColeSwap',
   description: 'Mercado de insumos escolares de tu colegio',
   manifest: '/manifest.json',
   icons: { icon: '/icon.svg', apple: '/icon-192.png' },

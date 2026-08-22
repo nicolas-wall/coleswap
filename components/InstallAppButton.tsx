@@ -37,7 +37,7 @@ export function InstallAppButton() {
         )}
         {status === 'manual' && (
           <p className="text-xs text-muted-foreground">
-            Buscá la opción &quot;Instalar SchoolShop&quot; en el menú de tu navegador, o el ícono de instalar en la barra de direcciones.
+            Buscá la opción &quot;Instalar ColeSwap&quot; en el menú de tu navegador, o el ícono de instalar en la barra de direcciones.
           </p>
         )}
       </CardContent>
