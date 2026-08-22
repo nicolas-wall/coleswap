@@ -51,11 +51,19 @@ export async function signUp(formData: FormData) {
     return { error: 'Este código de invitación ya fue utilizado' }
   }
 
+  const origin = await getOrigin()
   const supabase = await createClient()
   const { data: authData, error: authErr } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { display_name: displayName } },
+    options: {
+      data: { display_name: displayName },
+      // Explícito, igual que en el reset de contraseña: si algún día se activa
+      // "Confirm email", el link sigue el dominio real del request en vez de
+      // depender del Site URL del dashboard, que quedó viejo la última vez que
+      // se renombró el proyecto.
+      emailRedirectTo: `${origin}/login`,
+    },
   })
 
   if (authErr || !authData.user) {
@@ -117,11 +125,15 @@ export async function requestJoin(formData: FormData) {
   const { data: school } = await service.from('schools').select('id').eq('id', schoolId).single()
   if (!school) return { error: 'Colegio no encontrado' }
 
+  const origin = await getOrigin()
   const supabase = await createClient()
   const { data: authData, error: authErr } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { display_name: displayName } },
+    options: {
+      data: { display_name: displayName },
+      emailRedirectTo: `${origin}/login`,
+    },
   })
 
   if (authErr || !authData.user) {
