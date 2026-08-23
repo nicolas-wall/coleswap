@@ -85,14 +85,6 @@ const plantillas = {
 
 mkdirSync(salida, { recursive: true })
 
-const indice = ['# Plantillas de Supabase Auth', '',
-  'Generadas por `scripts/generar-plantillas-supabase.mjs` con el mismo diseño',
-  'que los mails de la app (`lib/emails/layout.ts`). **No editar a mano**: si hace',
-  'falta un cambio, se cambia el generador y se vuelve a correr.', '',
-  'Se pegan en Supabase → Authentication → Email Templates.', '',
-  '| Plantilla de Supabase | Archivo | Asunto sugerido |',
-  '|---|---|---|']
-
 const NOMBRES_SUPABASE = {
   'recuperar-contrasena': 'Reset Password',
   'confirmar-cuenta': 'Confirm signup',
@@ -100,13 +92,51 @@ const NOMBRES_SUPABASE = {
   'cambio-de-mail': 'Change Email Address',
 }
 
+const indice = [
+  '# Plantillas de Supabase Auth',
+  '',
+  'Generadas por `scripts/generar-plantillas-supabase.mjs` con el mismo diseño',
+  'que los mails de la app (`lib/emails/layout.ts`). **No editar a mano**: si hace',
+  'falta un cambio, se cambia el generador y se vuelve a correr — así el diseño',
+  'no se va separando del de la app en cada retoque.',
+  '',
+  'Se cargan en **Supabase → Authentication → Emails → Templates**. Cada plantilla',
+  'tiene **dos campos**: el asunto (`Subject heading`) y el cuerpo (`Message body`).',
+  'El asunto NO va adentro del HTML, se carga aparte.',
+  '',
+  '`{{ .ConfirmationURL }}` lo reemplaza Supabase por el enlace real. No tocarlo.',
+  '',
+  '---',
+  '',
+]
+
 for (const [clave, p] of Object.entries(plantillas)) {
   writeFileSync(join(salida, p.archivo), p.html, 'utf8')
-  indice.push(`| ${NOMBRES_SUPABASE[clave]} | \`${p.archivo}\` | ${p.asunto} |`)
-  console.log(`  ✓ ${p.archivo}`)
+  indice.push(
+    `## ${NOMBRES_SUPABASE[clave]}`,
+    '',
+    '**Subject heading** — copiar tal cual:',
+    '',
+    '```',
+    p.asunto,
+    '```',
+    '',
+    `**Message body** — pegar el contenido de \`${p.archivo}\``,
+    '',
+  )
+  console.log(`  ✓ ${p.archivo.padEnd(28)} ${p.asunto}`)
 }
 
-writeFileSync(join(salida, 'README.md'), indice.join('\n') + '\n', 'utf8')
+// También en texto plano, por si se necesita fuera del repo.
+writeFileSync(
+  join(salida, 'asuntos.txt'),
+  Object.entries(plantillas)
+    .map(([clave, p]) => `${NOMBRES_SUPABASE[clave]}\n${p.asunto}\n`)
+    .join('\n'),
+  'utf8'
+)
+
+writeFileSync(join(salida, 'README.md'), indice.join('\n'), 'utf8')
 
 
 console.log(`\n${Object.keys(plantillas).length} plantillas → supabase/email-templates/`)
