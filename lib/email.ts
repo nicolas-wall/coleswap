@@ -1,4 +1,5 @@
 import { createServiceClient } from '@/lib/supabase/server'
+import { emailLayout, parrafo } from '@/lib/emails/layout'
 
 /**
  * Capa de mails. Todo lo específico de Resend vive acá adentro: el resto de la
@@ -15,8 +16,6 @@ const RESEND_ENDPOINT = 'https://api.resend.com/emails'
 // sirve para arrancar sin comprar ni configurar nada. Es provisorio: el destino
 // es coleswap.com, y llegar ahí es cambiar esta env var, no tocar código.
 const FROM = process.env.EMAIL_FROM ?? 'ColeSwap <coleswap@chipu.app>'
-
-const MARCA = '#1f6b45'
 
 interface EmailInput {
   to: string
@@ -56,40 +55,6 @@ export async function sendEmail({ to, subject, html }: EmailInput): Promise<bool
   }
 }
 
-/**
- * Shell HTML de los mails. Tablas y estilos inline a propósito: Outlook y
- * Gmail ignoran flexbox, grid y buena parte de las hojas de estilo.
- */
-function layout(opts: { titulo: string; cuerpo: string; cta?: { texto: string; url: string } }) {
-  const { titulo, cuerpo, cta } = opts
-  return `<!doctype html>
-<html lang="es"><body style="margin:0;padding:0;background:#f6f4ef;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f4ef;padding:24px 12px;">
-    <tr><td align="center">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:12px;overflow:hidden;">
-        <tr><td style="background:${MARCA};padding:20px 28px;">
-          <span style="color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.02em;">ColeSwap</span>
-        </td></tr>
-        <tr><td style="padding:28px;">
-          <h1 style="margin:0 0 14px;font-size:20px;line-height:1.3;color:#1a1a1a;">${titulo}</h1>
-          <div style="font-size:15px;line-height:1.6;color:#444;">${cuerpo}</div>
-          ${cta ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px 0 4px;">
-            <tr><td style="background:${MARCA};border-radius:8px;">
-              <a href="${cta.url}" style="display:inline-block;padding:12px 22px;color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;">${cta.texto}</a>
-            </td></tr></table>` : ''}
-        </td></tr>
-        <tr><td style="padding:0 28px 26px;">
-          <p style="margin:0;font-size:12px;line-height:1.5;color:#8a8a8a;border-top:1px solid #eceae4;padding-top:14px;">
-            Te llega este mail porque tenés una cuenta en ColeSwap, el mercado de
-            libros y uniformes de tu colegio.
-          </p>
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
-</body></html>`
-}
-
 function siteUrl() {
   return process.env.NEXT_PUBLIC_SITE_URL ?? 'https://coleswap.vercel.app'
 }
@@ -109,11 +74,13 @@ export async function sendApprovalEmail(familyId: string) {
   await sendEmail({
     to: family.email,
     subject: colegio ? `Ya podés entrar a ColeSwap — ${colegio}` : 'Ya podés entrar a ColeSwap',
-    html: layout({
+    html: emailLayout({
       titulo: 'Aprobaron tu cuenta',
-      cuerpo: `<p style="margin:0 0 10px;">Hola ${family.display_name},</p>
-        <p style="margin:0;">Un moderador${colegio ? ` de <strong>${colegio}</strong>` : ''} aprobó tu solicitud.
-        Ya podés ver lo que publican las otras familias y publicar lo tuyo.</p>`,
+      vistaPrevia: 'Ya podés ver y publicar en el catálogo de tu colegio.',
+      cuerpo:
+        parrafo(`Hola ${family.display_name},`) +
+        parrafo(`Un moderador${colegio ? ` de <strong>${colegio}</strong>` : ''} aprobó tu solicitud.
+          Ya podés ver lo que publican las otras familias y publicar lo tuyo.`),
       cta: { texto: 'Entrar al catálogo', url: `${siteUrl()}/catalog` },
     }),
   })
@@ -132,10 +99,11 @@ export async function sendPendingRequestEmail(schoolId: string, nombreSolicitant
 
   if (!admins || admins.length === 0) return
 
-  const html = layout({
+  const html = emailLayout({
     titulo: 'Una familia quiere entrar',
-    cuerpo: `<p style="margin:0;"><strong>${nombreSolicitante}</strong> pidió sumarse al colegio.
-      Hasta que la apruebes o la rechaces no puede ver ni publicar nada.</p>`,
+    vistaPrevia: `${nombreSolicitante} está esperando que la apruebes.`,
+    cuerpo: parrafo(`<strong>${nombreSolicitante}</strong> pidió sumarse al colegio.
+      Hasta que la apruebes o la rechaces no puede ver ni publicar nada.`),
     cta: { texto: 'Ver la solicitud', url: `${siteUrl()}/admin` },
   })
 
@@ -144,4 +112,75 @@ export async function sendPendingRequestEmail(schoolId: string, nombreSolicitant
       .filter((a) => a.email)
       .map((a) => sendEmail({ to: a.email, subject: 'Hay una solicitud esperando tu aprobación', html }))
   )
+}
+
+/**
+ * Aviso del ciclo de vida: publicaciones viejas por confirmar y/o ya pausadas.
+ * Lo dispara el barrido diario, junto con el push. Un solo mail por familia
+ * aunque le toquen las dos cosas.
+ */
+export async function sendLifecycleEmail(
+  familyId: string,
+  { porConfirmar, pausadas }: { porConfirmar: number; pausadas: number }
+) {
+  if (porConfirmar === 0 && pausadas === 0) return
+
+  const service = createServiceClient()
+  const { data: family } = await service
+    .from('families')
+    .select('email, display_name')
+    .eq('id', familyId)
+    .single() as { data: { email: string; display_name: string } | null }
+
+  if (!family?.email) return
+
+  const partes: string[] = [parrafo(`Hola ${family.display_name},`)]
+
+  if (pausadas > 0) {
+    partes.push(
+      parrafo(
+        pausadas === 1
+          ? `Una publicación tuya llevaba más de dos meses sin confirmar, así que la sacamos
+             del catálogo. <strong>No se borró nada</strong>: si todavía la tenés, la reactivás de un toque.`
+          : `${pausadas} publicaciones tuyas llevaban más de dos meses sin confirmar, así que las
+             sacamos del catálogo. <strong>No se borró nada</strong>: si todavía las tenés, las reactivás de un toque.`
+      )
+    )
+  }
+
+  if (porConfirmar > 0) {
+    partes.push(
+      parrafo(
+        porConfirmar === 1
+          ? `Tenés una publicación de más de 45 días. Confirmanos si seguís teniéndola;
+             si no decís nada, en 15 días la bajamos sola del catálogo.`
+          : `Tenés ${porConfirmar} publicaciones de más de 45 días. Confirmanos cuáles seguís
+             teniendo; las que no confirmes se bajan solas del catálogo en 15 días.`
+      )
+    )
+  }
+
+  partes.push(
+    parrafo(
+      'Lo hacemos para que nadie escriba por algo que ya no está — es lo que mantiene el catálogo confiable.',
+      { chico: true }
+    )
+  )
+
+  await sendEmail({
+    to: family.email,
+    subject:
+      pausadas > 0
+        ? 'Pausamos publicaciones tuyas en ColeSwap'
+        : '¿Seguís teniendo lo que publicaste?',
+    html: emailLayout({
+      titulo: pausadas > 0 ? 'Pausamos publicaciones tuyas' : '¿Seguís teniendo esto?',
+      vistaPrevia:
+        pausadas > 0
+          ? 'Salieron del catálogo por antigüedad. Reactivalas si todavía las tenés.'
+          : 'Confirmá cuáles siguen disponibles para que no se bajen solas.',
+      cuerpo: partes.join(''),
+      cta: { texto: 'Ver mis publicaciones', url: `${siteUrl()}/my-listings` },
+    }),
+  })
 }

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { sendPushToFamily } from '@/lib/push'
+import { sendLifecycleEmail } from '@/lib/email'
 import { NUDGE_AFTER_DAYS, AUTO_PAUSE_AFTER_DAYS } from '@/lib/lifecycle'
 
 const DAY_MS = 86_400_000
@@ -91,14 +92,18 @@ export async function GET(request: NextRequest) {
     byFamily.set(l.family_id, entry)
   }
 
+  // Los dos canales: push llega al instante pero solo a quien lo activó; el
+  // mail llega siempre. Ninguno tira excepción, así que el barrido termina
+  // aunque falle el envío.
   await Promise.all(
-    [...byFamily].map(([familyId, { nudged, paused }]) =>
+    [...byFamily].flatMap(([familyId, { nudged, paused }]) => [
       sendPushToFamily(familyId, {
         title: paused > 0 ? 'Pausamos publicaciones tuyas' : '¿Seguís teniendo esto?',
         body: buildBody(nudged, paused),
         url: '/my-listings',
-      })
-    )
+      }),
+      sendLifecycleEmail(familyId, { porConfirmar: nudged, pausadas: paused }),
+    ])
   )
 
   return NextResponse.json({
