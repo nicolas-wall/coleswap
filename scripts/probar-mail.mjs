@@ -37,7 +37,7 @@ if (!apiKey) {
   process.exit(1)
 }
 
-const from = env.EMAIL_FROM ?? 'ColeSwap <coleswap@doselementos.com>'
+const from = env.EMAIL_FROM ?? 'ColeSwap <coleswap@chipu.app>'
 const MARCA = '#1f6b45'
 
 const html = `<!doctype html>

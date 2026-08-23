@@ -11,10 +11,10 @@ import { createServiceClient } from '@/lib/supabase/server'
 
 const RESEND_ENDPOINT = 'https://api.resend.com/emails'
 
-// doselementos.com ya está verificado en la cuenta de Resend, así que sirve sin
-// comprar ni configurar nada. Cuando exista coleswap.com se cambia esta env var
-// y no se toca una línea de código.
-const FROM = process.env.EMAIL_FROM ?? 'ColeSwap <coleswap@doselementos.com>'
+// chipu.app es el único dominio verificado hoy en la cuenta de Resend, así que
+// sirve para arrancar sin comprar ni configurar nada. Es provisorio: el destino
+// es coleswap.com, y llegar ahí es cambiar esta env var, no tocar código.
+const FROM = process.env.EMAIL_FROM ?? 'ColeSwap <coleswap@chipu.app>'
 
 const MARCA = '#1f6b45'
 
