@@ -44,7 +44,9 @@ export const metadata: Metadata = {
 }
 
 export const viewport = {
-  themeColor: '#1f6b45',
+  // Mismo verde que --primary en globals.css. Se ve en la barra del navegador
+  // en Android y al instalar la PWA, así que tiene que coincidir con la app.
+  themeColor: '#005e31',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
